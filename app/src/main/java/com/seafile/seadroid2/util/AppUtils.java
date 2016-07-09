@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-import com.alfred.chowder.global.MyApplication;
+import com.seafile.seadroid2.global.SeadroidApplication;
 
 /**
  * 跟app相关的辅助类
@@ -17,6 +17,12 @@ public class AppUtils {
         throw new UnsupportedOperationException("cannot be instantiated");
 
     }
+
+//    private static  PackageInfo getPackageInfo(){
+//        PackageManager packageManager = SeadroidApplication.getAppContext().getPackageManager();
+//       return packageManager.getPackageInfo(
+//                SeadroidApplication.getAppContext().getPackageName(), 0);
+//    }
 
     /**
      * 获取应用程序名称
@@ -41,9 +47,9 @@ public class AppUtils {
      */
     public static String getVersionName() {
         try {
-            PackageManager packageManager = MyApplication.getGlabalContext().getPackageManager();
+            PackageManager packageManager = SeadroidApplication.getAppContext().getPackageManager();
             PackageInfo packageInfo = packageManager.getPackageInfo(
-                    MyApplication.getGlabalContext().getPackageName(), 0);
+                    SeadroidApplication.getAppContext().getPackageName(), 0);
             return packageInfo.versionName;
 
         } catch (PackageManager.NameNotFoundException e) {
@@ -59,9 +65,9 @@ public class AppUtils {
      */
     public static int getVersionCode() {
         try {
-            PackageManager packageManager = MyApplication.getGlabalContext().getPackageManager();
+            PackageManager packageManager = SeadroidApplication.getAppContext().getPackageManager();
             PackageInfo packageInfo = packageManager.getPackageInfo(
-                    MyApplication.getGlabalContext().getPackageName(), 0);
+                    SeadroidApplication.getAppContext().getPackageName(), 0);
             return packageInfo.versionCode;
 
         } catch (PackageManager.NameNotFoundException e) {
