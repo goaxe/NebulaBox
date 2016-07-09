@@ -2,12 +2,12 @@ package com.seafile.seadroid2;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.style.ReplacementSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.seafile.seadroid2.account.Account;
+import com.seafile.seadroid2.network.SeafConnection;
 import com.seafile.seadroid2.account.AccountInfo;
 import com.seafile.seadroid2.account.AccountManager;
 import com.seafile.seadroid2.data.DataManager;

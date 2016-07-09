@@ -7,12 +7,12 @@ import android.util.Pair;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.seafile.seadroid2.R;
-import com.seafile.seadroid2.SeadroidApplication;
-import com.seafile.seadroid2.SeafConnection;
 import com.seafile.seadroid2.SeafException;
 import com.seafile.seadroid2.account.Account;
 import com.seafile.seadroid2.account.AccountInfo;
 import com.seafile.seadroid2.crypto.Crypto;
+import com.seafile.seadroid2.global.SeadroidApplication;
+import com.seafile.seadroid2.network.SeafConnection;
 import com.seafile.seadroid2.util.Utils;
 
 import org.apache.commons.io.FileUtils;

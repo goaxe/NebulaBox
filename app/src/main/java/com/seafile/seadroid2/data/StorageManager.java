@@ -10,10 +10,10 @@ import android.text.format.Formatter;
 import android.util.Log;
 
 import com.seafile.seadroid2.R;
-import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.SettingsManager;
 import com.seafile.seadroid2.account.Account;
 import com.seafile.seadroid2.account.AccountManager;
+import com.seafile.seadroid2.global.SeadroidApplication;
 
 import org.apache.commons.io.FileUtils;
 
