@@ -1,7 +1,7 @@
 package com.seafile.seadroid2.transfer;
 
 import com.seafile.seadroid2.SeafException;
-import com.seafile.seadroid2.account.Account;
+import com.seafile.seadroid2.bean.Account;
 
 /**
  * Base class

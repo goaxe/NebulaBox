@@ -5,20 +5,20 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.provider.Settings.Secure;
-import android.util.Log;
 import android.util.Pair;
 
 import com.github.kevinsawicki.http.HttpRequest;
 import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 import com.google.common.collect.Maps;
+import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.SeafException;
-import com.seafile.seadroid2.account.Account;
+import com.seafile.seadroid2.bean.Account;
 import com.seafile.seadroid2.data.Block;
 import com.seafile.seadroid2.data.DataManager;
 import com.seafile.seadroid2.data.FileBlocks;
 import com.seafile.seadroid2.data.ProgressMonitor;
-import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.util.Utils;
+import com.seafile.seadroid2.util.log.KLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -157,7 +157,7 @@ public class SeafConnection {
         HttpRequest req = null;
         try {
             req = prepareApiPostRequest("api2/auth-token/", false, null);
-            // Log.d(DEBUG_TAG, "Login to " + account.server + "api2/auth-token/");
+            // KLog.d(DEBUG_TAG, "Login to " + account.server + "api2/auth-token/");
 
             req.form("username", account.email);
             req.form("password", passwd);
@@ -184,7 +184,7 @@ public class SeafConnection {
             checkRequestResponseStatus(req, HttpURLConnection.HTTP_OK);
 
             String contentAsString = new String(req.bytes(), "UTF-8");
-            Log.e("=====", "realLogin: " + contentAsString);
+            KLog.e("=====", "realLogin: " + contentAsString);
             JSONObject obj = Utils.parseJsonObject(contentAsString);
             if (obj == null)
                 return false;
@@ -399,10 +399,10 @@ public class SeafConnection {
 
             if (dirID.equals(cachedDirID)) {
                 // local cache is valid
-                // Log.d(DEBUG_TAG, String.format("dir %s is cached", path));
+                // KLog.d(DEBUG_TAG, String.format("dir %s is cached", path));
                 content = null;
             } else {
-                /*Log.d(DEBUG_TAG,
+                /*KLog.d(DEBUG_TAG,
                       String.format("dir %s will be downloaded from server, latest %s, local cache %s",
                                     path, dirID, cachedDirID != null ? cachedDirID : "null"));*/
                 byte[] rawBytes = req.bytes();
@@ -525,12 +525,12 @@ public class SeafConnection {
     public String uploadByBlocks(String repoID, String dir, String filePath, List<Block> blocks, boolean update, ProgressMonitor monitor) throws IOException, SeafException {
         try {
             String url = getUploadLink(repoID, update, true);
-            Log.d(DEBUG_TAG, "UploadLink " + url);
+            KLog.d(DEBUG_TAG, "UploadLink " + url);
             return uploadBlocksCommon(url, repoID, dir, filePath, blocks, monitor, update);
         } catch (SeafException e) {
             // do again
             String url = getUploadLink(repoID, update, true);
-            Log.d(DEBUG_TAG, "do again UploadLink " + url);
+            KLog.d(DEBUG_TAG, "do again UploadLink " + url);
             return uploadBlocksCommon(url, repoID, dir, filePath, blocks, monitor, update);
         }
     }
@@ -563,7 +563,7 @@ public class SeafConnection {
             }
 
             File tmp = DataManager.createTempFile();
-            // Log.d(DEBUG_TAG, "write to " + tmp.getAbsolutePath());
+            // KLog.d(DEBUG_TAG, "write to " + tmp.getAbsolutePath());
             if (monitor == null) {
                 req.receive(tmp);
             } else {
@@ -572,7 +572,7 @@ public class SeafConnection {
             }
 
             if (!tmp.renameTo(file)) {
-                Log.w(DEBUG_TAG, "Rename file error");
+                KLog.w(DEBUG_TAG, "Rename file error");
                 return null;
             }
             return file;
@@ -586,7 +586,7 @@ public class SeafConnection {
             throw SeafException.networkException;
         } catch (HttpRequestException e) {
             if (e.getCause() instanceof MonitorCancelledException) {
-                // Log.d(DEBUG_TAG, "download is cancelled");
+                // KLog.d(DEBUG_TAG, "download is cancelled");
                 throw SeafException.userCancelledException;
             } else {
                 throw getSeafExceptionFromHttpRequestException(e);
@@ -616,7 +616,7 @@ public class SeafConnection {
             }
 
             File block = new File(localPath);
-            // Log.d(DEBUG_TAG, "write to " + block.getAbsolutePath());
+            // KLog.d(DEBUG_TAG, "write to " + block.getAbsolutePath());
             if (monitor == null) {
                 req.receive(block);
             } else {
@@ -635,7 +635,7 @@ public class SeafConnection {
             throw SeafException.networkException;
         } catch (HttpRequestException e) {
             if (e.getCause() instanceof MonitorCancelledException) {
-                // Log.d(DEBUG_TAG, "download is cancelled");
+                // KLog.d(DEBUG_TAG, "download is cancelled");
                 throw SeafException.userCancelledException;
             } else {
                 throw getSeafExceptionFromHttpRequestException(e);
@@ -663,10 +663,10 @@ public class SeafConnection {
 
         if (fileID.equals(cachedFileID)) {
             // cache is valid
-            // Log.d(DEBUG_TAG, String.format("file %s is cached", path));
+            // KLog.d(DEBUG_TAG, String.format("file %s is cached", path));
             return new Pair<String, File>(fileID, null);
         } else {
-            /*Log.d(DEBUG_TAG,
+            /*KLog.d(DEBUG_TAG,
                   String.format("file %s will be downloaded from server, latest %s, local cache %s",
                                 path, fileID, cachedFileID != null ? cachedFileID : "null"));*/
 
@@ -687,10 +687,10 @@ public class SeafConnection {
             req.form("password", passwd);
             checkRequestResponseStatus(req, HttpURLConnection.HTTP_OK);
         } catch (SeafException e) {
-            Log.d(DEBUG_TAG, "Set Password err: " + e.getCode());
+            KLog.d(DEBUG_TAG, "Set Password err: " + e.getCode());
             throw e;
         } catch (Exception e) {
-            Log.d(DEBUG_TAG, "Exception in setPassword ");
+            KLog.d(DEBUG_TAG, "Exception in setPassword ");
             e.printStackTrace();
             return;
         }
@@ -730,14 +730,14 @@ public class SeafConnection {
             } else
                 throw SeafException.unknownException;
         } catch (SeafException e) {
-            Log.d(DEBUG_TAG, e.getCode() + e.getMessage());
+            KLog.d(DEBUG_TAG, e.getCode() + e.getMessage());
             throw e;
         } catch (Exception e) {
             String msg = e.getMessage();
             if (msg != null)
-                Log.d(DEBUG_TAG, msg);
+                KLog.d(DEBUG_TAG, msg);
             else
-                Log.d(DEBUG_TAG, "get upload link error", e);
+                KLog.d(DEBUG_TAG, "get upload link error", e);
             throw SeafException.unknownException;
         }
     }
@@ -873,7 +873,7 @@ public class SeafConnection {
             throw SeafException.networkException;
         } catch (HttpRequestException e) {
             if (e.getCause() instanceof MonitorCancelledException) {
-                Log.d(DEBUG_TAG, "upload is cancelled");
+                KLog.d(DEBUG_TAG, "upload is cancelled");
                 throw SeafException.userCancelledException;
             } else {
                 throw getSeafExceptionFromHttpRequestException(e);
@@ -982,7 +982,7 @@ public class SeafConnection {
 
             if (update) {
                 req.send(updateBuilder);
-                Log.d(DEBUG_TAG, updateBuilder.toString());
+                KLog.d(DEBUG_TAG, updateBuilder.toString());
             }
 
             req.send(parentDirBuilder);
@@ -1029,7 +1029,7 @@ public class SeafConnection {
             throw SeafException.networkException;
         } catch (HttpRequestException e) {
             if (e.getCause() instanceof MonitorCancelledException) {
-                Log.d(DEBUG_TAG, "upload is cancelled");
+                KLog.d(DEBUG_TAG, "upload is cancelled");
                 throw SeafException.userCancelledException;
             } else {
                 throw getSeafExceptionFromHttpRequestException(e);
@@ -1490,7 +1490,7 @@ public class SeafConnection {
 
     private void checkRequestResponseStatus(HttpRequest req, int expectedStatusCode) throws SeafException {
         if (req.code() != expectedStatusCode) {
-            Log.d(DEBUG_TAG, "HTTP request failed : " + req.url() + ", " + req.code() + ", " + req.message());
+            KLog.d(DEBUG_TAG, "HTTP request failed : " + req.url() + ", " + req.code() + ", " + req.message());
 
             if (req.message() == null) {
                 throw SeafException.networkException;
@@ -1499,7 +1499,7 @@ public class SeafConnection {
             }
         }
         else {
-            // Log.v(DEBUG_TAG, "HTTP request ok : " + req.url());
+            // KLog.v(DEBUG_TAG, "HTTP request ok : " + req.url());
         }
     }
 

@@ -1,33 +1,32 @@
-package com.seafile.seadroid2;
+package com.seafile.seadroid2.ui.activity;
 
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.IBinder;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.seafile.seadroid2.account.Account;
-import com.seafile.seadroid2.data.SeafDirent;
-import com.seafile.seadroid2.network.SeafConnection;
-import com.seafile.seadroid2.account.AccountInfo;
+import com.seafile.seadroid2.R;
 import com.seafile.seadroid2.account.AccountManager;
+import com.seafile.seadroid2.bean.Account;
+import com.seafile.seadroid2.bean.AccountInfo;
 import com.seafile.seadroid2.data.DataManager;
+import com.seafile.seadroid2.data.SeafDirent;
 import com.seafile.seadroid2.data.SeafRepo;
 import com.seafile.seadroid2.data.ServerInfo;
+import com.seafile.seadroid2.network.SeafConnection;
 import com.seafile.seadroid2.transfer.TransferService;
-import com.seafile.seadroid2.ui.activity.TransferActivity;
-import com.seafile.seadroid2.util.Utils;
+import com.seafile.seadroid2.ui.base.BaseActivity;
 
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private static final String TAG = "MainActivity";
     private static final String DEBUG_TAG = "MainActivity";

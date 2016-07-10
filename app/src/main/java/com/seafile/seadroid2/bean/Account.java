@@ -1,4 +1,4 @@
-package com.seafile.seadroid2.account;
+package com.seafile.seadroid2.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.common.base.Objects;
-import com.seafile.seadroid2.BuildConfig;
 import com.seafile.seadroid2.util.Utils;
 
 public class Account implements Parcelable, Comparable<Account> {

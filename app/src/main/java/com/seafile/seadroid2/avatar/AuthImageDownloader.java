@@ -5,15 +5,13 @@ import android.content.Context;
 import com.github.kevinsawicki.http.HttpRequest;
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
-import com.seafile.seadroid2.account.Account;
+import com.seafile.seadroid2.bean.Account;
 //import com.seafile.seadroid2.ssl.SSLTrustManager;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-
-import javax.net.ssl.HttpsURLConnection;
 
 public class AuthImageDownloader extends BaseImageDownloader {
     public static final String TAG = AuthImageDownloader.class.getName();
