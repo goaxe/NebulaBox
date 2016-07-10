@@ -27,7 +27,7 @@ import android.webkit.MimeTypeMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.seafile.seadroid2.R;
-import com.seafile.seadroid2.global.SeadroidApplication;
+import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.data.SeafRepo;
 //import com.seafile.seadroid2.fileschooser.SelectableFile;
 

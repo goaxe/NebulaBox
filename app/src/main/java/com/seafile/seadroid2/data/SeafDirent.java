@@ -3,7 +3,7 @@ package com.seafile.seadroid2.data;
 import android.util.Log;
 
 import com.seafile.seadroid2.R;
-import com.seafile.seadroid2.global.SeadroidApplication;
+import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.util.PinyinUtils;
 import com.seafile.seadroid2.util.Utils;
 

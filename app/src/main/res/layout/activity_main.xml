@@ -6,8 +6,21 @@
     android:layout_height="match_parent" >
 
     <Button
-        android:id="@+id/buttion"
-        android:text="button"
-        android:layout_width="100px"
-        android:layout_height="50px"/>
+        android:id="@+id/buttion1"
+        android:text="common api"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="46dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="transfer list"
+        android:id="@+id/button2"
+        android:layout_below="@+id/buttion1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="59dp"/>
+
 </RelativeLayout>

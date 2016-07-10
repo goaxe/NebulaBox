@@ -1,4 +1,4 @@
-package com.seafile.seadroid2.global;
+package com.seafile.seadroid2;
 
 import android.app.Application;
 import android.content.Context;
@@ -12,6 +12,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.seafile.seadroid2.avatar.AuthImageDownloader;
 import com.seafile.seadroid2.data.StorageManager;
+import com.seafile.seadroid2.global.ConfigurationConstants;
 import com.seafile.seadroid2.util.log.KLog;
 
 import java.io.File;

@@ -17,7 +17,7 @@ import com.seafile.seadroid2.data.Block;
 import com.seafile.seadroid2.data.DataManager;
 import com.seafile.seadroid2.data.FileBlocks;
 import com.seafile.seadroid2.data.ProgressMonitor;
-import com.seafile.seadroid2.global.SeadroidApplication;
+import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.util.Utils;
 
 import org.json.JSONException;

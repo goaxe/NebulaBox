@@ -11,7 +11,7 @@ import com.seafile.seadroid2.SeafException;
 import com.seafile.seadroid2.account.Account;
 import com.seafile.seadroid2.account.AccountInfo;
 import com.seafile.seadroid2.crypto.Crypto;
-import com.seafile.seadroid2.global.SeadroidApplication;
+import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.network.SeafConnection;
 import com.seafile.seadroid2.util.Utils;
 
@@ -890,6 +890,7 @@ public class DataManager {
     }
 
     public Pair<String, String> getRepoEncKey(String repoID) {
+        Log.e(DEBUG_TAG, repoID);
         if (repoID == null) {
             return null;
         }

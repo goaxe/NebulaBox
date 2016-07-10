@@ -454,4 +454,8 @@
     <string name="clear_password_failed">清除密码失败</string>
     <string name="clear_password_warning">你想清除密码吗？</string>
     <string name="clear_password_auto">自动清除密码</string>
+    <!-- Accessibility description for navigation drawer -->
+    <string name="navdrawer_description_a11y" translatable="false">Navigation Drawer used to switch between major
+        features of the application</string>
+
 </resources>

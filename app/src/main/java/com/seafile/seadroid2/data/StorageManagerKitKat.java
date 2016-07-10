@@ -9,7 +9,7 @@ import android.os.StatFs;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import com.seafile.seadroid2.global.SeadroidApplication;
+import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.util.Utils;
 
 import java.io.File;

@@ -12,7 +12,7 @@ import android.util.Pair;
 
 import com.google.common.collect.Lists;
 import com.seafile.seadroid2.account.Account;
-import com.seafile.seadroid2.global.SeadroidApplication;
+import com.seafile.seadroid2.SeadroidApplication;
 
 import java.io.File;
 import java.util.List;

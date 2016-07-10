@@ -35,7 +35,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:name=".global.SeadroidApplication"
+        android:name=".SeadroidApplication"
         android:theme="@style/AppTheme">
 
         <activity android:name=".MainActivity">
@@ -45,6 +45,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity android:name="com.seafile.seadroid2.ui.activity.TransferActivity"
+                  android:label="@string/app_name">
+        </activity>
+
+        <service android:name=".transfer.TransferService"></service>
     </application>
 
 </manifest>

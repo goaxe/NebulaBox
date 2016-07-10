@@ -7,7 +7,6 @@ import android.text.TextUtils;
 
 import com.seafile.seadroid2.account.AccountManager;
 //import com.seafile.seadroid2.gesturelock.LockPatternUtils;
-import com.seafile.seadroid2.global.SeadroidApplication;
 import com.seafile.seadroid2.util.Utils;
 
 import java.util.Arrays;
