@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<view xmlns:android="http://schemas.android.com/apk/res/android"
-      android:id="@+id/view_toolbar_bottom_line"
-      android:layout_width="match_parent"
-      android:layout_height="1dp"
-      android:background="@color/line">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
 
-</view>
+    <View
+        android:id="@+id/view_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/line"/>
+
+</merge>
