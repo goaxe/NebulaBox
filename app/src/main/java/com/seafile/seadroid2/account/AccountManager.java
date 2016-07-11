@@ -2,6 +2,9 @@ package com.seafile.seadroid2.account;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.seafile.seadroid2.bean.Account;
+import com.seafile.seadroid2.bean.AccountInfo;
 import com.seafile.seadroid2.data.ServerInfo;
 
 

@@ -3,7 +3,7 @@ package com.seafile.seadroid2.transfer;
 import android.util.Log;
 
 import com.seafile.seadroid2.SeafException;
-import com.seafile.seadroid2.account.Account;
+import com.seafile.seadroid2.bean.Account;
 import com.seafile.seadroid2.data.DataManager;
 import com.seafile.seadroid2.data.ProgressMonitor;
 

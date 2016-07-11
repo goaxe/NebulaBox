@@ -2,7 +2,7 @@ package com.seafile.seadroid2.avatar;
 
 import com.google.common.collect.Lists;
 import com.seafile.seadroid2.SeadroidApplication;
-import com.seafile.seadroid2.account.Account;
+import com.seafile.seadroid2.bean.Account;
 import com.seafile.seadroid2.account.AccountManager;
 import com.seafile.seadroid2.util.Utils;
 

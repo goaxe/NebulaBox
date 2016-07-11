@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+    <com.seafile.seadroid2.ui.widget.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/avatar_toolbar_main_iv"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_launcher"
+        app:civ_border_color="@color/white"
+        app:civ_border_width="2dp"/>
+
+    <TextView
+        android:id="@+id/username_toolbar_main_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/avatar_toolbar_main_iv"
+        android:layout_toRightOf="@id/avatar_toolbar_main_iv"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="个人空间"
+        android:textColor="@color/app_main_color"
+        android:textSize="18sp"/>
+
+    <ImageView
+        android:id="@+id/search_toolbar_main_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/more_toolbar_main_iv"
+        android:layout_toStartOf="@+id/more_toolbar_main_iv"
+        android:src="@drawable/search"/>
+
+    <ImageView
+        android:id="@+id/more_toolbar_main_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/action_more"/>
+
+
+</RelativeLayout>
