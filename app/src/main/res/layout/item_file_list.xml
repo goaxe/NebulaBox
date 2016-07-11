@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="68dp"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/avatar_item_file_list_iv"
+        android:layout_width="60dp"
+        android:layout_height="60dp"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_toEndOf="@id/avatar_item_file_list_iv"
+        android:layout_toRightOf="@id/avatar_item_file_list_iv">
+
+        <TextView
+            android:id="@+id/title_item_file_list_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:singleLine="true"
+            android:textColor="@color/fancy_dark_black"
+            android:textSize="@dimen/lv_title_txt_size"/>
+
+
+        <ImageView
+            android:id="@+id/status_item_file_list_iv"
+            android:layout_width="@dimen/lv_download_icon_width"
+            android:layout_height="@dimen/lv_download_icon_height"
+            android:layout_alignBottom="@+id/size_item_file_list_tv"
+            android:layout_alignLeft="@id/title_item_file_list_tv"
+            android:layout_alignStart="@id/title_item_file_list_tv"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:contentDescription="@null"
+            android:src="@drawable/list_item_download_finished"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/size_item_file_list_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/title_item_file_list_tv"
+            android:layout_marginTop="5dp"
+            android:layout_toEndOf="@id/status_item_file_list_iv"
+            android:layout_toRightOf="@id/status_item_file_list_iv"
+            />
+
+        <TextView
+            android:id="@+id/date_item_file_list_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/size_item_file_list_tv"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@id/size_item_file_list_tv"
+            android:layout_toRightOf="@id/size_item_file_list_tv"
+            />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/expandable_toggle_button"
+        android:layout_width="@dimen/lv_iv_action_width"
+        android:layout_height="fill_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/toggle_btn_selector_holo_light"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="@dimen/lv_item_padding"
+            android:src="@drawable/spinner_disabled_holo_light"/>
+    </RelativeLayout>
+
+</RelativeLayout>

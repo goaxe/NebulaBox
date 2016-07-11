@@ -1,4 +1,4 @@
-package com.seafile.seadroid2.inter;
+package com.seafile.seadroid2.interf;
 
 import android.view.View;
 import android.view.ViewGroup;

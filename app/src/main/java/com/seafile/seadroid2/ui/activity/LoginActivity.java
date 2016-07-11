@@ -57,13 +57,19 @@ public class LoginActivity extends BaseActivity {
 		checkAccountIfLogin();
     }
 
-	private void checkAccountIfLogin() {
+    @Override
+    protected int getFragmentContentId() {
+        return 0;
+    }
+
+    private void checkAccountIfLogin() {
 		String account,token;
 		AccountsSharedPreferencesHelper accountsSharedPreferencesHelper = AccountsSharedPreferencesHelper.getInstance(this);
 		account = accountsSharedPreferencesHelper.getAccountName();
 		token = accountsSharedPreferencesHelper.getTokenName();
 		if (!TextUtils.isEmpty(account) && !TextUtils.isEmpty(token)){
 			ActivityIntentHelper.gotoMainActivity(this);
+            ActivityManager.finishCurrent();
 		}
 	}
 
