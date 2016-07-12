@@ -7,6 +7,7 @@ import com.seafile.seadroid2.data.SeafDirent;
 import com.seafile.seadroid2.interf.MultiItemTypeSupport;
 import com.seafile.seadroid2.ui.base.BaseViewHolder;
 import com.seafile.seadroid2.ui.base.MultiItemCommonAdapter;
+import com.seafile.seadroid2.util.StringUtils;
 
 import java.util.List;
 
@@ -15,8 +16,11 @@ import java.util.List;
  * Created by Alfred on 2016/7/11.
  */
 public class FileListAdapter extends MultiItemCommonAdapter<SeafDirent> {
-	private static  final int TYPE_ITEM = 0;
-	private static  final int TYPE_FOOTER_ITEM = 1;
+	private String footerViewText;
+	private boolean isFootViewShown;
+
+	private static final int TYPE_ITEM = 0;
+	private static final int TYPE_FOOTER_ITEM = 1;
 
 	public FileListAdapter(Context context, final List<SeafDirent> datas) {
 		super(context, datas, new MultiItemTypeSupport<SeafDirent>() {
@@ -39,9 +43,32 @@ public class FileListAdapter extends MultiItemCommonAdapter<SeafDirent> {
 
 	@Override
 	public void bindData(BaseViewHolder viewHolder, SeafDirent seafDirent, int position) {
-		if (viewHolder.getLayoutId() == R.layout.item_file_list){
-			viewHolder.setText(R.id.title_item_file_list_tv,seafDirent.getTitle());
-			viewHolder.setText(R.id.date_item_file_list_tv,seafDirent.getSubtitle());
+		if (viewHolder.getLayoutId() == R.layout.item_file_list) {
+			viewHolder.setText(R.id.title_item_file_list_tv, seafDirent.getTitle());
+			viewHolder.setText(R.id.date_item_file_list_tv, seafDirent.getSubtitle());
+		} else if (viewHolder.getLayoutId() == R.layout.recyclerview_footview_layout) {
+			if (!StringUtils.isEmpty(footerViewText)) {
+				viewHolder.setText(R.id.tv_loading_more, footerViewText);
+			}
+			viewHolder.setVisible(R.id.tv_loading_more, isFootViewShown);
 		}
+	}
+
+	public String getFooterViewText() {
+		return footerViewText;
+	}
+
+	public void setFooterViewText(String footerViewText) {
+		this.footerViewText = footerViewText;
+		notifyItemChanged(getItemCount());
+	}
+
+	public boolean isFootViewShown() {
+		return isFootViewShown;
+	}
+
+	public void setFootViewShown(boolean footViewShown) {
+		isFootViewShown = footViewShown;
+		notifyItemChanged(getItemCount());
 	}
 }
