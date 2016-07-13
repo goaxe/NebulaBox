@@ -472,7 +472,7 @@
         <item>影片</item>
         <item>文档</item>
         <item>应用</item>
-        <item>说明</item>
+        <item>全部</item>
     </string-array>
 
     <string-array name="sorts_files_options_array">

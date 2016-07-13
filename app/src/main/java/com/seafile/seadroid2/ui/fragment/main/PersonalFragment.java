@@ -1,29 +1,57 @@
 package com.seafile.seadroid2.ui.fragment.main;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.seafile.seadroid2.R;
+import com.seafile.seadroid2.data.SeafDirent;
 import com.seafile.seadroid2.ui.base.BaseFragment;
+import com.seafile.seadroid2.ui.dialog.FileOptionDialog;
 
+import java.util.List;
+
+import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * 个人
  * Created by Alfred on 2016/7/11.
  */
-public class PersonalFragment extends BaseFragment {
+public class PersonalFragment extends BaseFragment implements View.OnClickListener, FileOptionDialog.OnItemClickListener {
 
-//	@Bind(R.id.category)
+	@Bind(R.id.category_personal_tv)
+	TextView categoryTextView;
+	@Bind(R.id.sort_personal_tv)
+	TextView sortTextView;
+	@Bind(R.id.create_personal_tv)
+	TextView createTextView;
+	@Bind(R.id.transfer_personal_tv)
+	TextView transferTextView;
+
+	private String[] categoryOptionalList;
+	private String[] sortOptionalList;
+
+	private FileOptionDialog categoryDialog;
+	private FileOptionDialog sortDialog;
+
+	private List<SeafDirent> pictureList;
+	private List<SeafDirent> musicList;
+	private List<SeafDirent> movieList;
+	private List<SeafDirent> txtList;
+	private List<SeafDirent> appList;
+	private List<SeafDirent> allList;
 
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_personal,container,false);
-		ButterKnife.bind(this,view);
+		View view = inflater.inflate(R.layout.fragment_personal, container, false);
+		ButterKnife.bind(this, view);
 		return view;
 	}
 
@@ -35,12 +63,70 @@ public class PersonalFragment extends BaseFragment {
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+
+		categoryOptionalList = getResources().getStringArray(R.array.category_files_options_array);
+		sortOptionalList = getResources().getStringArray(R.array.sorts_files_options_array);
+		categoryDialog = new FileOptionDialog();
+		categoryDialog.setList(categoryOptionalList);
+		sortDialog = new FileOptionDialog();
+		sortDialog.setList(sortOptionalList);
 	}
 
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
 		ButterKnife.unbind(this);
+	}
+
+	@OnClick({R.id.category_personal_tv, R.id.sort_personal_tv, R.id.create_personal_tv, R.id.transfer_personal_tv})
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+			case R.id.category_personal_tv:
+				sortDialog.dismiss();
+				categoryDialog.show(getFragmentManager(), "categoryDialog");
+				break;
+			case R.id.sort_personal_tv:
+				categoryDialog.dismiss();
+				sortDialog.show(getFragmentManager(), "sortDialog");
+				break;
+			case R.id.create_personal_tv:
+				break;
+			case R.id.transfer_personal_tv:
+				break;
+		}
+	}
+
+	@Override
+	public void OnItemClick(DialogInterface dialog, int which) {
+		switch (which) {
+			case 1:
+				//照片,按文件排序
+				if (((FileOptionDialog) dialog).getList().length > 2) {
+					//照片
+				}else {
+//					for (int i = 0 ; i < )
+				}
+				break;
+			case 2:
+				//音乐,按时间倒序排序
+				if (((FileOptionDialog) dialog).getList().length > 2) {
+					//音乐
+				}
+				break;
+			case 3:
+				//影视
+				break;
+			case 4:
+				//文档
+				break;
+			case 5:
+				//应用
+				break;
+			case 6:
+				//全部
+				break;
+		}
 	}
 
 //	private NavContext getNavContext() {
