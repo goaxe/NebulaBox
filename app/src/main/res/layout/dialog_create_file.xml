@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:text="建立文件夹"
+        android:textSize="16sp"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/password_hint_login_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <EditText
+            android:id="@+id/name_dialog_create_file_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/et_margin_bottom"
+            android:layout_marginLeft="@dimen/auto_complete_ed_margin_left"
+            android:layout_marginRight="@dimen/auto_complete_ed_margin_right"
+            android:hint="文件夹名称"
+            android:inputType="textPassword"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/confirm_dialog_create_file_btn"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/long_btn_height"
+            android:layout_marginEnd="@dimen/long_btn_margin_right"
+            android:layout_marginLeft="@dimen/long_btn_margin_left"
+            android:layout_marginRight="@dimen/long_btn_margin_right"
+            android:layout_marginStart="@dimen/long_btn_margin_left"
+            android:layout_weight="1"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="@string/confirm"
+            android:textColor="@color/white"
+            android:textSize="@dimen/long_btn_txt_size"/>
+
+        <Button
+            android:id="@+id/cancel_dialog_create_file_btn"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/long_btn_height"
+            android:layout_marginEnd="@dimen/long_btn_margin_right"
+            android:layout_marginLeft="@dimen/long_btn_margin_left"
+            android:layout_marginRight="@dimen/long_btn_margin_right"
+            android:layout_marginStart="@dimen/long_btn_margin_left"
+            android:layout_weight="1"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="@string/cancel"
+            android:textColor="@color/white"
+            android:textSize="@dimen/long_btn_txt_size"/>
+    </LinearLayout>
+
+
+</LinearLayout>

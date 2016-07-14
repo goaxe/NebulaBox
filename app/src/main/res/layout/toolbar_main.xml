@@ -60,5 +60,10 @@
             android:src="@drawable/ic_more_vert_white_36dp"/>
     </RelativeLayout>
 
+    <include layout="@layout/line_view"/>
+    <!--<View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/line"/>-->
 
 </LinearLayout>

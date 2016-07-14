@@ -466,4 +466,20 @@
     <string name="load_data_adequate">没有更多啦</string>
     <string name="loading_data">加载中...</string>
 
+    <string-array name="category_files_options_array">
+        <item>照片</item>
+        <item>音乐</item>
+        <item>影片</item>
+        <item>文档</item>
+        <item>应用</item>
+        <item>全部</item>
+    </string-array>
+
+    <string-array name="sorts_files_options_array">
+        <item>按文件名称排序</item>
+        <item>按时间倒序排序</item>
+    </string-array>
+
+
+
 </resources>

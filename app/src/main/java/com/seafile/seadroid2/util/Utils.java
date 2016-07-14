@@ -673,7 +673,7 @@ public class Utils {
     /**
      * SslCertificate class does not has a public getter for the underlying
      * X509Certificate, we can only do this by hack. This only works for andorid 4.0+
-     * @see https://groups.google.com/forum/#!topic/android-developers/eAPJ6b7mrmg
+     * @see <a>https://groups.google.com/forum/#!topic/android-developers/eAPJ6b7mrmg</a>
      */
     public static X509Certificate getX509CertFromSslCertHack(SslCertificate sslCert) {
         X509Certificate x509Certificate = null;
@@ -755,5 +755,9 @@ public class Utils {
     public static int px2dip(Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
+    }
+
+    public static void categoryFile(){
+
     }
 }

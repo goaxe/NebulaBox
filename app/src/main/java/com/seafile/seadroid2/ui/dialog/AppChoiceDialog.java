@@ -71,7 +71,6 @@ public class AppChoiceDialog extends DialogFragment {
                 onAppSelected(i);
             }
         });
-
         return builder.create();
     }
 
