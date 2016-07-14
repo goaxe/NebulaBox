@@ -13,7 +13,10 @@ import android.widget.TextView;
 
 import com.mingle.widget.LoadingView;
 import com.seafile.seadroid2.R;
+import com.seafile.seadroid2.data.SeafDirent;
+import com.seafile.seadroid2.ui.adapter.FileListAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -22,7 +25,7 @@ import butterknife.ButterKnife;
 /**
  * Created by Alfred on 2016/7/11.
  */
-public class BaseListFragment extends BaseFragment {
+public abstract class BaseListFragment<T> extends BaseFragment<T> implements SwipeRefreshLayout.OnRefreshListener{
 	@Bind(R.id.refresh_layout_base_list_srlayout)
 	SwipeRefreshLayout swipeRefreshLayout;
 	@Bind(R.id.recycler_view_base_list_rl)
@@ -34,7 +37,9 @@ public class BaseListFragment extends BaseFragment {
 	@Bind(R.id.status_base_list_tv)
 	TextView statusTextView;
 
-	private List
+	private int lastVisibleItem;
+	protected List<SeafDirent> list;
+	protected FileListAdapter fileListAdapter;
 	private LinearLayoutManager linearLayoutManager;
 
 	@Nullable
@@ -49,6 +54,49 @@ public class BaseListFragment extends BaseFragment {
 		linearLayoutManager = new LinearLayoutManager(mActivity);
 		recyclerView.setLayoutManager(linearLayoutManager);
 		loadingView.setVisibility(View.VISIBLE);
+
+		list = new ArrayList<>();
+		fileListAdapter = new FileListAdapter(mActivity,list);
+		recyclerView.setAdapter(fileListAdapter);
+
+	}
+
+	private void initListener(){
+		recyclerView.addOnScrollListener(new PauseOnScrollListener());
+		swipeRefreshLayout.setOnRefreshListener(this);
+	}
+
+	protected abstract void onRefreshStart(); //下拉刷新数据
+	protected abstract void onScrollLast(); //上拉加载数据
+	protected abstract int emptyDataString(); //数据为空时的显示文字
+
+	class PauseOnScrollListener extends RecyclerView.OnScrollListener{
+		@Override
+		public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+			super.onScrollStateChanged(recyclerView, newState);
+			switch (newState) {
+				case RecyclerView.SCROLL_STATE_IDLE:
+					//RecyclerView目前不滑动
+					int size = recyclerView.getAdapter().getItemCount();
+					if (lastVisibleItem + 1 == size && fileListAdapter.isFootViewShown() &&
+							!fileListAdapter.getFooterViewText().equals(getString(R.string.load_data_adequate))) {
+						onScrollLast();
+					}
+					break;
+				case RecyclerView.SCROLL_STATE_DRAGGING:
+					//RecyclerView开始滑动
+					break;
+				case RecyclerView.SCROLL_STATE_SETTLING:
+					//RecyclerView惯性移动
+					break;
+			}
+		}
+
+		@Override
+		public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+			super.onScrolled(recyclerView, dx, dy);
+			lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+		}
 	}
 
 	@Override
@@ -58,4 +106,8 @@ public class BaseListFragment extends BaseFragment {
 	}
 
 
+	@Override
+	public void onRefresh() {
+		onRefreshStart();
+	}
 }

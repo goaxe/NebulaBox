@@ -14,7 +14,7 @@ import com.seafile.seadroid2.ui.NavContext;
 /**
  * Created by Alfred on 2016/7/11.
  */
-public abstract class BaseFragment extends Fragment{
+public abstract class BaseFragment<T> extends Fragment{
 
 	protected Activity mActivity;
 	protected Context mContext;
