@@ -289,12 +289,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    protected void showLoadingDialog() {
+    public void showLoadingDialog() {
         initLoadingDialog();
         progressDialog.show();
     }
 
-    protected void dismissLoadingDialog() {
+    public void dismissLoadingDialog() {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }

@@ -23,6 +23,7 @@ public class SeafRepo implements SeafItem {
     public String owner;
     public long mtime;    // the last modification time
 
+    public boolean isFile;
     public boolean isGroupRepo;
     public boolean isPersonalRepo;
     public boolean isSharedRepo;
@@ -50,6 +51,7 @@ public class SeafRepo implements SeafItem {
         repo.magic = obj.optString("magic");
         repo.encKey = obj.optString("random_key");
         repo.encVersion = obj.optInt("enc_version");
+        repo.isFile = obj.optString("type").equals("file");
         return repo;
     }
 

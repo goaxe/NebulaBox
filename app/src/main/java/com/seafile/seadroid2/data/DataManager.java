@@ -1,19 +1,19 @@
 package com.seafile.seadroid2.data;
 
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.seafile.seadroid2.R;
+import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.SeafException;
 import com.seafile.seadroid2.bean.Account;
 import com.seafile.seadroid2.bean.AccountInfo;
 import com.seafile.seadroid2.crypto.Crypto;
-import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.network.SeafConnection;
 import com.seafile.seadroid2.util.Utils;
+import com.seafile.seadroid2.util.log.KLog;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -287,11 +287,11 @@ public class DataManager {
             }
             return repos;
         } catch (JSONException e) {
-            Log.e(DEBUG_TAG, "parse json error");
+            KLog.e(DEBUG_TAG, "parse json error");
             return null;
         } catch (Exception e) {
             // other exception, for example ClassCastException
-            Log.e(DEBUG_TAG, "parseRepos exception");
+            KLog.e(DEBUG_TAG, "parseRepos exception");
             return null;
         }
     }
@@ -340,7 +340,7 @@ public class DataManager {
         }
 
         String json = sc.getRepos();
-        //Log.d(DEBUG_TAG, "get repos from server " + json);
+        KLog.json("get repos from server " + json);
         if (json == null)
             return null;
 
@@ -350,7 +350,7 @@ public class DataManager {
             File cache = getFileForReposCache();
             Utils.writeFile(cache, json);
         } catch (IOException e) {
-            Log.e(DEBUG_TAG, "Could not write repo cache to disk.", e);
+            KLog.e(DEBUG_TAG, "Could not write repo cache to disk.", e);
         }
 
         return reposCache;
@@ -364,7 +364,7 @@ public class DataManager {
             File cache = getFileForDirentCache(dirID);
             Utils.writeFile(cache, content);
         } catch (IOException e) {
-            Log.e(DEBUG_TAG, "Could not write dirent cache to disk.", e);
+            KLog.e(DEBUG_TAG, "Could not write dirent cache to disk.", e);
         }
     }
 
@@ -432,7 +432,7 @@ public class DataManager {
 
         if (fileBlocks.fileID.equals(cachedFileID)) {
             // cache is valid
-            Log.d(DEBUG_TAG, "cache is valid");
+            KLog.d(DEBUG_TAG, "cache is valid");
             return localFile;
         }
 
@@ -445,10 +445,10 @@ public class DataManager {
 
         if (fileBlocks.blocks == null) {
             if (!localFile.createNewFile()) {
-                Log.w(DEBUG_TAG, "Failed to create file " + localFile.getName());
+                KLog.w(DEBUG_TAG, "Failed to create file " + localFile.getName());
                 return null;
             }
-            Log.d(DEBUG_TAG, String.format("addCachedFile repoName %s, repoId %s, path %s, fileId %s", repoName, repoID, path, fileBlocks.fileID));
+            KLog.d(DEBUG_TAG, String.format("addCachedFile repoName %s, repoId %s, path %s, fileId %s", repoName, repoID, path, fileBlocks.fileID));
             addCachedFile(repoName, repoID, path, fileBlocks.fileID, localFile);
             return localFile;
         }
@@ -461,7 +461,7 @@ public class DataManager {
             FileUtils.writeByteArrayToFile(localFile, decryptedBlock, true);
         }
 
-        Log.d(DEBUG_TAG, String.format("addCachedFile repoName %s, repoId %s, path %s, fileId %s", repoName, repoID, path, fileBlocks.fileID));
+        KLog.d(DEBUG_TAG, String.format("addCachedFile repoName %s, repoId %s, path %s, fileId %s", repoName, repoID, path, fileBlocks.fileID));
         addCachedFile(repoName, repoID, path, fileBlocks.fileID, localFile);
         return localFile;
     }
@@ -481,7 +481,7 @@ public class DataManager {
             }
             return dirents;
         } catch (JSONException e) {
-            Log.e(DEBUG_TAG, "Could not parse cached dirent", e);
+            KLog.e(DEBUG_TAG, "Could not parse cached dirent", e);
             return null;
         }
     }
@@ -501,7 +501,7 @@ public class DataManager {
             }
             return starredFiles;
         } catch (JSONException e) {
-            Log.e(DEBUG_TAG, "Could not parse cached starred files", e);
+            KLog.e(DEBUG_TAG, "Could not parse cached starred files", e);
             return null;
         }
     }
@@ -567,7 +567,7 @@ public class DataManager {
 
     public List<SeafStarredFile> getStarredFiles() throws SeafException {
         String starredFiles = sc.getStarredFiles();
-        Log.v(DEBUG_TAG, "Save starred files: " + starredFiles);
+        KLog.v(DEBUG_TAG, "Save starred files: " + starredFiles);
         if (starredFiles == null) {
             return null;
         }
@@ -577,7 +577,7 @@ public class DataManager {
 
     public List<SeafStarredFile> getCachedStarredFiles() {
         String starredFiles = dbHelper.getCachedStarredFiles(account);
-        Log.v(DEBUG_TAG, "Get cached starred files: " + starredFiles);
+        KLog.v(DEBUG_TAG, "Get cached starred files: " + starredFiles);
         if (starredFiles == null) {
             return null;
         }
@@ -825,11 +825,11 @@ public class DataManager {
             }
             return events;
         } catch (JSONException e) {
-            Log.e(DEBUG_TAG, "parse json error");
+            KLog.e(DEBUG_TAG, "parse json error");
             return null;
         } catch (Exception e) {
             // other exception, for example ClassCastException
-            Log.e(DEBUG_TAG, "parseEvents exception");
+            KLog.e(DEBUG_TAG, "parseEvents exception");
             return null;
         }
     }
@@ -890,7 +890,7 @@ public class DataManager {
     }
 
     public Pair<String, String> getRepoEncKey(String repoID) {
-        Log.e(DEBUG_TAG, repoID);
+        KLog.e(DEBUG_TAG, repoID);
         if (repoID == null) {
             return null;
         }
@@ -1035,7 +1035,7 @@ public class DataManager {
             in = new FileInputStream(file);
             dis = new DataInputStream(in);
 
-            // Log.d(DEBUG_TAG, "file size " + file.length());
+            // KLog.d(DEBUG_TAG, "file size " + file.length());
             int byteRead;
             while ((byteRead = dis.read(buffer, 0, BUFFER_SIZE)) != -1) {
                 byte[] cipher;
@@ -1084,7 +1084,7 @@ public class DataManager {
         final Pair<String, String> pair = getRepoEncKey(repoID);
         final String encKey = pair.first;
         final String encIv = pair.second;
-        // Log.d(DEBUG_TAG, "encKey " + encKey + " encIv " + encIv);
+        // KLog.d(DEBUG_TAG, "encKey " + encKey + " encIv " + encIv);
         if (TextUtils.isEmpty(encKey) || TextUtils.isEmpty(encIv)) {
             // TODO calculate them and continue
             throw SeafException.encryptException;
@@ -1096,7 +1096,7 @@ public class DataManager {
         }
 
         String newFileID = sc.uploadByBlocks(repoID, dir, filePath, chunkFile.blocks, isUpdate, monitor);
-        // Log.d(DEBUG_TAG, "uploadByBlocks " + newFileID);
+        // KLog.d(DEBUG_TAG, "uploadByBlocks " + newFileID);
 
         if (newFileID == null || newFileID.length() == 0) {
             return;

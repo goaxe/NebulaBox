@@ -17,54 +17,53 @@ import com.seafile.seadroid2.R;
  * Created by Alfred on 2016/7/13.
  */
 public class FileOptionDialog extends DialogFragment {
-	private String fileName;
-	private String[] list;
-	private OnItemClickListener onItemClickListener;
+    private String fileName;
+    private String[] list;
+    private OnItemClickListener onItemClickListener;
 
-	public interface OnItemClickListener {
-		void OnItemClick(DialogInterface dialog, int which);
-	}
+    public interface OnItemClickListener {
+        void OnItemClick(DialogInterface dialog, String[] list, int which);
+    }
 
 
-	public String[] getList() {
-		return list;
-	}
+    public String[] getList() {
+        return list;
+    }
 
-	public void setList(String[] list) {
-		this.list = list;
-	}
+    public void setList(String[] list) {
+        this.list = list;
+    }
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 
-	public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-		this.onItemClickListener = onItemClickListener;
-	}
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
 
-	@NonNull
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		if (list == null) {
-			return super.onCreateDialog(savedInstanceState);
-		}
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		View view = getActivity().getLayoutInflater().inflate(R.layout.item_dialog_file_option, null);
-		if (!TextUtils.isEmpty(fileName)) {
-			builder.setTitle(fileName);
-		}
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        if (list == null) {
+            return super.onCreateDialog(savedInstanceState);
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View view = getActivity().getLayoutInflater().inflate(R.layout.item_dialog_file_option, null);
+        if (!TextUtils.isEmpty(fileName)) {
+            builder.setTitle(fileName);
+        }
 
-		builder.setSingleChoiceItems(list, -1, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				if (onItemClickListener == null) {
-					onItemClickListener.OnItemClick(dialog,which);
-				}
-			}
-		});
-		return builder.create();
-	}
-
+        builder.setItems(list, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (onItemClickListener != null) {
+                    onItemClickListener.OnItemClick(dialog, list, which);
+                }
+            }
+        });
+        return builder.create();
+    }
 
 
 }

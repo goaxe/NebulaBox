@@ -767,10 +767,10 @@ public class Utils {
     public static List<SeafRepo> categoryFile(List<SeafRepo> list,String[] formatList){
         List<SeafRepo> filterList = new ArrayList<>();
         for (int i = 0 ; i< list.size();i++){
-//            if (list.get(i).isDir()){
-//                //当前为目录而不是文件
-//                continue;
-//            }
+            if (!list.get(i).isFile){
+                //当前为目录而不是文件
+                continue;
+            }
             String fileName = list.get(i).getTitle();
             for (int j = 0; j < formatList.length;j++){
                 int formatLength = formatList[j].length();

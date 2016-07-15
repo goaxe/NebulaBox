@@ -3,12 +3,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="68dp"
                 android:orientation="vertical"
+                android:background="@drawable/selector_nomal_white_pressed_gray"
                 android:padding="10dp">
 
     <ImageView
         android:id="@+id/avatar_item_file_list_iv"
         android:layout_width="60dp"
-        android:layout_height="60dp"/>
+        android:layout_height="60dp"
+        android:src="@drawable/repo"/>
 
     <RelativeLayout
         android:layout_width="wrap_content"
