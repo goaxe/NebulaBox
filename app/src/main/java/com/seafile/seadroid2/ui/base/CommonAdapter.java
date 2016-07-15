@@ -156,6 +156,7 @@ public abstract class CommonAdapter<T> extends RecyclerView.Adapter<BaseViewHold
 	}
 	public void setDatas(List<T> datas){
 		mDatas = datas;
+		notifyDataSetChanged();
 	}
 	/**
 	 * 数据绑定view

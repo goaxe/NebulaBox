@@ -12,6 +12,9 @@ import android.widget.TextView;
 
 import com.seafile.seadroid2.R;
 import com.seafile.seadroid2.account.AccountManager;
+import com.seafile.seadroid2.bean.Account;
+import com.seafile.seadroid2.data.DataManager;
+import com.seafile.seadroid2.global.AccountsSharedPreferencesHelper;
 import com.seafile.seadroid2.ui.base.BaseActivity;
 import com.seafile.seadroid2.ui.fragment.main.PersonalFragment;
 import com.seafile.seadroid2.ui.fragment.main.ShareFragment;
@@ -37,6 +40,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 	private Button commonApiBtn;
 	private Button transferBtn;
 	private AccountManager accountManager;
+	private DataManager dataManager;
 //	private TransferService txService = null;
 
 	//	private Fragment currentFragment;
@@ -108,6 +112,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 			}
 		});*/
 		accountManager = new AccountManager(getApplicationContext());
+		AccountsSharedPreferencesHelper accountsSharedPreferencesHelper = AccountsSharedPreferencesHelper.getInstance(this);
+		dataManager = new DataManager(new Account(accountsSharedPreferencesHelper.getServerUrl(),accountsSharedPreferencesHelper.getAccountName(),accountsSharedPreferencesHelper.getTokenName()));
 
 /*		Intent txIntent = new Intent(this, TransferService.class);
 		startService(txIntent);
@@ -211,6 +217,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 				switchFragment(i);
 			}
 		}
+	}
+
+	public DataManager getDataManager() {
+		return dataManager;
 	}
 
 

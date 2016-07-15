@@ -56,8 +56,8 @@ public abstract class BaseListFragment<T> extends BaseFragment<T> implements Swi
 		loadingView.setVisibility(View.VISIBLE);
 
 		list = new ArrayList<>();
-		fileListAdapter = new FileListAdapter(mActivity,list);
-		recyclerView.setAdapter(fileListAdapter);
+//		fileListAdapter = new FileListAdapter(mActivity,list);
+//		recyclerView.setAdapter(fileListAdapter);
 
 	}
 

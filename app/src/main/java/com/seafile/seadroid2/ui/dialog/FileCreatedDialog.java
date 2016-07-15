@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
  * 创建文件夹的对话框
  * Created by Alfred on 2016/7/13.
  */
-public class FileCreateDialog extends DialogFragment{
+public class FileCreatedDialog extends DialogFragment{
 
 	@Bind(R.id.name_dialog_create_file_et)
 	EditText nameEditText;

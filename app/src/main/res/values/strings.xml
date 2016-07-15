@@ -480,6 +480,46 @@
         <item>按时间倒序排序</item>
     </string-array>
 
+    <string-array name="format_picture">
+        <item>.bmp</item>
+        <item>.exif</item>
+        <item>.gif</item>
+        <item>.jpeg</item>
+        <item>.png</item>
+        <item>.svg</item>
+        <item>.raw</item>
+    </string-array>
 
+    <string-array name="format_movie">
+        <item>.avi</item>
+        <item>.mov</item>
+        <item>.mpeg</item>
+        <item>.rm</item>
+        <item>.mp4</item>
+        <item>.wmv</item>
+        <item>.rmvb</item>
+        <item>.rmvb</item>
+        <item>.mpg</item>
+    </string-array>
+
+    <string-array name="format_app">
+        <item>.apk</item>
+        <item>.exe</item>
+        <item>.ipa</item>
+        <item>.dmg</item>
+    </string-array>
+
+    <string-array name="format_video">
+        <item>.wav</item>
+        <item>.mp3</item>
+        <item>.wma</item>
+        <item>.ape</item>
+        <item>.aac</item>
+    </string-array>
+
+    <string-array name="format_document">
+        <item>.txt</item>
+        <item>.doc</item>
+    </string-array>
 
 </resources>

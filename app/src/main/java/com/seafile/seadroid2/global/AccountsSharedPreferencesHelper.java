@@ -11,6 +11,7 @@ public class AccountsSharedPreferencesHelper {
 	private SharedPreferences.Editor editor;
 
 	private static volatile AccountsSharedPreferencesHelper accountsSharedPreferencesHelper;
+	private static final String SERVER_URL = "server_url";
 	private static final String ACCOUNT_NAME = "account";
 	private static final String TOKEN_NAME = "token";
 	private static final String ACCOUNT_SHARED_FILE_NAME = "account_info";
@@ -32,20 +33,34 @@ public class AccountsSharedPreferencesHelper {
 	}
 
 
-	public void putAccountInfo(String acountName, String token) {
+	public void putAccountInfo(String serverUrl, String acountName, String token) {
 		editor = sharedPreferences.edit();
+		editor.putString(SERVER_URL, serverUrl);
 		editor.putString(ACCOUNT_NAME, acountName);
 		editor.putString(TOKEN_NAME, token);
 		editor.commit();
 	}
 
 	public String getAccountName() {
-		return sharedPreferences.getString(ACCOUNT_NAME, "");
+		if (sharedPreferences != null) {
+			return sharedPreferences.getString(ACCOUNT_NAME, "");
+		}
+		return "";
+	}
+
+	public String getServerUrl() {
+		if (sharedPreferences != null) {
+			return sharedPreferences.getString(SERVER_URL, "");
+		}
+		return "";
 	}
 
 
 	public String getTokenName() {
-		return sharedPreferences.getString(TOKEN_NAME, "");
+		if (sharedPreferences != null) {
+			return sharedPreferences.getString(TOKEN_NAME, "");
+		}
+		return "";
 	}
 
 }

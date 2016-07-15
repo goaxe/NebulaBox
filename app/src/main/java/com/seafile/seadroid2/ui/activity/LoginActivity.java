@@ -169,7 +169,7 @@ public class LoginActivity extends BaseActivity {
 //                setResult(RESULT_OK, retData);
 //                finish();
 				AccountsSharedPreferencesHelper helper = new AccountsSharedPreferencesHelper(LoginActivity.this);
-				helper.putAccountInfo(loginAccount.getEmail(),loginAccount.getToken());
+				helper.putAccountInfo(loginAccount.getServer(),loginAccount.getEmail(),loginAccount.getToken());
 				ActivityIntentHelper.gotoMainActivity(LoginActivity.this);
 				ActivityManager.finishCurrent();
             } else {
