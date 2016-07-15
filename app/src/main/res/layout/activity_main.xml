@@ -6,7 +6,6 @@
     android:orientation="vertical">
 
     <include
-        android:id="@+id/toolbar_main_layout"
         layout="@layout/toolbar_main"/>
 
     <FrameLayout
@@ -15,19 +14,16 @@
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
-    <View
-        android:id="@+id/view_toolbar_bottom_line"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-
-        android:background="@color/fancy_dark_gray"/>
+    <include layout="@layout/line_view"/>
 
 
     <LinearLayout
         android:id="@+id/tabs_main_ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp">
 
         <LinearLayout
             android:id="@+id/personal_main_ll"
@@ -41,12 +37,15 @@
                 android:id="@+id/personal_main_iv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_launcher"/>
+                android:src="@drawable/ic_filter_drama_black_36dp"/>
 
             <TextView
                 android:id="@+id/personal_main_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/tabs_main_personal"
+                android:textColor="@color/tab_main_selected"/>
         </LinearLayout>
 
         <LinearLayout
@@ -61,12 +60,15 @@
                 android:id="@+id/share_main_iv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_launcher"/>
+                android:src="@drawable/ic_share_white_36dp"/>
 
             <TextView
                 android:id="@+id/share_main_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/tabs_main_share"
+                android:textColor="@color/tab_main_unselected"/>
         </LinearLayout>
 
         <LinearLayout
@@ -81,12 +83,15 @@
                 android:id="@+id/upload_main_iv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_launcher"/>
+                android:src="@drawable/upload_48"/>
 
             <TextView
                 android:id="@+id/upload_main_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/tabs_main_upload"
+                android:textColor="@color/tab_main_unselected"/>
         </LinearLayout>
 
         <LinearLayout
@@ -101,16 +106,19 @@
                 android:id="@+id/star_main_iv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_launcher"/>
+                android:src="@drawable/ic_share_white_36dp"/>
 
             <TextView
                 android:id="@+id/star_main_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/tabs_main_star"
+                android:textColor="@color/tab_main_unselected"/>
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/user_main_ll"
+            android:id="@+id/usercenter_main_ll"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -118,15 +126,18 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/user_main_iv"
+                android:id="@+id/usercenter_main_iv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_launcher"/>
+                android:src="@drawable/self_48"/>
 
             <TextView
-                android:id="@+id/user_main_tv"
+                android:id="@+id/usercenter_main_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/tabs_main_usercenter"
+                android:textColor="@color/tab_main_unselected"/>
         </LinearLayout>
 
 

@@ -28,6 +28,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.seafile.seadroid2.R;
 import com.seafile.seadroid2.SeadroidApplication;
+import com.seafile.seadroid2.data.SeafDirent;
 import com.seafile.seadroid2.data.SeafRepo;
 //import com.seafile.seadroid2.fileschooser.SelectableFile;
 
@@ -60,6 +61,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -673,7 +675,7 @@ public class Utils {
     /**
      * SslCertificate class does not has a public getter for the underlying
      * X509Certificate, we can only do this by hack. This only works for andorid 4.0+
-     * @see https://groups.google.com/forum/#!topic/android-developers/eAPJ6b7mrmg
+     * @see <a>https://groups.google.com/forum/#!topic/android-developers/eAPJ6b7mrmg</a>
      */
     public static X509Certificate getX509CertFromSslCertHack(SslCertificate sslCert) {
         X509Certificate x509Certificate = null;
@@ -755,5 +757,45 @@ public class Utils {
     public static int px2dip(Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
+    }
+
+	/**
+     * 分类筛选文件
+     * @param list  待筛选的文件列表
+     * @param formatList 扩展名
+     */
+    public static List<SeafRepo> categoryFile(List<SeafRepo> list,String[] formatList){
+        List<SeafRepo> filterList = new ArrayList<>();
+        for (int i = 0 ; i< list.size();i++){
+//            if (list.get(i).isDir()){
+//                //当前为目录而不是文件
+//                continue;
+//            }
+            String fileName = list.get(i).getTitle();
+            for (int j = 0; j < formatList.length;j++){
+                int formatLength = formatList[j].length();
+                String fileExtensionName = fileName.substring(fileName.length() - (fileName.length() - formatLength),fileName.length());
+                if (fileExtensionName.equals(formatList[j])){
+                    filterList.add(list.get(i));
+                    continue;
+                }
+
+            }
+        }
+        return filterList;
+    }
+
+    public static List<SeafDirent> sortFile(List<SeafDirent> list){
+        for (int i = 0 ; i<list.size() ; i++){
+            for (int j = 0;j<list.size() - i -1;j++){
+                SeafDirent leftBean = list.get(j);
+                SeafDirent rightBean = list.get(j+1);
+                if (list.get(j).getTitle().compareToIgnoreCase(list.get(j+1).getTitle()) > 0){
+                    list.set(j,rightBean);
+                    list.set(j+1,leftBean);
+                }
+            }
+        }
+        return list;
     }
 }

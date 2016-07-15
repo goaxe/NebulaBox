@@ -3,7 +3,7 @@ package com.seafile.seadroid2.ui.base;
 import android.content.Context;
 import android.view.ViewGroup;
 
-import com.seafile.seadroid2.inter.MultiItemTypeSupport;
+import com.seafile.seadroid2.interf.MultiItemTypeSupport;
 import com.seafile.seadroid2.util.log.KLog;
 
 import java.util.List;

@@ -38,7 +38,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
 		mContext = context;
 		mConvertView = itemView;
 		mPosition = position;
-		mViews = new SparseArray<View>();
+		mViews = new SparseArray<>();
 		mConvertView.setTag(this);
 
 	}
@@ -223,21 +223,21 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
 	 * 关于事件的
 	 */
 	public BaseViewHolder setOnClickListener(int viewId,
-										 View.OnClickListener listener) {
+											 View.OnClickListener listener) {
 		View view = getView(viewId);
 		view.setOnClickListener(listener);
 		return this;
 	}
 
 	public BaseViewHolder setOnTouchListener(int viewId,
-										 View.OnTouchListener listener) {
+											 View.OnTouchListener listener) {
 		View view = getView(viewId);
 		view.setOnTouchListener(listener);
 		return this;
 	}
 
 	public BaseViewHolder setOnLongClickListener(int viewId,
-											 View.OnLongClickListener listener) {
+												 View.OnLongClickListener listener) {
 		View view = getView(viewId);
 		view.setOnLongClickListener(listener);
 		return this;

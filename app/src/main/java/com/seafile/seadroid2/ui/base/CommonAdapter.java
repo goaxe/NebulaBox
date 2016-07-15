@@ -6,8 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.seafile.seadroid2.inter.OnItemClickListener;
-import com.seafile.seadroid2.inter.OnItemLongClickListener;
+import com.seafile.seadroid2.interf.OnItemClickListener;
+import com.seafile.seadroid2.interf.OnItemLongClickListener;
 import com.seafile.seadroid2.util.log.KLog;
 
 import java.util.ArrayList;
@@ -156,6 +156,7 @@ public abstract class CommonAdapter<T> extends RecyclerView.Adapter<BaseViewHold
 	}
 	public void setDatas(List<T> datas){
 		mDatas = datas;
+		notifyDataSetChanged();
 	}
 	/**
 	 * 数据绑定view

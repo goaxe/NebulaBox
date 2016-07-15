@@ -57,13 +57,19 @@ public class LoginActivity extends BaseActivity {
 		checkAccountIfLogin();
     }
 
-	private void checkAccountIfLogin() {
+    @Override
+    protected int getFragmentContentId() {
+        return 0;
+    }
+
+    private void checkAccountIfLogin() {
 		String account,token;
 		AccountsSharedPreferencesHelper accountsSharedPreferencesHelper = AccountsSharedPreferencesHelper.getInstance(this);
 		account = accountsSharedPreferencesHelper.getAccountName();
 		token = accountsSharedPreferencesHelper.getTokenName();
 		if (!TextUtils.isEmpty(account) && !TextUtils.isEmpty(token)){
 			ActivityIntentHelper.gotoMainActivity(this);
+            ActivityManager.finishCurrent();
 		}
 	}
 
@@ -163,7 +169,7 @@ public class LoginActivity extends BaseActivity {
 //                setResult(RESULT_OK, retData);
 //                finish();
 				AccountsSharedPreferencesHelper helper = new AccountsSharedPreferencesHelper(LoginActivity.this);
-				helper.putAccountInfo(loginAccount.getEmail(),loginAccount.getToken());
+				helper.putAccountInfo(loginAccount.getServer(),loginAccount.getEmail(),loginAccount.getToken());
 				ActivityIntentHelper.gotoMainActivity(LoginActivity.this);
 				ActivityManager.finishCurrent();
             } else {

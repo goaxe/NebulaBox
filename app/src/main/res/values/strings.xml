@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name">Ne</string>
+    <string name="app_name">NebulaBox</string>
     <string name="welcome_to_NebulaBox">欢迎使用NebulaBox</string>
     <string name="select_account">请选择一个账户开始使用</string>
     <string name="edit_account">编辑帐户</string>
@@ -162,9 +162,11 @@
     <string name="added_to_upload_tasks">开始上传</string>
     <string name="added_photo_to_upload_tasks">图片开始上传</string>
     <string name="take_photo_successfully">拍照成功</string>
-    <string name="tabs_library">资料库</string>
-    <string name="tabs_activity">最近修改</string>
-    <string name="tabs_starred">星标文件</string>
+    <string name="tabs_main_personal">个人</string>
+    <string name="tabs_main_share">分享</string>
+    <string name="tabs_main_upload">上传</string>
+    <string name="tabs_main_star">星标</string>
+    <string name="tabs_main_usercenter">我</string>
     <string name="provide_password">请提供资料库\"%s\"的密码</string>
     <string name="upload_waiting">等待上传</string>
     <string name="upload_finished">上传完成</string>
@@ -458,5 +460,66 @@
     <!-- Accessibility description for navigation drawer -->
     <string name="navdrawer_description_a11y" translatable="false">Navigation Drawer used to switch between major
         features of the application</string>
+
+    <string name="no_data">暂无数据</string>
+    <string name="load_data_fail">加载失败</string>
+    <string name="load_data_adequate">没有更多啦</string>
+    <string name="loading_data">加载中...</string>
+
+    <string-array name="category_files_options_array">
+        <item>照片</item>
+        <item>音乐</item>
+        <item>影片</item>
+        <item>文档</item>
+        <item>应用</item>
+        <item>全部</item>
+    </string-array>
+
+    <string-array name="sorts_files_options_array">
+        <item>按文件名称排序</item>
+        <item>按时间倒序排序</item>
+    </string-array>
+
+    <string-array name="format_picture">
+        <item>.bmp</item>
+        <item>.exif</item>
+        <item>.gif</item>
+        <item>.jpeg</item>
+        <item>.png</item>
+        <item>.svg</item>
+        <item>.raw</item>
+    </string-array>
+
+    <string-array name="format_movie">
+        <item>.avi</item>
+        <item>.mov</item>
+        <item>.mpeg</item>
+        <item>.rm</item>
+        <item>.mp4</item>
+        <item>.wmv</item>
+        <item>.rmvb</item>
+        <item>.rmvb</item>
+        <item>.mpg</item>
+    </string-array>
+
+    <string-array name="format_app">
+        <item>.apk</item>
+        <item>.exe</item>
+        <item>.ipa</item>
+        <item>.dmg</item>
+    </string-array>
+
+    <string-array name="format_video">
+        <item>.wav</item>
+        <item>.mp3</item>
+        <item>.wma</item>
+        <item>.ape</item>
+        <item>.aac</item>
+    </string-array>
+
+    <string-array name="format_document">
+        <item>.txt</item>
+        <item>.doc</item>
+    </string-array>
 
 </resources>
