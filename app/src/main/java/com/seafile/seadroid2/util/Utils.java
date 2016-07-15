@@ -30,6 +30,7 @@ import com.seafile.seadroid2.R;
 import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.data.SeafDirent;
 import com.seafile.seadroid2.data.SeafRepo;
+import com.seafile.seadroid2.fileschooser.SelectableFile;
 //import com.seafile.seadroid2.fileschooser.SelectableFile;
 
 import org.json.JSONArray;
@@ -62,7 +63,9 @@ import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -437,13 +440,13 @@ public class Utils {
     }
 
     /************ MutiFileChooser ************/
-//    private static Comparator<SelectableFile> mComparator = new Comparator<SelectableFile>() {
-//        public int compare(SelectableFile f1, SelectableFile f2) {
-//            // Sort alphabetically by lower case, which is much cleaner
-//            return f1.getName().toLowerCase().compareTo(
-//                    f2.getName().toLowerCase());
-//        }
-//    };
+    private static Comparator<SelectableFile> mComparator = new Comparator<SelectableFile>() {
+        public int compare(SelectableFile f1, SelectableFile f2) {
+            // Sort alphabetically by lower case, which is much cleaner
+            return f1.getName().toLowerCase().compareTo(
+                    f2.getName().toLowerCase());
+        }
+    };
 
     private static FileFilter mFileFilter = new FileFilter() {
         public boolean accept(File file) {
@@ -461,39 +464,39 @@ public class Utils {
         }
     };
 
-//    public static List<SelectableFile> getFileList(String path, List<File> selectedFile) {
-//        ArrayList<SelectableFile> list = Lists.newArrayList();
-//
-//        // Current directory File instance
-//        final SelectableFile pathDir = new SelectableFile(path);
-//
-//        // List file in this directory with the directory filter
-//        final SelectableFile[] dirs = pathDir.listFiles(mDirFilter);
-//        if (dirs != null) {
-//            // Sort the folders alphabetically
-//            Arrays.sort(dirs, mComparator);
-//            // Add each folder to the File list for the list adapter
-//            for (SelectableFile dir : dirs) list.add(dir);
-//        }
-//
-//        // List file in this directory with the file filter
-//        final SelectableFile[] files = pathDir.listFiles(mFileFilter);
-//        if (files != null) {
-//            // Sort the files alphabetically
-//            Arrays.sort(files, mComparator);
-//            // Add each file to the File list for the list adapter
-//            for (SelectableFile file : files) {
-//                if (selectedFile != null) {
-//                    if (selectedFile.contains(file.getFile())) {
-//                        file.setSelected(true);
-//                    }
-//                }
-//                list.add(file);
-//            }
-//        }
-//
-//        return list;
-//    }
+    public static List<SelectableFile> getFileList(String path, List<File> selectedFile) {
+        ArrayList<SelectableFile> list = Lists.newArrayList();
+
+        // Current directory File instance
+        final SelectableFile pathDir = new SelectableFile(path);
+
+        // List file in this directory with the directory filter
+        final SelectableFile[] dirs = pathDir.listFiles(mDirFilter);
+        if (dirs != null) {
+            // Sort the folders alphabetically
+            Arrays.sort(dirs, mComparator);
+            // Add each folder to the File list for the list adapter
+            for (SelectableFile dir : dirs) list.add(dir);
+        }
+
+        // List file in this directory with the file filter
+        final SelectableFile[] files = pathDir.listFiles(mFileFilter);
+        if (files != null) {
+            // Sort the files alphabetically
+            Arrays.sort(files, mComparator);
+            // Add each file to the File list for the list adapter
+            for (SelectableFile file : files) {
+                if (selectedFile != null) {
+                    if (selectedFile.contains(file.getFile())) {
+                        file.setSelected(true);
+                    }
+                }
+                list.add(file);
+            }
+        }
+
+        return list;
+    }
 
     public static Intent createGetContentIntent() {
         // Implicitly allow the user to select a particular kind of data

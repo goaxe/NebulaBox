@@ -12,7 +12,29 @@
         android:id="@+id/content_main_fl"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="upload_file"
+            android:id="@+id/upload_file"
+            android:layout_gravity="center"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="common_api"
+            android:id="@+id/common_api"
+            android:layout_gravity="center_horizontal|bottom"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="transfer_list"
+            android:id="@+id/transfer_list_btn"
+            android:layout_gravity="right|center_vertical"/>
+    </FrameLayout>
 
     <include layout="@layout/line_view"/>
 
