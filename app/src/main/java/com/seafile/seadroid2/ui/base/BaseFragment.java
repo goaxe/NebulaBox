@@ -10,13 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.seafile.seadroid2.ui.NavContext;
+import com.seafile.seadroid2.ui.activity.MainActivity;
 
 /**
  * Created by Alfred on 2016/7/11.
  */
 public abstract class BaseFragment<T> extends Fragment{
 
-	protected Activity mActivity;
+	protected MainActivity mActivity;
 	protected Context mContext;
 
 	private NavContext navContext = new NavContext();
@@ -31,7 +32,7 @@ public abstract class BaseFragment<T> extends Fragment{
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
-		mActivity = (Activity) context;
+		mActivity = (MainActivity) context;
 		mContext = context;
 	}
 

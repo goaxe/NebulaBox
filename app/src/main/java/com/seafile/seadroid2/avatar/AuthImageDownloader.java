@@ -5,7 +5,7 @@ import android.content.Context;
 import com.github.kevinsawicki.http.HttpRequest;
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
-import com.seafile.seadroid2.bean.Account;
+import com.seafile.seadroid2.account.Account;
 //import com.seafile.seadroid2.ssl.SSLTrustManager;
 
 import java.io.BufferedInputStream;

@@ -1,4 +1,4 @@
-package com.seafile.seadroid2.bean;
+package com.seafile.seadroid2.account;
 
 import com.seafile.seadroid2.util.Utils;
 

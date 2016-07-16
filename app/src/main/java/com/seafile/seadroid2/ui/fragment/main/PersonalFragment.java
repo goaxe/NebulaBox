@@ -18,9 +18,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.cocosw.bottomsheet.BottomSheet;
 import com.seafile.seadroid2.R;
 import com.seafile.seadroid2.SeafException;
 import com.seafile.seadroid2.data.DataManager;
+import com.seafile.seadroid2.data.SeafCachedFile;
 import com.seafile.seadroid2.data.SeafDirent;
 import com.seafile.seadroid2.data.SeafItem;
 import com.seafile.seadroid2.data.SeafRepo;
@@ -651,6 +653,103 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         }
     }
 
+    public void showFileBottomSheet(String title, final SeafDirent dirent) {
+        final String repoName = getNavContext().getRepoName();
+        final String repoID = getNavContext().getRepoID();
+        final String dir = getNavContext().getDirPath();
+        final String path = Utils.pathJoin(dir, dirent.name);
+        final String filename = dirent.name;
+        final String localPath = getDataManager().getLocalRepoFile(repoName, repoID, path).getPath();
+        final BottomSheet.Builder builder = new BottomSheet.Builder(mActivity);
+        builder.title(title).sheet(R.menu.bottom_sheet_op_file).listener(new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case R.id.share:
+//                        mActivity.shareFile(repoID, path);
+                        break;
+                    case R.id.delete:
+                        mActivity.deleteFile(repoID, repoName, path);
+                        break;
+                    case R.id.copy:
+//                        mActivity.copyFile(repoID, repoName, dir, filename, false);
+                        break;
+                    case R.id.move:
+//                        mActivity.moveFile(repoID, repoName, dir, filename, false);
+                        break;
+                    case R.id.rename:
+//                        mActivity.renameFile(repoID, repoName, path);
+                        break;
+                    case R.id.update:
+//                        mActivity.addUpdateTask(repoID, repoName, dir, localPath);
+                        break;
+                    case R.id.download:
+                        ((MainActivity)mActivity).downloadFile(dir, dirent.name);
+                        break;
+                    case R.id.export:
+//                        mActivity.exportFile(dirent.name);
+                        break;
+                    case R.id.star:
+                        ((MainActivity) mActivity).starFile(repoID, dir, filename);
+                        break;
+                }
+            }
+        }).show();
 
+        SeafRepo repo = getDataManager().getCachedRepoByID(repoID);
+        if (repo != null && repo.encrypted) {
+            builder.remove(R.id.share);
+        }
+
+        SeafCachedFile cf = getDataManager().getCachedFile(repoName, repoID, path);
+        if (cf!= null) {
+            builder.remove(R.id.download);
+        } else {
+            builder.remove(R.id.update);
+        }
+
+    }
+
+    public void showDirBottomSheet(String title, final SeafDirent dirent) {
+        final String repoName = getNavContext().getRepoName();
+        final String repoID = getNavContext().getRepoID();
+        final String dir = getNavContext().getDirPath();
+        final String path = Utils.pathJoin(dir, dirent.name);
+        final String filename = dirent.name;
+        final BottomSheet.Builder builder = new BottomSheet.Builder(mActivity);
+        builder.title(title).sheet(R.menu.bottom_sheet_op_dir).listener(new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case R.id.share:
+//                        mActivity.shareDir(repoID, path);
+                        break;
+                    case R.id.delete:
+//                        mActivity.deleteDir(repoID, repoName, path);
+                        break;
+                    case R.id.copy:
+//                        mActivity.copyFile(repoID, repoName, dir, filename, false);
+                        break;
+                    case R.id.move:
+//                        mActivity.moveFile(repoID, repoName, dir, filename, false);
+                        break;
+                    case R.id.rename:
+//                        mActivity.renameDir(repoID, repoName, path);
+                        break;
+                    case R.id.download:
+//                        mActivity.downloadDir(dir, dirent.name, true);
+                        break;
+                }
+            }
+        }).show();
+        SeafRepo repo = getDataManager().getCachedRepoByID(repoID);
+        if (repo != null && repo.encrypted) {
+            builder.remove(R.id.share);
+        }
+    }
+
+    public SeafItemAdapter getAdapter() {
+        return adapter;
+    }
 
 }

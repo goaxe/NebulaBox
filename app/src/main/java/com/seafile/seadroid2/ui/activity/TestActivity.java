@@ -19,22 +19,21 @@ import android.widget.TextView;
 
 import com.seafile.seadroid2.R;
 import com.seafile.seadroid2.account.AccountManager;
-import com.seafile.seadroid2.bean.Account;
-import com.seafile.seadroid2.bean.AccountInfo;
+import com.seafile.seadroid2.account.Account;
+import com.seafile.seadroid2.account.AccountInfo;
 import com.seafile.seadroid2.data.DataManager;
 import com.seafile.seadroid2.data.SeafDirent;
 import com.seafile.seadroid2.data.SeafRepo;
 import com.seafile.seadroid2.data.ServerInfo;
 import com.seafile.seadroid2.fileschooser.MultiFileChooserActivity;
-import com.seafile.seadroid2.global.AccountsSharedPreferencesHelper;
 import com.seafile.seadroid2.network.SeafConnection;
 import com.seafile.seadroid2.transfer.TransferService;
 import com.seafile.seadroid2.ui.ToastUtils;
 import com.seafile.seadroid2.ui.base.BaseActivity;
 import com.seafile.seadroid2.ui.dialog.UploadChoiceDialog;
+import com.seafile.seadroid2.ui.fragment.StarredFragment;
 import com.seafile.seadroid2.ui.fragment.main.PersonalFragment;
 import com.seafile.seadroid2.ui.fragment.main.ShareFragment;
-import com.seafile.seadroid2.ui.fragment.main.StarListFragment;
 import com.seafile.seadroid2.ui.fragment.main.UploadFragment;
 import com.seafile.seadroid2.ui.fragment.main.UserCenterFragment;
 import com.seafile.seadroid2.ui.widget.CircleImageView;
@@ -172,8 +171,7 @@ public class TestActivity extends BaseActivity implements View.OnClickListener {
 			}
 		});*/
         accountManager = new AccountManager(getApplicationContext());
-        AccountsSharedPreferencesHelper accountsSharedPreferencesHelper = AccountsSharedPreferencesHelper.getInstance(this);
-        dataManager = new DataManager(new Account(accountsSharedPreferencesHelper.getServerUrl(), accountsSharedPreferencesHelper.getAccountName(), accountsSharedPreferencesHelper.getTokenName()));
+        dataManager = new DataManager(accountManager.getAccount());
 
         Intent txIntent = new Intent(this, TransferService.class);
         startService(txIntent);
@@ -219,7 +217,7 @@ public class TestActivity extends BaseActivity implements View.OnClickListener {
         fragmentList.add(PersonalFragment.newInstance(new PersonalFragment()));
         fragmentList.add(ShareFragment.newInstance(new ShareFragment()));
         fragmentList.add(UploadFragment.newInstance(new UploadFragment()));
-        fragmentList.add(StarListFragment.newInstance(new StarListFragment()));
+        fragmentList.add(new StarredFragment());
         fragmentList.add(UserCenterFragment.newInstance(new UserCenterFragment()));
     }
 

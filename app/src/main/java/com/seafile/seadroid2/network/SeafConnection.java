@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.provider.Settings.Secure;
+import android.util.Log;
 import android.util.Pair;
 
 import com.github.kevinsawicki.http.HttpRequest;
@@ -12,7 +13,7 @@ import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 import com.google.common.collect.Maps;
 import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.SeafException;
-import com.seafile.seadroid2.bean.Account;
+import com.seafile.seadroid2.account.Account;
 import com.seafile.seadroid2.data.Block;
 import com.seafile.seadroid2.data.DataManager;
 import com.seafile.seadroid2.data.FileBlocks;
@@ -129,6 +130,7 @@ public class SeafConnection {
         HttpRequest req = HttpRequest.post(account.server + apiPath, params, encode)
                 .followRedirects(true)
                 .connectTimeout(CONNECTION_TIMEOUT);
+        Log.e(DEBUG_TAG, account.server + apiPath);
 
         if (withToken) {
             req.header("Authorization", "Token " + account.token);

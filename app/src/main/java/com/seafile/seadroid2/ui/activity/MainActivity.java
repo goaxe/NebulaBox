@@ -7,9 +7,10 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,19 +18,25 @@ import android.widget.TextView;
 
 import com.seafile.seadroid2.R;
 import com.seafile.seadroid2.account.AccountManager;
-import com.seafile.seadroid2.bean.Account;
+import com.seafile.seadroid2.account.Account;
 import com.seafile.seadroid2.data.DataManager;
-import com.seafile.seadroid2.global.AccountsSharedPreferencesHelper;
+import com.seafile.seadroid2.data.SeafDirent;
+import com.seafile.seadroid2.notification.DownloadNotificationProvider;
+import com.seafile.seadroid2.transfer.DownloadTaskInfo;
 import com.seafile.seadroid2.transfer.TransferService;
 import com.seafile.seadroid2.ui.NavContext;
+import com.seafile.seadroid2.ui.ToastUtils;
+import com.seafile.seadroid2.ui.adapter.SeafItemAdapter;
 import com.seafile.seadroid2.ui.base.BaseActivity;
+import com.seafile.seadroid2.ui.dialog.DeleteFileDialog;
+import com.seafile.seadroid2.ui.dialog.TaskDialog;
+import com.seafile.seadroid2.ui.fragment.StarredFragment;
 import com.seafile.seadroid2.ui.fragment.main.PersonalFragment;
-import com.seafile.seadroid2.ui.fragment.main.ShareFragment;
-import com.seafile.seadroid2.ui.fragment.main.StarListFragment;
 import com.seafile.seadroid2.ui.fragment.main.UploadFragment;
 import com.seafile.seadroid2.ui.fragment.main.UserCenterFragment;
 import com.seafile.seadroid2.ui.widget.CircleImageView;
 import com.seafile.seadroid2.util.Utils;
+import com.seafile.seadroid2.util.log.KLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +47,13 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
+    private static final String DEBUG_TAG = "MainActivity";
+
+    public static final String TAG_DELETE_FILE_DIALOG_FRAGMENT = "DeleteFileDialogFragment";
+    public static final String TAG_DELETE_FILES_DIALOG_FRAGMENT = "DeleteFilesDialogFragment";
+    public static final String TAG_RENAME_FILE_DIALOG_FRAGMENT = "RenameFileDialogFragment";
+    public static final String TAG_COPY_MOVE_DIALOG_FRAGMENT = "CopyMoveDialogFragment";
+    public static final String TAG_SORT_FILES_DIALOG_FRAGMENT = "SortFilesDialogFragment";
 
     private List<Integer> tabsImagesUnselectedList;
     private List<Integer> tabsImagesSelectedList;
@@ -92,14 +106,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         ButterKnife.bind(this);
 
         initVariable();
-        getSupportFragmentManager().beginTransaction().add(R.id.content_main_fl, fragmentList.get(currentFragmentIndex)).commitAllowingStateLoss();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        for (Fragment fragment : fragmentList) {
+            transaction.add(R.id.content_main_fl, fragment);
+        }
+        transaction.commitAllowingStateLoss();
+        KLog.e("=================" + currentFragmentIndex);
+        Log.e(DEBUG_TAG, "==============" + currentFragmentIndex);
+        switchFragment(currentFragmentIndex);
+
+//        getSupportFragmentManager().beginTransaction().add(R.id.content_main_fl, fragmentList.get(currentFragmentIndex)).commitAllowingStateLoss();
         for (int i = 0; i < fragmentList.size(); i++) {
             tabsLinearLayoutList.get(i).setOnClickListener(this);
         }
 
         accountManager = new AccountManager(getApplicationContext());
-        AccountsSharedPreferencesHelper accountsSharedPreferencesHelper = AccountsSharedPreferencesHelper.getInstance(this);
-        dataManager = new DataManager(new Account(accountsSharedPreferencesHelper.getServerUrl(), accountsSharedPreferencesHelper.getAccountName(), accountsSharedPreferencesHelper.getTokenName()));
+        dataManager = new DataManager(accountManager.getAccount());
 
 		Intent txIntent = new Intent(this, TransferService.class);
         startService(txIntent);
@@ -138,7 +160,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         fragmentList = new ArrayList<>();
         fragmentList.add(PersonalFragment.newInstance(new PersonalFragment()));
         fragmentList.add(UploadFragment.newInstance(new UploadFragment()));
-        fragmentList.add(StarListFragment.newInstance(new StarListFragment()));
+//        fragmentList.add(StarListFragment.newInstance(new StarListFragment()));
+        fragmentList.add(new StarredFragment());
         fragmentList.add(UserCenterFragment.newInstance(new UserCenterFragment()));
     }
 
@@ -149,18 +172,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      */
     private void switchFragment(int tabIndex) {
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         Fragment nextFragment = fragmentList.get(tabIndex);
-        Fragment currentFragment = fragmentList.get(currentFragmentIndex);
-        if (nextFragment != currentFragment) {
-            android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
-            if (nextFragment.isAdded()) {
-                transaction.hide(currentFragment).show(nextFragment).commitAllowingStateLoss();
-            } else {
-                transaction.hide(currentFragment).add(R.id.content_main_fl, nextFragment).commitAllowingStateLoss();
+//        Fragment currentFragment = fragmentList.get(currentFragmentIndex);
+        for (Fragment fragment : fragmentList) {
+            if (fragment != nextFragment) {
+                transaction.hide(fragment);
             }
-            switchTextAndImage(tabIndex);
-            this.currentFragmentIndex = tabIndex;
         }
+        transaction.show(nextFragment).commitAllowingStateLoss();
+        switchTextAndImage(tabIndex);
+        this.currentFragmentIndex = tabIndex;
+
+//
+//        if (nextFragment != currentFragment) {
+//            android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
+//            if (nextFragment.isAdded()) {
+//                transaction.hide(currentFragment).show(nextFragment).commitAllowingStateLoss();
+//            } else {
+//                transaction.hide(currentFragment).add(R.id.content_main_fl, nextFragment).commitAllowingStateLoss();
+//            }
+//            switchTextAndImage(tabIndex);
+//            this.currentFragmentIndex = tabIndex;
+//        }
     }
 
     /**
@@ -185,7 +219,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         super.onDestroy();
     }
 
-
     @Override
     public void onClick(View v) {
         for (int i = 0; i < tabsLinearLayoutList.size(); i++) {
@@ -198,8 +231,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public DataManager getDataManager() {
         return dataManager;
     }
-
-
 
     @Override
     public void onBackPressed() {
@@ -216,4 +247,78 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         PersonalFragment personalFragment = (PersonalFragment) fragmentList.get(currentFragmentIndex);
         personalFragment.refreshView(false);
     }
+
+    private Fragment getFragment(int index) {
+        return fragmentList.get(index);
+    }
+
+    private PersonalFragment getPersonalFragment() {
+        return (PersonalFragment) getFragment(0);
+    }
+
+    private StarredFragment getStarredFragment() {
+        return (StarredFragment) getFragment(2);
+    }
+
+    public void showFileBottomSheet(String title, final SeafDirent dirent) {
+        getPersonalFragment().showFileBottomSheet(title, dirent);
+    }
+
+    public void showDirBottomSheet(String title, final SeafDirent dirent) {
+        getPersonalFragment().showDirBottomSheet(title, dirent);
+    }
+
+    public void starFile(String srcRepoId, String srcDir, String srcFn) {
+        getStarredFragment().doStarFile(srcRepoId, srcDir, srcFn);
+    }
+
+    public void downloadFile(String dir, String fileName) {
+        String filePath = Utils.pathJoin(dir, fileName);
+        Account account = accountManager.getAccount();
+        Log.e(DEBUG_TAG, "===" + account.getServer() + "==========server");
+
+        txService.addDownloadTask(account,
+                navContext.getRepoName(),
+                navContext.getRepoID(),
+                filePath);
+
+        if (!txService.hasDownloadNotifProvider()) {
+            DownloadNotificationProvider provider = new DownloadNotificationProvider(txService.getDownloadTaskManager(),
+                    txService);
+            txService.saveDownloadNotifProvider(provider);
+        }
+
+        SeafItemAdapter adapter = getPersonalFragment().getAdapter();
+        List<DownloadTaskInfo> infos = txService.getDownloadTaskInfosByPath(navContext.getRepoID(), dir);
+        // update downloading progress
+        adapter.setDownloadTaskList(infos);
+    }
+
+    public void deleteFile(String repoID, String repoName, String path) {
+        doDelete(repoID, repoName, path, false);
+    }
+
+        public void deleteDir(String repoID, String repoName, String path) {
+        doDelete(repoID, repoName, path, true);
+    }
+
+    private void doDelete(String repoID, String repoName, String path, boolean isdir) {
+        final DeleteFileDialog dialog = new DeleteFileDialog();
+        dialog.init(repoID, path, isdir, accountManager.getAccount());
+        dialog.setTaskDialogLisenter(new TaskDialog.TaskDialogListener() {
+            @Override
+            public void onTaskSuccess() {
+                ToastUtils.show(MainActivity.this, R.string.delete_successful);
+                PersonalFragment reposFragment = getPersonalFragment();
+                if (currentFragmentIndex == 0 && reposFragment != null) {
+                    reposFragment.refreshView(true);
+                }
+            }
+        });
+        dialog.show(getSupportFragmentManager(), TAG_DELETE_FILE_DIALOG_FRAGMENT);
+    }
+
+
+
+
 }

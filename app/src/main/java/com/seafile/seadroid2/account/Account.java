@@ -1,4 +1,4 @@
-package com.seafile.seadroid2.bean;
+package com.seafile.seadroid2.account;
 
 import android.os.Parcel;
 import android.os.Parcelable;

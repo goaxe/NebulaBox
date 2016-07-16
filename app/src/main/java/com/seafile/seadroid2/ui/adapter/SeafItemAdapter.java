@@ -237,10 +237,10 @@ public class SeafItemAdapter extends BaseAdapter {
         viewHolder.action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (dirent.isDir())
-//                    mActivity.showDirBottomSheet(dirent.getTitle(), (SeafDirent) getItem(position));
-//                else
-//                    mActivity.showFileBottomSheet(dirent.getTitle(), (SeafDirent) getItem(position));
+                if (dirent.isDir())
+                    mActivity.showDirBottomSheet(dirent.getTitle(), (SeafDirent) getItem(position));
+                else
+                    mActivity.showFileBottomSheet(dirent.getTitle(), (SeafDirent) getItem(position));
             }
         });
 
