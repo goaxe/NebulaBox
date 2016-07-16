@@ -12,8 +12,7 @@ import com.seafile.seadroid2.R;
 import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.fileschooser.MultiFileChooserActivity;
 import com.seafile.seadroid2.gallery.MultipleImageSelectionActivity;
-import com.seafile.seadroid2.ui.activity.MainActivity;
-import com.seafile.seadroid2.util.Utils;
+import com.seafile.seadroid2.ui.activity.TestActivity;
 
 public class UploadChoiceDialog extends DialogFragment {
     private Context ctx = SeadroidApplication.getAppContext();
@@ -30,18 +29,18 @@ public class UploadChoiceDialog extends DialogFragment {
                         switch (which) {
                         case 0:
                             Intent intent = new Intent(ctx, MultiFileChooserActivity.class);
-                            getActivity().startActivityForResult(intent, MainActivity.PICK_FILES_REQUEST);
+                            getActivity().startActivityForResult(intent, TestActivity.PICK_FILES_REQUEST);
                             break;
                         case 1:
                             // photos
                             intent = new Intent(ctx, MultipleImageSelectionActivity.class);
-                            getActivity().startActivityForResult(intent, MainActivity.PICK_PHOTOS_VIDEOS_REQUEST);
+                            getActivity().startActivityForResult(intent, TestActivity.PICK_PHOTOS_VIDEOS_REQUEST);
                             break;
                         case 2:
                             // thirdparty file chooser
 //                            Intent target = Utils.createGetContentIntent();
 //                            intent = Intent.createChooser(target, getString(R.string.choose_file));
-//                            getActivity().startActivityForResult(intent, MainActivity.PICK_FILE_REQUEST);
+//                            getActivity().startActivityForResult(intent, TestActivity.PICK_FILE_REQUEST);
                             break;
                         default:
                             return;

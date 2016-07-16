@@ -46,7 +46,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class TestActivity extends BaseActivity implements View.OnClickListener {
 
 
     public static final int PICK_FILES_REQUEST = 1;
@@ -58,7 +58,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     public static final String PICK_FILE_DIALOG_FRAGMENT_TAG = "pick_file_fragment";
 
-    public static final String DEBUG_TAG = "MainActivity";
+    public static final String DEBUG_TAG = "TestActivity";
     private List<SeafRepo> repos;
 
 
@@ -196,7 +196,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //            Intent intent = Intent.createChooser(target, getString(R.string.choose_file));
 //        Log.e(DEBUG_TAG, "start choose");
 //
-//            startActivityForResult(intent, MainActivity.PICK_FILE_REQUEST);
+//            startActivityForResult(intent, TestActivity.PICK_FILE_REQUEST);
 ////        }
     }
 
