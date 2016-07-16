@@ -212,6 +212,50 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         super.onDestroy();
     }
 
+//    public void onFileSelected(SeafDirent dirent) {
+//        final String fileName= dirent.name;
+//        final String repoName = navContext.getRepoName();
+//        final String repoID = navContext.getRepoID();
+//        final String dirPath = navContext.getDirPath();
+//        final String filePath = Utils.pathJoin(navContext.getDirPath(), fileName);
+//        final SeafRepo repo = dataManager.getCachedRepoByID(repoID);
+//
+//        // Encrypted repo doesn\`t support gallery,
+//        // because pic thumbnail under encrypted repo was not supported at the server side
+//        if (Utils.isViewableImage(fileName)
+//                && repo != null && !repo.encrypted) {
+//            WidgetUtils.startGalleryActivity(this, repoName, repoID, dirPath, fileName, account);
+//            return;
+//        }
+//
+//        final File localFile = dataManager.getLocalCachedFile(repoName, repoID, filePath, dirent.id);
+//        if (localFile != null) {
+//            WidgetUtils.showFile(this, localFile);
+//            return;
+//        }
+//
+//        if (repo == null) return;
+//
+//        startFileActivity(repoName, repoID, filePath, repo.canLocalDecrypt(), repo.encVersion);
+//    }
+//
+//    private void startFileActivity(String repoName, String repoID, String filePath, boolean byBlock, int encVersion) {
+//        int taskID = 0;
+//        if (byBlock) {
+//            taskID = txService.addDownloadTask(account, repoName, repoID, filePath, true, encVersion);
+//        } else {
+//            taskID = txService.addDownloadTask(account, repoName, repoID, filePath);
+//        }
+//        Intent intent = new Intent(this, FileActivity.class);
+//        intent.putExtra("repoName", repoName);
+//        intent.putExtra("repoID", repoID);
+//        intent.putExtra("filePath", filePath);
+//        intent.putExtra("account", account);
+//        intent.putExtra("taskID", taskID);
+//        startActivityForResult(intent, DOWNLOAD_FILE_REQUEST);
+//    }
+
+
 
 /*	public void addUpdateTask(String repoID, String repoName, String targetDir, String localFilePath) {
         txService.addTaskToUploadQue(accountManager.getAccount(), repoID, repoName, targetDir, localFilePath, true, true);

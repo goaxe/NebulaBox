@@ -14,7 +14,7 @@
 //import com.mingle.widget.LoadingView;
 //import com.seafile.seadroid2.R;
 //import com.seafile.seadroid2.data.SeafDirent;
-//import com.seafile.seadroid2.ui.adapter.FileListAdapter;
+//import com.seafile.seadroid2.ui.adapter.SeafItemAdapter;
 //
 //import java.util.ArrayList;
 //import java.util.List;
@@ -39,7 +39,7 @@
 //
 //    private int lastVisibleItem;
 //    protected List<SeafDirent> list;
-//    protected FileListAdapter fileListAdapter;
+//    protected SeafItemAdapter fileListAdapter;
 //    private LinearLayoutManager linearLayoutManager;
 //
 //    @Nullable
@@ -60,7 +60,7 @@
 //        loadingView.setVisibility(View.VISIBLE);
 //
 //        list = new ArrayList<>();
-////		fileListAdapter = new FileListAdapter(mActivity,list);
+////		fileListAdapter = new SeafItemAdapter(mActivity,list);
 ////		recyclerView.setAdapter(fileListAdapter);
 //
 //    }
