@@ -1,7 +1,11 @@
 package com.seafile.seadroid2.ui.activity;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -16,6 +20,7 @@ import com.seafile.seadroid2.account.AccountManager;
 import com.seafile.seadroid2.bean.Account;
 import com.seafile.seadroid2.data.DataManager;
 import com.seafile.seadroid2.global.AccountsSharedPreferencesHelper;
+import com.seafile.seadroid2.transfer.TransferService;
 import com.seafile.seadroid2.ui.NavContext;
 import com.seafile.seadroid2.ui.base.BaseActivity;
 import com.seafile.seadroid2.ui.fragment.main.PersonalFragment;
@@ -40,13 +45,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private List<Integer> tabsImagesSelectedList;
     private List<Fragment> fragmentList;
 
-    private Button commonApiBtn;
-    private Button transferBtn;
     private AccountManager accountManager;
     private DataManager dataManager;
-//	private TransferService txService = null;
+	private TransferService txService = null;
 
-    //	private Fragment currentFragment;
     private int currentFragmentIndex = 0;
 
     private NavContext navContext = new NavContext();
@@ -62,26 +64,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Bind(R.id.content_main_fl)
     FrameLayout contentFrameLayout;
 
-    @Bind({R.id.personal_main_iv, R.id.share_main_iv, R.id.upload_main_iv, R.id.star_main_iv, R.id.usercenter_main_iv})
+    @Bind({R.id.personal_main_iv, R.id.upload_main_iv, R.id.star_main_iv, R.id.usercenter_main_iv})
     List<ImageView> tabsImageViewList;
-    @Bind({R.id.personal_main_ll, R.id.share_main_ll, R.id.upload_main_ll, R.id.star_main_ll, R.id.usercenter_main_ll})
+    @Bind({R.id.personal_main_ll, R.id.upload_main_ll, R.id.star_main_ll, R.id.usercenter_main_ll})
     List<LinearLayout> tabsLinearLayoutList;
-    @Bind({R.id.personal_main_tv, R.id.share_main_tv, R.id.upload_main_tv, R.id.star_main_tv, R.id.usercenter_main_tv})
+    @Bind({R.id.personal_main_tv, R.id.upload_main_tv, R.id.star_main_tv, R.id.usercenter_main_tv})
     List<TextView> tabsTextViewList;
 
-/*	ServiceConnection mConnection = new ServiceConnection() {
+	ServiceConnection mConnection = new ServiceConnection() {
         @Override
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			TransferService.TransferBinder binder = (TransferService.TransferBinder) service;
 			txService = binder.getService();
 
 		}
-
 		@Override
 		public void onServiceDisconnected(ComponentName arg0) {
 			txService = null;
 		}
-	};*/
+	};
 
 
     @Override
@@ -90,42 +91,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-
         initVariable();
-
         getSupportFragmentManager().beginTransaction().add(R.id.content_main_fl, fragmentList.get(currentFragmentIndex)).commitAllowingStateLoss();
-
-
         for (int i = 0; i < fragmentList.size(); i++) {
             tabsLinearLayoutList.get(i).setOnClickListener(this);
         }
 
-/*		commonApiBtn = (Button) findViewById(R.id.buttion1);
-        commonApiBtn.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Account loginAccount = new Account("http://166.111.131.62:6789/", "1@qq.com", null);
-				new MyThread(loginAccount).start();
-			}
-		});
-		transferBtn = (Button) findViewById(R.id.button2);
-		transferBtn.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Intent intent = new Intent(activity, TransferActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
-			}
-		});*/
         accountManager = new AccountManager(getApplicationContext());
         AccountsSharedPreferencesHelper accountsSharedPreferencesHelper = AccountsSharedPreferencesHelper.getInstance(this);
         dataManager = new DataManager(new Account(accountsSharedPreferencesHelper.getServerUrl(), accountsSharedPreferencesHelper.getAccountName(), accountsSharedPreferencesHelper.getTokenName()));
 
-/*		Intent txIntent = new Intent(this, TransferService.class);
+		Intent txIntent = new Intent(this, TransferService.class);
         startService(txIntent);
-
 		Intent bIntent = new Intent(this, TransferService.class);
-		bindService(bIntent, mConnection, Context.BIND_AUTO_CREATE);*/
+		bindService(bIntent, mConnection, Context.BIND_AUTO_CREATE);
 
         Intent intent = getIntent();
         String repoID = intent.getStringExtra("repoID");
@@ -143,29 +122,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         return navContext;
     }
 
-//	@Override
-//	protected int getFragmentContentId() {
-//		return R.id.content_main_fl;
-//	}
-
     private void initVariable() {
         tabsImagesUnselectedList = new ArrayList<>();
         tabsImagesUnselectedList.add(R.drawable.ic_filter_drama_white_36dp);
-        tabsImagesUnselectedList.add(R.drawable.ic_share_white_36dp);
         tabsImagesUnselectedList.add(R.drawable.upload_36);
         tabsImagesUnselectedList.add(R.drawable.ic_share_white_36dp);
         tabsImagesUnselectedList.add(R.drawable.self_48);
 
         tabsImagesSelectedList = new ArrayList<>();
         tabsImagesSelectedList.add(R.drawable.ic_filter_drama_black_36dp);
-        tabsImagesSelectedList.add(R.drawable.share_grey_36);
         tabsImagesSelectedList.add(R.drawable.upload_grey_36);
         tabsImagesSelectedList.add(R.drawable.share_grey_36);
         tabsImagesSelectedList.add(R.drawable.self_grey_48);
 
         fragmentList = new ArrayList<>();
         fragmentList.add(PersonalFragment.newInstance(new PersonalFragment()));
-        fragmentList.add(ShareFragment.newInstance(new ShareFragment()));
         fragmentList.add(UploadFragment.newInstance(new UploadFragment()));
         fragmentList.add(StarListFragment.newInstance(new StarListFragment()));
         fragmentList.add(UserCenterFragment.newInstance(new UserCenterFragment()));
@@ -207,73 +178,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void onDestroy() {
-//		if (txService != null) {
-//			unbindService(mConnection);
-//			txService = null;
-//		}
+		if (txService != null) {
+			unbindService(mConnection);
+			txService = null;
+		}
         super.onDestroy();
     }
 
-//    public void onFileSelected(SeafDirent dirent) {
-//        final String fileName= dirent.name;
-//        final String repoName = navContext.getRepoName();
-//        final String repoID = navContext.getRepoID();
-//        final String dirPath = navContext.getDirPath();
-//        final String filePath = Utils.pathJoin(navContext.getDirPath(), fileName);
-//        final SeafRepo repo = dataManager.getCachedRepoByID(repoID);
-//
-//        // Encrypted repo doesn\`t support gallery,
-//        // because pic thumbnail under encrypted repo was not supported at the server side
-//        if (Utils.isViewableImage(fileName)
-//                && repo != null && !repo.encrypted) {
-//            WidgetUtils.startGalleryActivity(this, repoName, repoID, dirPath, fileName, account);
-//            return;
-//        }
-//
-//        final File localFile = dataManager.getLocalCachedFile(repoName, repoID, filePath, dirent.id);
-//        if (localFile != null) {
-//            WidgetUtils.showFile(this, localFile);
-//            return;
-//        }
-//
-//        if (repo == null) return;
-//
-//        startFileActivity(repoName, repoID, filePath, repo.canLocalDecrypt(), repo.encVersion);
-//    }
-//
-//    private void startFileActivity(String repoName, String repoID, String filePath, boolean byBlock, int encVersion) {
-//        int taskID = 0;
-//        if (byBlock) {
-//            taskID = txService.addDownloadTask(account, repoName, repoID, filePath, true, encVersion);
-//        } else {
-//            taskID = txService.addDownloadTask(account, repoName, repoID, filePath);
-//        }
-//        Intent intent = new Intent(this, FileActivity.class);
-//        intent.putExtra("repoName", repoName);
-//        intent.putExtra("repoID", repoID);
-//        intent.putExtra("filePath", filePath);
-//        intent.putExtra("account", account);
-//        intent.putExtra("taskID", taskID);
-//        startActivityForResult(intent, DOWNLOAD_FILE_REQUEST);
-//    }
-
-
-
-/*	public void addUpdateTask(String repoID, String repoName, String targetDir, String localFilePath) {
-        txService.addTaskToUploadQue(accountManager.getAccount(), repoID, repoName, targetDir, localFilePath, true, true);
-	}
-
-	public void addUpdateBlocksTask(String repoID, String repoName, String targetDir, String localFilePath, int version) {
-		txService.addTaskToUploadQue(accountManager.getAccount(), repoID, repoName, targetDir, localFilePath, true, true, version);
-	}
-
-	private int addUploadTask(String repoID, String repoName, String targetDir, String localFilePath) {
-		return txService.addTaskToUploadQue(accountManager.getAccount(), repoID, repoName, targetDir, localFilePath, false, true);
-	}
-
-	private int addUploadBlocksTask(String repoID, String repoName, String targetDir, String localFilePath, int version) {
-		return txService.addTaskToUploadQue(accountManager.getAccount(), repoID, repoName, targetDir, localFilePath, false, true, version);
-	}*/
 
     @Override
     public void onClick(View v) {
@@ -289,64 +200,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
 
-/*	class MyThread extends Thread {
-
-		private Account loginAccount;
-		private SeafConnection sc;
-
-		public MyThread(Account loginAccount) {
-			this.loginAccount = loginAccount;
-			this.sc = new SeafConnection(loginAccount);
-		}
-
-		@Override
-		public void run() {
-			try {
-				Log.e("====", "start run");
-				if (!sc.doLogin("123456")) {
-					return;
-				}
-
-				DataManager dataManager = new DataManager(loginAccount);
-				AccountInfo accountInfo = dataManager.getAccountInfo();
-				// replace email address/username given by the user with the address known by the server.
-				Log.e(TAG, loginAccount.toString());
-				Log.e(TAG, accountInfo.getEmail());
-				loginAccount = new Account(loginAccount.server, accountInfo.getEmail(), loginAccount.token);
-				ServerInfo serverInfo = dataManager.getServerInfo();
-
-				accountManager.setAccount(loginAccount);
-				accountManager.setServerInfo(serverInfo);
-
-				Log.e(TAG, accountManager.getAccount().toString());
-				Log.e(TAG, accountManager.getServerInfo().toString());
-				List<SeafRepo> repos = dataManager.getReposFromServer();
-				for (SeafRepo repo : repos) {
-					Log.e(TAG, repo.getID() + " " + repo.getName() + " " + repo.getTitle());
-				}
-
-				SeafRepo downloadRepo = repos.get(0);
-				SeafRepo uploadRepo = repos.get(1);
-				List<SeafDirent> dirents = dataManager.getDirentsFromServer(downloadRepo.getID(), "/");
-				for (SeafDirent dirent : dirents) {
-					Log.e(DEBUG_TAG, dirent.getTitle() + " " + dirent.getSubtitle());
-					if (!dirent.isDir()) {
-						txService.addDownloadTask(accountManager.getAccount(), downloadRepo.getName(), downloadRepo.getID(), "/" + dirent.getTitle());
-					}
-				}
-
-				// wait the download task finish, then we can upload our local files
-				Thread.sleep(2000);
-				txService.addUploadTask(accountManager.getAccount(), uploadRepo.getID(), uploadRepo.getName(), "/", "/storage/emulated/0/Seafile/1@qq.com (166.111.131.62)/askjdfkljsd/settings.jar", false, false);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}*/
 
     @Override
     public void onBackPressed() {
-//        super.onBackPressed();
         if (currentFragmentIndex != 0 || !navContext.inRepo()) {
             super.onBackPressed();
         }

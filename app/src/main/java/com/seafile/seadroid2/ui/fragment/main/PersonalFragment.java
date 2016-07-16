@@ -1,6 +1,7 @@
 package com.seafile.seadroid2.ui.fragment.main;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.seafile.seadroid2.interf.OnItemClickListener;
 import com.seafile.seadroid2.interf.OnItemLongClickListener;
 import com.seafile.seadroid2.ui.NavContext;
 import com.seafile.seadroid2.ui.activity.MainActivity;
+import com.seafile.seadroid2.ui.activity.TransferActivity;
 import com.seafile.seadroid2.ui.adapter.SeafItemAdapter;
 import com.seafile.seadroid2.ui.base.BaseFragment;
 import com.seafile.seadroid2.ui.dialog.FileOptionDialog;
@@ -201,6 +203,10 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             case R.id.create_personal_tv:
                 break;
             case R.id.transfer_personal_tv:
+                Intent intent = new Intent(mActivity, TransferActivity.class);
+                startActivity(intent);
+                break;
+            default:
                 break;
         }
     }
