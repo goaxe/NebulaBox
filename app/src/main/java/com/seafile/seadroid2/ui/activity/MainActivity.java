@@ -24,6 +24,7 @@ import com.seafile.seadroid2.ui.fragment.main.StarListFragment;
 import com.seafile.seadroid2.ui.fragment.main.UploadFragment;
 import com.seafile.seadroid2.ui.fragment.main.UserCenterFragment;
 import com.seafile.seadroid2.ui.widget.CircleImageView;
+import com.seafile.seadroid2.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +89,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
 
         initVariable();
 
@@ -341,4 +343,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 			}
 		}
 	}*/
+
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        if (currentFragmentIndex != 0 || !navContext.inRepo()) {
+            super.onBackPressed();
+        }
+        if (navContext.isRepoRoot()) {
+            navContext.setRepoID(null);
+        } else {
+            String parentPath = Utils.getParentPath(navContext
+                    .getDirPath());
+            navContext.setDir(parentPath, null);
+        }
+        PersonalFragment personalFragment = (PersonalFragment) fragmentList.get(currentFragmentIndex);
+        personalFragment.refreshView(false);
+    }
 }

@@ -9,15 +9,19 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.seafile.seadroid2.R;
 import com.seafile.seadroid2.SeafException;
 import com.seafile.seadroid2.data.DataManager;
 import com.seafile.seadroid2.data.SeafDirent;
+import com.seafile.seadroid2.data.SeafItem;
 import com.seafile.seadroid2.data.SeafRepo;
 import com.seafile.seadroid2.interf.OnItemClickListener;
 import com.seafile.seadroid2.interf.OnItemLongClickListener;
@@ -44,191 +48,226 @@ import butterknife.OnClick;
  */
 public class PersonalFragment extends BaseFragment implements View.OnClickListener, OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, FileOptionDialog.OnItemClickListener, OnItemLongClickListener {
 
-	@Bind(R.id.category_personal_tv)
-	TextView categoryTextView;
-	@Bind(R.id.sort_personal_tv)
-	TextView sortTextView;
-	@Bind(R.id.create_personal_tv)
-	TextView createTextView;
-	@Bind(R.id.transfer_personal_tv)
-	TextView transferTextView;
-	@Bind(R.id.refresh_layout_personal_srlayout)
-	SwipeRefreshLayout swipeRefreshLayout;
-	@Bind(R.id.recycler_view_personal_rl)
-	RecyclerView recyclerView;
+    private static final String DEBUG_TAG = "PersonalFragment";
 
-	private String[] categoryOptionalList;
-	private String[] sortOptionalList;
+    @Bind(R.id.category_personal_tv)
+    TextView categoryTextView;
+    @Bind(R.id.sort_personal_tv)
+    TextView sortTextView;
+    @Bind(R.id.create_personal_tv)
+    TextView createTextView;
+    @Bind(R.id.transfer_personal_tv)
+    TextView transferTextView;
+    @Bind(R.id.refresh_layout_personal_srlayout)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @Bind(R.id.recycler_view_personal_rl)
+    ListView recyclerView;
 
-	private FileOptionDialog categoryDialog;
-	private FileOptionDialog sortDialog;
+    private String[] categoryOptionalList;
+    private String[] sortOptionalList;
 
-	private List<SeafDirent> pictureList;
-	private List<SeafDirent> videoList;
-	private List<SeafDirent> movieList;
-	private List<SeafDirent> txtList;
-	private List<SeafDirent> appList;
-	private List<SeafDirent> allDirentList;
+    private FileOptionDialog categoryDialog;
+    private FileOptionDialog sortDialog;
 
-	private String[] pictureFormat;
-	private String[] videoFormat;
-	private String[] movieFormat;
-	private String[] txtFormat;
-	private String[] appFormat;
+    private List<SeafDirent> pictureList;
+    private List<SeafDirent> videoList;
+    private List<SeafDirent> movieList;
+    private List<SeafDirent> txtList;
+    private List<SeafDirent> appList;
+    private List<SeafDirent> allDirentList;
 
-	private SeafItemAdapter adapter;
-	private int lastVisibleItem;
-	private LinearLayoutManager linearLayoutManager;
+    private String[] pictureFormat;
+    private String[] videoFormat;
+    private String[] movieFormat;
+    private String[] txtFormat;
+    private String[] appFormat;
 
-	private NavContext navContext;
-	private DataManager dataManager;
+    private SeafItemAdapter adapter;
+    private int lastVisibleItem;
+    private LinearLayoutManager linearLayoutManager;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_personal, container, false);
-		ButterKnife.bind(this, view);
-		return view;
-	}
+    private DataManager dataManager;
 
-	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-	}
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_personal, container, false);
+        ButterKnife.bind(this, view);
+        return view;
+    }
 
-	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
 
-		categoryOptionalList = getResources().getStringArray(R.array.category_files_options_array);
-		sortOptionalList = getResources().getStringArray(R.array.sorts_files_options_array);
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-		categoryDialog = new FileOptionDialog();
-		categoryDialog.setList(categoryOptionalList);
-		categoryDialog.setOnItemClickListener(this);
-		sortDialog = new FileOptionDialog();
-		sortDialog.setList(sortOptionalList);
-		sortDialog.setOnItemClickListener(this);
+        categoryOptionalList = getResources().getStringArray(R.array.category_files_options_array);
+        sortOptionalList = getResources().getStringArray(R.array.sorts_files_options_array);
 
-		Resources resources = getResources();
-		pictureFormat = resources.getStringArray(R.array.format_picture);
-		videoFormat = resources.getStringArray(R.array.format_video);
-		movieFormat = resources.getStringArray(R.array.format_movie);
-		appFormat = resources.getStringArray(R.array.format_app);
-		txtFormat = resources.getStringArray(R.array.format_app);
+        categoryDialog = new FileOptionDialog();
+        categoryDialog.setList(categoryOptionalList);
+        categoryDialog.setOnItemClickListener(this);
+        sortDialog = new FileOptionDialog();
+        sortDialog.setList(sortOptionalList);
+        sortDialog.setOnItemClickListener(this);
 
-		dataManager = ((MainActivity) mActivity).getDataManager();
+        Resources resources = getResources();
+        pictureFormat = resources.getStringArray(R.array.format_picture);
+        videoFormat = resources.getStringArray(R.array.format_video);
+        movieFormat = resources.getStringArray(R.array.format_movie);
+        appFormat = resources.getStringArray(R.array.format_app);
+        txtFormat = resources.getStringArray(R.array.format_app);
 
-		allDirentList = new ArrayList<>();
-		adapter = new SeafItemAdapter(mActivity, R.layout.item_file_list);
-		adapter.setOnItemClickListener(this);
-		adapter.setOnItemLongClickListener(this);
+        dataManager = ((MainActivity) mActivity).getDataManager();
 
-		linearLayoutManager = new LinearLayoutManager(mActivity);
-		recyclerView.addItemDecoration(new RecycleViewDivider(mContext, LinearLayoutManager.VERTICAL, 10, ContextCompat.getColor(mContext, R.color.app_main_color)));
+        allDirentList = new ArrayList<>();
+        adapter = new SeafItemAdapter((MainActivity) mActivity);
+//		adapter.setOnItemClickListener(this);
+//		adapter.setOnItemLongClickListener(this);
+
+        linearLayoutManager = new LinearLayoutManager(mActivity);
+//		recyclerView.addItemDecoration(new RecycleViewDivider(mContext, LinearLayoutManager.VERTICAL, 10, ContextCompat.getColor(mContext, R.color.app_main_color)));
 //        recyclerView.addOnScrollListener(new PauseOnScrollListener());
-		recyclerView.setLayoutManager(linearLayoutManager);
-		recyclerView.setAdapter(adapter);
+//		recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(adapter);
+
+        recyclerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                NavContext navContext = getNavContext();
+                SeafItem o = adapter.getItem(i);
+                boolean inRepo = navContext.inRepo();
+                Log.e(DEBUG_TAG, "inRepo:" + inRepo + " " + navContext.getRepoID() + o.getClass());
+
+                if (inRepo == true) {
+                    if (o instanceof SeafDirent) {
+                        SeafDirent seafDirent = (SeafDirent) o;
+                        if (seafDirent.isDir()) {
+                            String currentPath = navContext.getDirPath();
+                            String newPath = currentPath.endsWith("/") ?
+                                    currentPath + seafDirent.name : currentPath + "/" + seafDirent.name;
+                            navContext.setDir(newPath, seafDirent.id);
+                            refreshView(false);
+                        } else {
+                            // TODO: 16-7-16  file condition
+                        }
+                    } else
+                        return;
+                } else {
+                    SeafRepo seafRepo = (SeafRepo) o;
+                    navContext.setRepoID(seafRepo.id);
+                    navContext.setRepoName(seafRepo.getName());
+                    navContext.setDir("/", seafRepo.root);
+                    refreshView(false);
+                }
+
+            }
+        });
 
 
-		swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setOnRefreshListener(this);
 //        swipeRefreshLayout.setSize(SwipeRefreshLayout.LARGE);
 //        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(mActivity,R.color.app_main_color));
-		swipeRefreshLayout.setColorSchemeColors(R.color.swipe_refresh_color_1, R.color.swipe_refresh_color_2, R.color.swipe_refresh_color_3, R.color.swipe_refresh_color_4);
-		refreshView(true);
-	}
+        swipeRefreshLayout.setColorSchemeColors(R.color.swipe_refresh_color_1, R.color.swipe_refresh_color_2, R.color.swipe_refresh_color_3, R.color.swipe_refresh_color_4);
+        refreshView(true);
+    }
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		ButterKnife.unbind(this);
-	}
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
 
-	@OnClick({R.id.category_personal_tv, R.id.sort_personal_tv, R.id.create_personal_tv, R.id.transfer_personal_tv})
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.category_personal_tv:
-				KLog.i("sortDialog = " + sortDialog);
-				if (sortDialog.isVisible()) {
-					sortDialog.dismiss();
-				}
-				categoryDialog.show(getFragmentManager(), "categoryDialog");
-				break;
-			case R.id.sort_personal_tv:
-				if (categoryDialog.isVisible()) {
-					categoryDialog.dismiss();
-				}
-				sortDialog.show(getFragmentManager(), "sortDialog");
-				break;
-			case R.id.create_personal_tv:
-				break;
-			case R.id.transfer_personal_tv:
-				break;
-		}
-	}
+    @OnClick({R.id.category_personal_tv, R.id.sort_personal_tv, R.id.create_personal_tv, R.id.transfer_personal_tv})
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.category_personal_tv:
+                KLog.i("sortDialog = " + sortDialog);
+                if (sortDialog.isVisible()) {
+                    sortDialog.dismiss();
+                }
+                categoryDialog.show(getFragmentManager(), "categoryDialog");
+                break;
+            case R.id.sort_personal_tv:
+                if (categoryDialog.isVisible()) {
+                    categoryDialog.dismiss();
+                }
+                sortDialog.show(getFragmentManager(), "sortDialog");
+                break;
+            case R.id.create_personal_tv:
+                break;
+            case R.id.transfer_personal_tv:
+                break;
+        }
+    }
 
-	@Override
-	public void OnItemClick(DialogInterface dialog, String[] list, int which) {
-		switch (which) {
-			case 1:
-				//照片,按文件排序
-				if (list.length > 2) {
-					//照片
-					pictureList = Utils.categoryFile(allDirentList, pictureFormat);
-					setCagoryDataToAdapter(pictureList);
-				} else {
+    @Override
+    public void OnItemClick(DialogInterface dialog, String[] list, int which) {
+        switch (which) {
+            case 1:
+                //照片,按文件排序
+                if (list.length > 2) {
+                    //照片
+                    pictureList = Utils.categoryFile(allDirentList, pictureFormat);
+                    setCagoryDataToAdapter(pictureList);
+                } else {
 
-				}
-				break;
-			case 2:
-				//音乐,按时间倒序排序
-				if (list.length > 2) {
-					//音乐
-					videoList = Utils.categoryFile(allDirentList, videoFormat);
-					setCagoryDataToAdapter(videoList);
+                }
+                break;
+            case 2:
+                //音乐,按时间倒序排序
+                if (list.length > 2) {
+                    //音乐
+                    videoList = Utils.categoryFile(allDirentList, videoFormat);
+                    setCagoryDataToAdapter(videoList);
 
-				}
-				break;
-			case 3:
-				//影视
-				movieList = Utils.categoryFile(allDirentList, movieFormat);
-				setCagoryDataToAdapter(movieList);
-				break;
-			case 4:
-				//文档
-				txtList = Utils.categoryFile(allDirentList, txtFormat);
-				setCagoryDataToAdapter(txtList);
-				break;
-			case 5:
-				//应用
-				appList = Utils.categoryFile(allDirentList, appFormat);
-				setCagoryDataToAdapter(appList);
-				break;
-			case 6:
-				//全部
-				setCagoryDataToAdapter(allDirentList);
-				break;
-		}
-	}
+                }
+                break;
+            case 3:
+                //影视
+                movieList = Utils.categoryFile(allDirentList, movieFormat);
+                setCagoryDataToAdapter(movieList);
+                break;
+            case 4:
+                //文档
+                txtList = Utils.categoryFile(allDirentList, txtFormat);
+                setCagoryDataToAdapter(txtList);
+                break;
+            case 5:
+                //应用
+                appList = Utils.categoryFile(allDirentList, appFormat);
+                setCagoryDataToAdapter(appList);
+                break;
+            case 6:
+                //全部
+                setCagoryDataToAdapter(allDirentList);
+                break;
+        }
+    }
 
-	private void setCagoryDataToAdapter(List<SeafDirent> list) {
-		if (list.size() > 0) {
-			for (SeafDirent seafDirent : list) {
-				adapter.add(seafDirent);
-			}
-			adapter.notifyDataSetChanged();
-		}
-	}
+    private void setCagoryDataToAdapter(List<SeafDirent> list) {
+        if (list.size() > 0) {
+            adapter.clear();
+            for (SeafDirent seafDirent : list) {
+                adapter.add(seafDirent);
+            }
+            adapter.notifyDataSetChanged();
+        }
+    }
 
-	@Override
-	public void onRefresh() {
-		allDirentList.clear();
-		refreshView(true);
-	}
+    @Override
+    public void onRefresh() {
+        allDirentList.clear();
+        refreshView(true);
+    }
 
-	public DataManager getDataManager() {
-		return dataManager;
-	}
+    public DataManager getDataManager() {
+        return dataManager;
+    }
 
 //	class PauseOnScrollListener extends RecyclerView.OnScrollListener {
 //		@Override
@@ -260,79 +299,85 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 //	}
 
 
-	@Override
-	public boolean onItemLongClick(ViewGroup parent, View view, Object o, int position) {
-		return false;
-	}
+    @Override
+    public boolean onItemLongClick(ViewGroup parent, View view, Object o, int position) {
+        return false;
+    }
 
-	@Override
-	public void onItemClck(ViewGroup parent, View view, Object o, int position) {
-		NavContext navContext = getNavContext();
-		if (navContext.inRepo()) {
-			if (o instanceof SeafDirent) {
-				SeafDirent seafDirent = (SeafDirent) o;
-				if (seafDirent.isDir()) {
-					String currentPath = navContext.getDirPath();
-					String newPath = currentPath.endsWith("/") ?
-							currentPath + seafDirent.name : currentPath + "/" + seafDirent.name;
-					navContext.setDir(newPath, seafDirent.id);
-					refreshView(false);
-				} else {
-				}
-			} else
-				return;
-		} else {
-			SeafRepo seafRepo = (SeafRepo) o;
-			navContext.setRepoID(seafRepo.id);
-			navContext.setRepoName(seafRepo.getName());
-			navContext.setDir("/", seafRepo.root);
-			refreshView(false);
-		}
+    @Override
+    public void onItemClck(ViewGroup parent, View view, Object o, int position) {
+        NavContext navContext = getNavContext();
+        if (navContext.inRepo()) {
+            if (o instanceof SeafDirent) {
+                SeafDirent seafDirent = (SeafDirent) o;
+                if (seafDirent.isDir()) {
+                    String currentPath = navContext.getDirPath();
+                    String newPath = currentPath.endsWith("/") ?
+                            currentPath + seafDirent.name : currentPath + "/" + seafDirent.name;
+                    navContext.setDir(newPath, seafDirent.id);
+                    refreshView(false);
+                } else {
+                }
+            } else
+                return;
+        } else {
+            SeafRepo seafRepo = (SeafRepo) o;
+            navContext.setRepoID(seafRepo.id);
+            navContext.setRepoName(seafRepo.getName());
+            navContext.setDir("/", seafRepo.root);
+            refreshView(false);
+        }
 
-	}
+    }
 
-	public void refreshView(boolean forceRefresh) {
-		NavContext navContext = getNavContext();
-		if (navContext.inRepo()) {
+    public void refreshView(boolean forceRefresh) {
+        NavContext navContext = getNavContext();
+        if (navContext.inRepo()) {
 //            if (mActivity.getCurrentPosition() == BrowserActivity.INDEX_LIBRARY_TAB) {
 //                mActivity.enableUpButton();
 //            }
-			navToDirectory(forceRefresh);
-		} else {
+            navToDirectory(forceRefresh);
+        } else {
 //            mActivity.disableUpButton();
-			navToReposView(forceRefresh);
-		}
-	}
+            navToReposView(forceRefresh);
+        }
+    }
 
-	private void navToReposView(boolean forceRefresh) {
+    private void navToReposView(boolean forceRefresh) {
 		ConcurrentAsyncTask.execute(new LoadTask(getDataManager()));
-	}
+    }
 
-	private void navToDirectory(boolean forceRefresh) {
-		ConcurrentAsyncTask.execute(new LoadDirTask(getDataManager()),
-				navContext.getRepoName(),
-				navContext.getRepoID(),
-				navContext.getDirPath());
-	}
+    private void navToDirectory(boolean forceRefresh) {
+        NavContext navContext = getNavContext();
+        if (navContext == null) {
+            Log.e(DEBUG_TAG, "navcontext is null");
+        } else {
+            Log.e(DEBUG_TAG, navContext.getRepoName() + navContext.getDirID() + navContext.getDirPath());
+        }
+        ConcurrentAsyncTask.execute(new LoadDirTask(getDataManager()),
+                navContext.getRepoName(),
+                navContext.getRepoID(),
+                navContext.getDirPath());
+    }
 
-	@Override
-	public NavContext getNavContext() {
-		return ((MainActivity) mActivity).getNavContext();
-	}
+    @Override
+    public NavContext getNavContext() {
+        return ((MainActivity) mActivity).getNavContext();
+    }
 
-	private class LoadTask extends AsyncTask<Void, Void, List<SeafRepo>> {
-		SeafException err = null;
-		DataManager dataManager;
+    private class LoadTask extends AsyncTask<Void, Void, List<SeafRepo>> {
+        SeafException err = null;
+        DataManager dataManager;
 
-		public LoadTask(DataManager dataManager) {
-			this.dataManager = dataManager;
-		}
+        public LoadTask(DataManager dataManager) {
+            this.dataManager = dataManager;
+        }
 
-		@Override
-		protected void onPreExecute() {
-			if (mActivity == null) {
-				return;
-			}
+        @Override
+        protected void onPreExecute() {
+            if (mActivity == null) {
+                return;
+            }
 //			adapter.setFootViewShown(true);
 //			adapter.setFooterViewText(ContextCompat.getColor(mContext, R.string.loading_data));
 //			if (mRefreshType == REFRESH_ON_CLICK
@@ -342,17 +387,23 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 //			} else if (mRefreshType == REFRESH_ON_PULL) {
 //
 //			}
-		}
+        }
 
-		@Override
-		protected List<SeafRepo> doInBackground(Void... params) {
-			try {
-				return dataManager.getReposFromServer();
-			} catch (SeafException e) {
-				err = e;
-				return null;
-			}
-		}
+        @Override
+        protected List<SeafRepo> doInBackground(Void... params) {
+            try {
+                List<SeafRepo> repos = dataManager.getReposFromServer();
+                for (SeafRepo repo : repos) {
+                    Log.e(DEBUG_TAG, repo.getName() + " " + repo.id);
+                }
+                return repos;
+            } catch (SeafException e) {
+                err = e;
+                e.printStackTrace();
+                Log.e(DEBUG_TAG, e.getMessage());
+                return null;
+            }
+        }
 
 //		private void displaySSLError() {
 //			if (mActivity == null)
@@ -375,15 +426,15 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 //			ConcurrentAsyncTask.execute(new LoadTask(dataManager));
 //		}
 
-		// onPostExecute displays the results of the AsyncTask.
-		@Override
-		protected void onPostExecute(List<SeafRepo> rs) {
-			if (mActivity == null)
-				// this occurs if user navigation to another activity
-				return;
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(List<SeafRepo> rs) {
+            if (mActivity == null)
+                // this occurs if user navigation to another activity
+                return;
 
 			/*if (mRefreshType == REFRESH_ON_CLICK
-					|| mRefreshType == REFRESH_ON_OVERFLOW_MENU
+                    || mRefreshType == REFRESH_ON_OVERFLOW_MENU
 					|| mRefreshType == REFRESH_ON_RESUME) {
 				showLoading(false);
 			} else if (mRefreshType == REFRESH_ON_PULL) {
@@ -394,21 +445,22 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 				mPullToRefreshStopRefreshing = 0;
 			}*/
 
-			if (getNavContext().inRepo()) {
-				// this occurs if user already navigate into a repo
-				return;
-			}
-			if (rs.size() > 0) {
-				for (SeafRepo seafRepo : rs) {
-					adapter.add(seafRepo);
-				}
-			}
-			adapter.notifyDataSetChanged();
+            if (getNavContext().inRepo()) {
+                // this occurs if user already navigate into a repo
+                return;
+            }
+            adapter.clear();
+            if (rs.size() > 0) {
+                for (SeafRepo seafRepo : rs) {
+                    adapter.add(seafRepo);
+                }
+            }
+            adapter.notifyDataSetChanged();
 //            adapter.setFootViewShown(false);
-			swipeRefreshLayout.setRefreshing(false);
+            swipeRefreshLayout.setRefreshing(false);
 
-			// Prompt the user to accept the ssl certificate
-			/*if (err == SeafException.sslException) {
+            // Prompt the user to accept the ssl certificate
+            /*if (err == SeafException.sslException) {
 				SslConfirmDialog dialog = new SslConfirmDialog(dataManager.getAccount(),
 						new SslConfirmDialog.Listener() {
 							@Override
@@ -446,89 +498,90 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 				Log.i(DEBUG_TAG, "failed to load repos");
 				showError(R.string.error_when_load_repos);
 			}*/
-		}
-	}
+        }
+    }
 
-	private class LoadDirTask extends AsyncTask<String, Void, List<SeafDirent>> {
+    private class LoadDirTask extends AsyncTask<String, Void, List<SeafDirent>> {
 
-		SeafException err = null;
-		String myRepoName;
-		String myRepoID;
-		String myPath;
+        SeafException err = null;
+        String myRepoName;
+        String myRepoID;
+        String myPath;
 
-		DataManager dataManager;
+        DataManager dataManager;
 
-		public LoadDirTask(DataManager dataManager) {
-			this.dataManager = dataManager;
-		}
+        public LoadDirTask(DataManager dataManager) {
+            this.dataManager = dataManager;
+        }
 
-		@Override
-		protected void onPreExecute() {
+        @Override
+        protected void onPreExecute() {
 //                if (mRefreshType == REFRESH_ON_CLICK
 //                        || mRefreshType == REFRESH_ON_OVERFLOW_MENU
 //                        || mRefreshType == REFRESH_ON_RESUME) {
 //                    showLoading(true);
 //                } else if (mRefreshType == REFRESH_ON_PULL) {
-			// mHeadProgress.setVisibility(ProgressBar.VISIBLE);
+            // mHeadProgress.setVisibility(ProgressBar.VISIBLE);
 //                }
-		}
+        }
 
-		@Override
-		protected List<SeafDirent> doInBackground(String... params) {
-			if (params.length != 3) {
-				KLog.d("Wrong params to LoadDirTask");
-				return null;
-			}
+        @Override
+        protected List<SeafDirent> doInBackground(String... params) {
+            if (params.length != 3) {
+                KLog.d("Wrong params to LoadDirTask");
+                return null;
+            }
 
-			myRepoName = params[0];
-			myRepoID = params[1];
-			myPath = params[2];
-			try {
-				return dataManager.getDirentsFromServer(myRepoID, myPath);
-			} catch (SeafException e) {
-				err = e;
-				return null;
-			}
+            myRepoName = params[0];
+            myRepoID = params[1];
+            myPath = params[2];
+            try {
+                return dataManager.getDirentsFromServer(myRepoID, myPath);
+            } catch (SeafException e) {
+                err = e;
+                return null;
+            }
 
-		}
+        }
 
-		private void resend() {
-			if (mActivity == null)
-				return;
-			NavContext nav = getNavContext();
-			if (!myRepoID.equals(nav.getRepoID()) || !myPath.equals(nav.getDirPath())) {
-				return;
-			}
+        private void resend() {
+            if (mActivity == null)
+                return;
+            NavContext nav = getNavContext();
+            if (!myRepoID.equals(nav.getRepoID()) || !myPath.equals(nav.getDirPath())) {
+                return;
+            }
 
-			ConcurrentAsyncTask.execute(new LoadDirTask(dataManager), myRepoName, myRepoID, myPath);
-		}
+            ConcurrentAsyncTask.execute(new LoadDirTask(dataManager), myRepoName, myRepoID, myPath);
+        }
 
-		private void displaySSLError() {
-			if (mActivity == null)
-				return;
+        private void displaySSLError() {
+            if (mActivity == null)
+                return;
 
-			NavContext nav = getNavContext();
-			if (!myRepoID.equals(nav.getRepoID()) || !myPath.equals(nav.getDirPath())) {
-				return;
-			}
+            NavContext nav = getNavContext();
+            if (!myRepoID.equals(nav.getRepoID()) || !myPath.equals(nav.getDirPath())) {
+                return;
+            }
 //                showError(R.string.ssl_error);
-		}
+        }
 
-		// onPostExecute displays the results of the AsyncTask.
-		@Override
-		protected void onPostExecute(List<SeafDirent> dirents) {
-			if (mActivity == null)
-				// this occurs if user navigation to another activity
-				return;
-			allDirentList.clear();
-			allDirentList.addAll(dirents);
-			if (dirents.size() > 0) {
-				for (SeafDirent seafDirent : dirents) {
-					adapter.add(seafDirent);
-				}
-			}
-			adapter.notifyDataSetChanged();
-			swipeRefreshLayout.setRefreshing(false);
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(List<SeafDirent> dirents) {
+            if (mActivity == null)
+                // this occurs if user navigation to another activity
+                return;
+            allDirentList.clear();
+            allDirentList.addAll(dirents);
+            adapter.clear();
+            if (dirents.size() > 0) {
+                for (SeafDirent seafDirent : dirents) {
+                    adapter.add(seafDirent);
+                }
+            }
+            adapter.notifyDataSetChanged();
+            swipeRefreshLayout.setRefreshing(false);
 //                if (mRefreshType == REFRESH_ON_CLICK
 //                        || mRefreshType == REFRESH_ON_OVERFLOW_MENU
 //                        || mRefreshType == REFRESH_ON_RESUME) {
@@ -541,10 +594,10 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 //                    mPullToRefreshStopRefreshing = 0;
 //                }
 
-			NavContext nav = getNavContext();
-			if (!myRepoID.equals(nav.getRepoID()) || !myPath.equals(nav.getDirPath())) {
-				return;
-			}
+            NavContext nav = getNavContext();
+            if (!myRepoID.equals(nav.getRepoID()) || !myPath.equals(nav.getDirPath())) {
+                return;
+            }
 
 //                if (err == SeafException.sslException) {
 //                    SslConfirmDialog dialog = new SslConfirmDialog(dataManager.getAccount(),
@@ -587,9 +640,11 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 //                    Log.i(DEBUG_TAG, "failed to load dir");
 //                    return;
 //                }
-			getDataManager().setDirsRefreshTimeStamp(myRepoID, myPath);
+            getDataManager().setDirsRefreshTimeStamp(myRepoID, myPath);
 //                updateAdapterWithDirents(dirents);
-		}
-	}
+        }
+    }
+
+
 
 }
