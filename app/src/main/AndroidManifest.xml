@@ -43,10 +43,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ui.activity.TestActivity">
-
-        </activity>
-
         <activity
             android:name="com.seafile.seadroid2.ui.activity.TransferActivity"
             android:label="@string/app_name">
@@ -68,6 +64,13 @@
                   android:label="@string/app_name">
         </activity>
         <activity android:name="com.seafile.seadroid2.gallery.MultipleImageSelectionActivity"
+                  android:label="@string/app_name">
+        </activity>
+        <activity android:name=".ui.activity.GalleryActivity"
+                  android:label="@string/app_name">
+        </activity>
+
+        <activity android:name=".ui.activity.FileActivity"
                   android:label="@string/app_name">
         </activity>
 

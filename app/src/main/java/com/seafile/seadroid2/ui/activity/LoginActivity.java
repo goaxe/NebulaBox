@@ -16,7 +16,7 @@ import com.seafile.seadroid2.account.AccountInfo;
 import com.seafile.seadroid2.data.DataManager;
 import com.seafile.seadroid2.global.ActivityIntentHelper;
 import com.seafile.seadroid2.global.ActivityManager;
-import com.seafile.seadroid2.network.SeafConnection;
+import com.seafile.seadroid2.SeafConnection;
 import com.seafile.seadroid2.ui.base.BaseActivity;
 import com.seafile.seadroid2.util.ConcurrentAsyncTask;
 import com.seafile.seadroid2.util.Utils;

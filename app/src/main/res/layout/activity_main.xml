@@ -16,35 +16,7 @@
 
     </FrameLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="upload_file"
-            android:id="@+id/upload_file"
-            android:layout_gravity="center"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="common_api"
-            android:id="@+id/common_api"
-            android:layout_gravity="center_horizontal|bottom"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="transfer_list"
-            android:id="@+id/transfer_list_btn"
-            android:layout_gravity="right|center_vertical"/>
-    </LinearLayout>
-
     <include layout="@layout/line_view"/>
-
 
     <LinearLayout
         android:id="@+id/tabs_main_ll"

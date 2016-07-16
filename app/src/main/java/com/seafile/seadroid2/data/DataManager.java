@@ -11,7 +11,7 @@ import com.seafile.seadroid2.SeafException;
 import com.seafile.seadroid2.account.Account;
 import com.seafile.seadroid2.account.AccountInfo;
 import com.seafile.seadroid2.crypto.Crypto;
-import com.seafile.seadroid2.network.SeafConnection;
+import com.seafile.seadroid2.SeafConnection;
 import com.seafile.seadroid2.util.Utils;
 import com.seafile.seadroid2.util.log.KLog;
 

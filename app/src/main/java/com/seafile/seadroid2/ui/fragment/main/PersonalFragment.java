@@ -3,10 +3,14 @@ package com.seafile.seadroid2.ui.fragment.main;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,17 +34,25 @@ import com.seafile.seadroid2.data.SeafRepo;
 import com.seafile.seadroid2.interf.OnItemClickListener;
 import com.seafile.seadroid2.interf.OnItemLongClickListener;
 import com.seafile.seadroid2.ui.NavContext;
+import com.seafile.seadroid2.ui.ToastUtils;
 import com.seafile.seadroid2.ui.activity.MainActivity;
 import com.seafile.seadroid2.ui.activity.TransferActivity;
 import com.seafile.seadroid2.ui.adapter.SeafItemAdapter;
 import com.seafile.seadroid2.ui.base.BaseFragment;
-import com.seafile.seadroid2.ui.dialog.FileDirentCreatedDialog;
 import com.seafile.seadroid2.ui.dialog.FileOptionDialog;
+import com.seafile.seadroid2.ui.dialog.NewDirDialog;
+import com.seafile.seadroid2.ui.dialog.NewFileDialog;
+import com.seafile.seadroid2.ui.dialog.TaskDialog;
+import com.seafile.seadroid2.ui.dialog.UploadChoiceDialog;
 import com.seafile.seadroid2.util.ConcurrentAsyncTask;
 import com.seafile.seadroid2.util.Utils;
 import com.seafile.seadroid2.util.log.KLog;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;
@@ -51,7 +63,7 @@ import butterknife.OnClick;
  * 个人
  * Created by Alfred on 2016/7/11.
  */
-public class PersonalFragment extends BaseFragment implements View.OnClickListener, OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, FileOptionDialog.OnItemClickListener, OnItemLongClickListener,FileDirentCreatedDialog.onFileDirentCreatedListener {
+public class PersonalFragment extends BaseFragment implements View.OnClickListener, OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, FileOptionDialog.OnItemClickListener, OnItemLongClickListener {
 
     private static final String DEBUG_TAG = "PersonalFragment";
 
@@ -79,7 +91,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     private FileOptionDialog categoryDialog;
     private FileOptionDialog sortDialog;
-    private FileDirentCreatedDialog fileDirentCreatedDialog;
 
     private List<SeafDirent> pictureList;
     private List<SeafDirent> videoList;
@@ -129,9 +140,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         sortDialog = new FileOptionDialog();
         sortDialog.setList(sortOptionalList);
         sortDialog.setOnItemClickListener(this);
-        fileDirentCreatedDialog = new FileDirentCreatedDialog();
-        fileDirentCreatedDialog.setOnFileDirentCreatedListener(this);
-
 
         Resources resources = getResources();
         pictureFormat = resources.getStringArray(R.array.format_picture);
@@ -171,7 +179,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                             navContext.setDir(newPath, seafDirent.id);
                             refreshView(false);
                         } else {
-                            // TODO: 16-7-16  file condition
+                            mActivity.onFileSelected(seafDirent);
                         }
                     } else
                         return;
@@ -218,7 +226,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 sortDialog.show(getFragmentManager(), "sortDialog");
                 break;
             case R.id.create_personal_tv:
-                fileDirentCreatedDialog.show(getFragmentManager(),"FileDirentCreatedDialog");
+                addFile();
                 break;
             case R.id.transfer_personal_tv:
                 Intent intent = new Intent(mActivity, TransferActivity.class);
@@ -378,11 +386,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     @Override
     public NavContext getNavContext() {
         return ((MainActivity) mActivity).getNavContext();
-    }
-
-    @Override
-    public void OnFileDirentCreated(String fileDirentName) {
-
     }
 
     private class LoadTask extends AsyncTask<Void, Void, List<SeafRepo>> {
@@ -625,4 +628,88 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         return adapter;
     }
 
+    private void addFile() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+        builder.setTitle(getString(R.string.add_file));
+        builder.setItems(R.array.add_file_options_array, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) {
+                    // create file
+                    showNewFileDialog();
+                }
+                else if (which == 1) {
+                    // create folder
+                    showNewDirDialog();
+                }
+                else if (which == 2) {
+                    // upload file
+                    pickFile();
+                }
+                else if (which == 3) {
+                    // take a photo
+                    CameraTakePhoto();
+                }
+            }
+        }).show();
+    }
+
+    private void showNewFileDialog() {
+        final NewFileDialog dialog = new NewFileDialog();
+        NavContext navContext = getNavContext();
+        dialog.init(navContext.getRepoID(), navContext.getDirPath(), mActivity.getAccountManager().getAccount());
+        dialog.setTaskDialogLisenter(new TaskDialog.TaskDialogListener() {
+            @Override
+            public void onTaskSuccess() {
+                ToastUtils.show(mActivity, "Sucessfully created file " + dialog.getNewFileName());
+                refreshView(true);
+            }
+        });
+        dialog.show(mActivity.getSupportFragmentManager(), "NewFileDialogFragment");
+    }
+
+    private void showNewDirDialog() {
+        final NewDirDialog dialog = new NewDirDialog();
+        NavContext navContext = getNavContext();
+        dialog.init(navContext.getRepoID(), navContext.getDirPath(), mActivity.getAccountManager().getAccount());
+        dialog.setTaskDialogLisenter(new TaskDialog.TaskDialogListener() {
+            @Override
+            public void onTaskSuccess() {
+                ToastUtils.show(mActivity, "Sucessfully created folder " + dialog.getNewDirName());
+                refreshView(true);
+            }
+        });
+        dialog.show(mActivity.getSupportFragmentManager(), "NewDirDialogFragment");
+    }
+
+        private void pickFile() {
+         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+        UploadChoiceDialog dialog = new UploadChoiceDialog();
+        dialog.show(mActivity.getSupportFragmentManager(), mActivity.PICK_FILE_DIALOG_FRAGMENT_TAG);
+        } else {
+            Intent target = Utils.createGetContentIntent();
+            Intent intent = Intent.createChooser(target, getString(R.string.choose_file));
+        Log.e(DEBUG_TAG, "start choose");
+
+            startActivityForResult(intent, MainActivity.PICK_FILE_REQUEST);
+        }
+    }
+
+    private void CameraTakePhoto() {
+        Intent imageCaptureIntent = new Intent("android.media.action.IMAGE_CAPTURE");
+
+        try {
+            File ImgDir = DataManager.createTempDir();
+
+            String fileName = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".jpg";
+            mActivity.takeCameraPhotoTempFile = new File(ImgDir, fileName);
+
+            Uri photo = Uri.fromFile(mActivity.takeCameraPhotoTempFile);
+            imageCaptureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photo);
+            startActivityForResult(imageCaptureIntent, mActivity.TAKE_PHOTO_REQUEST);
+
+        } catch (IOException e) {
+            ToastUtils.show(mActivity, R.string.unknow_error);
+        }
+    }
 }

@@ -36,6 +36,7 @@ dependencies {
     compile 'us.feras.mdv:markdownview:1.1.0'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.commit451:PhotoView:1.2.4'
+//    compile 'com.github.chrisbanes:PhotoView:1.2.6'
     compile 'com.joanzapata.iconify:android-iconify-material-community:2.2.1'
     compile 'com.madgag.spongycastle:core:1.54.0.0'
     compile 'com.madgag.spongycastle:prov:1.54.0.0'

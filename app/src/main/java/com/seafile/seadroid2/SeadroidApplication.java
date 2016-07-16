@@ -2,6 +2,7 @@ package com.seafile.seadroid2;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.multidex.MultiDex;
 
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.MaterialCommunityModule;
@@ -56,5 +57,11 @@ public class SeadroidApplication extends Application {
                 .build();
         // Initialize ImageLoader with configuration.
         ImageLoader.getInstance().init(config);
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 }

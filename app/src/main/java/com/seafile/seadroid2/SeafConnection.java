@@ -1,4 +1,4 @@
-package com.seafile.seadroid2.network;
+package com.seafile.seadroid2;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;

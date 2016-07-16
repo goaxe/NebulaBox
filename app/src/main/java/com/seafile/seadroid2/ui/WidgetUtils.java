@@ -1,83 +1,95 @@
 package com.seafile.seadroid2.ui;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.webkit.MimeTypeMap;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.seafile.seadroid2.R;
 import com.seafile.seadroid2.SeadroidApplication;
+import com.seafile.seadroid2.account.Account;
+import com.seafile.seadroid2.ui.activity.GalleryActivity;
 import com.seafile.seadroid2.ui.activity.MainActivity;
+import com.seafile.seadroid2.ui.dialog.AppChoiceDialog;
+import com.seafile.seadroid2.ui.dialog.GetShareLinkDialog;
+import com.seafile.seadroid2.ui.dialog.TaskDialog;
+import com.seafile.seadroid2.util.Utils;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Activity Utils
  */
 public class WidgetUtils {
 //
-//    public static void chooseShareApp(final BaseActivity activity,
-//                                      final String repoID,
-//                                      final String path,
-//                                      final boolean isdir,
-//                                      final Account account) {
-//        final Intent shareIntent = new Intent();
-//        shareIntent.setAction(Intent.ACTION_SEND);
-//        shareIntent.setType("text/plain");
-//
-//        // Get a list of apps
-//        List<ResolveInfo> infos = Utils.getAppsByIntent(shareIntent);
-//
-//        String title = activity.getString(isdir ? R.string.share_dir_link : R.string.share_file_link);
-//
-//        AppChoiceDialog dialog = new AppChoiceDialog();
-//        dialog.addCustomAction(0, activity.getResources().getDrawable(R.drawable.copy_link),
-//                activity.getString(R.string.copy_link));
-//        dialog.init(title, infos, new AppChoiceDialog.OnItemSelectedListener() {
-//            @Override
-//            public void onCustomActionSelected(AppChoiceDialog.CustomAction action) {
-//                final GetShareLinkDialog gdialog = new GetShareLinkDialog();
-//                gdialog.init(repoID, path, isdir, account);
-//                gdialog.setTaskDialogLisenter(new TaskDialog.TaskDialogListener() {
-//                    @Override
-//                    @SuppressWarnings("deprecation")
-//                    public void onTaskSuccess() {
-//                        ClipboardManager clipboard = (ClipboardManager)
-//                                activity.getSystemService(Context.CLIPBOARD_SERVICE);
-//                        clipboard.setText(gdialog.getLink());
-//                        // ClipData clip = ClipData.newPlainText("seafile shared link", gdialog.getLink());
-//                        // clipboard.setPrimaryClip(clip);
-//                        ToastUtils.show(activity, R.string.link_ready_to_be_pasted);
-//                    }
-//                });
-//                gdialog.show(activity.getSupportFragmentManager(), "DialogFragment");
-//            }
-//
-//            @Override
-//            public void onAppSelected(ResolveInfo appInfo) {
-//                String className = appInfo.activityInfo.name;
-//                String packageName = appInfo.activityInfo.packageName;
-//                shareIntent.setClassName(packageName, className);
-//
-//                final GetShareLinkDialog gdialog = new GetShareLinkDialog();
-//                gdialog.init(repoID, path, isdir, account);
-//                gdialog.setTaskDialogLisenter(new TaskDialog.TaskDialogListener() {
-//                    @Override
-//                    public void onTaskSuccess() {
-//                        shareIntent.putExtra(Intent.EXTRA_TEXT, gdialog.getLink());
-//                        activity.startActivity(shareIntent);
-//                    }
-//                });
-//                gdialog.show(activity.getSupportFragmentManager(), "DialogFragment");
-//            }
-//
-//        });
-//        dialog.show(activity.getSupportFragmentManager(), BrowserActivity.CHOOSE_APP_DIALOG_FRAGMENT_TAG);
-//    }
-//
+    public static void chooseShareApp(final AppCompatActivity activity,
+                                      final String repoID,
+                                      final String path,
+                                      final boolean isdir,
+                                      final Account account) {
+        final Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+
+        // Get a list of apps
+        List<ResolveInfo> infos = Utils.getAppsByIntent(shareIntent);
+
+        String title = activity.getString(isdir ? R.string.share_dir_link : R.string.share_file_link);
+
+        AppChoiceDialog dialog = new AppChoiceDialog();
+        dialog.addCustomAction(0, activity.getResources().getDrawable(R.drawable.copy_link),
+                activity.getString(R.string.copy_link));
+        dialog.init(title, infos, new AppChoiceDialog.OnItemSelectedListener() {
+            @Override
+            public void onCustomActionSelected(AppChoiceDialog.CustomAction action) {
+                final GetShareLinkDialog gdialog = new GetShareLinkDialog();
+                gdialog.init(repoID, path, isdir, account);
+                gdialog.setTaskDialogLisenter(new TaskDialog.TaskDialogListener() {
+                    @Override
+                    @SuppressWarnings("deprecation")
+                    public void onTaskSuccess() {
+                        ClipboardManager clipboard = (ClipboardManager)
+                                activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                        clipboard.setText(gdialog.getLink());
+                        // ClipData clip = ClipData.newPlainText("seafile shared link", gdialog.getLink());
+                        // clipboard.setPrimaryClip(clip);
+                        ToastUtils.show(activity, R.string.link_ready_to_be_pasted);
+                    }
+                });
+                gdialog.show(activity.getSupportFragmentManager(), "DialogFragment");
+            }
+
+            @Override
+            public void onAppSelected(ResolveInfo appInfo) {
+                String className = appInfo.activityInfo.name;
+                String packageName = appInfo.activityInfo.packageName;
+                shareIntent.setClassName(packageName, className);
+
+                final GetShareLinkDialog gdialog = new GetShareLinkDialog();
+                gdialog.init(repoID, path, isdir, account);
+                gdialog.setTaskDialogLisenter(new TaskDialog.TaskDialogListener() {
+                    @Override
+                    public void onTaskSuccess() {
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, gdialog.getLink());
+                        activity.startActivity(shareIntent);
+                    }
+                });
+                gdialog.show(activity.getSupportFragmentManager(), "DialogFragment");
+            }
+
+        });
+        dialog.show(activity.getSupportFragmentManager(), MainActivity.CHOOSE_APP_DIALOG_FRAGMENT_TAG);
+    }
+
 
 	/**
 	 * display the file according to its file type
@@ -139,15 +151,15 @@ public class WidgetUtils {
 //	 * @param fileName
 //	 * @param account
 //	 */
-//	public static void startGalleryActivity(Activity activity, String repoName, String repoId, String path, String fileName, Account account) {
-//		Intent intent = new Intent(activity, GalleryActivity.class);
-//		intent.putExtra("repoName", repoName);
-//		intent.putExtra("repoId", repoId);
-//		intent.putExtra("path", path);
-//		intent.putExtra("account", account);
-//		intent.putExtra("fileName", fileName);
-//		activity.startActivity(intent);
-//	}
+	public static void startGalleryActivity(AppCompatActivity activity, String repoName, String repoId, String path, String fileName, Account account) {
+		Intent intent = new Intent(activity, GalleryActivity.class);
+		intent.putExtra("repoName", repoName);
+		intent.putExtra("repoId", repoId);
+		intent.putExtra("path", path);
+		intent.putExtra("account", account);
+		intent.putExtra("fileName", fileName);
+		activity.startActivity(intent);
+	}
 
 	//
     public static int getThumbnailWidth() {
