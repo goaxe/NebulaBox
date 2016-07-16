@@ -777,7 +777,7 @@ public class Utils {
             String fileName = list.get(i).getTitle();
             for (int j = 0; j < formatList.length;j++){
                 int formatLength = formatList[j].length();
-                String fileExtensionName = fileName.substring(fileName.length() - (fileName.length() - formatLength),fileName.length());
+                String fileExtensionName = fileName.substring(fileName.length() - formatLength,fileName.length());
                 if (fileExtensionName.equals(formatList[j])){
                     filterList.add(list.get(i));
                     continue;
@@ -788,12 +788,26 @@ public class Utils {
         return filterList;
     }
 
-    public static List<SeafDirent> sortFile(List<SeafDirent> list){
+    public static List<SeafDirent> sortFileByFileName(List<SeafDirent> list){
         for (int i = 0 ; i<list.size() ; i++){
             for (int j = 0;j<list.size() - i -1;j++){
                 SeafDirent leftBean = list.get(j);
                 SeafDirent rightBean = list.get(j+1);
                 if (list.get(j).getTitle().compareToIgnoreCase(list.get(j+1).getTitle()) > 0){
+                    list.set(j,rightBean);
+                    list.set(j+1,leftBean);
+                }
+            }
+        }
+        return list;
+    }
+
+    public static List<SeafDirent> sortFileByDate(List<SeafDirent> list){
+        for (int i = 0 ; i<list.size() ; i++){
+            for (int j = 0;j<list.size() - i -1;j++){
+                SeafDirent leftBean = list.get(j);
+                SeafDirent rightBean = list.get(j+1);
+                if (leftBean.mtime < rightBean.mtime){
                     list.set(j,rightBean);
                     list.set(j+1,leftBean);
                 }

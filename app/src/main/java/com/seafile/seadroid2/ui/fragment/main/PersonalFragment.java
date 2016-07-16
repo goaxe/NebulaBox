@@ -6,16 +6,17 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cocosw.bottomsheet.BottomSheet;
@@ -33,8 +34,8 @@ import com.seafile.seadroid2.ui.activity.MainActivity;
 import com.seafile.seadroid2.ui.activity.TransferActivity;
 import com.seafile.seadroid2.ui.adapter.SeafItemAdapter;
 import com.seafile.seadroid2.ui.base.BaseFragment;
+import com.seafile.seadroid2.ui.dialog.FileDirentCreatedDialog;
 import com.seafile.seadroid2.ui.dialog.FileOptionDialog;
-import com.seafile.seadroid2.ui.widget.RecycleViewDivider;
 import com.seafile.seadroid2.util.ConcurrentAsyncTask;
 import com.seafile.seadroid2.util.Utils;
 import com.seafile.seadroid2.util.log.KLog;
@@ -50,10 +51,12 @@ import butterknife.OnClick;
  * 个人
  * Created by Alfred on 2016/7/11.
  */
-public class PersonalFragment extends BaseFragment implements View.OnClickListener, OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, FileOptionDialog.OnItemClickListener, OnItemLongClickListener {
+public class PersonalFragment extends BaseFragment implements View.OnClickListener, OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, FileOptionDialog.OnItemClickListener, OnItemLongClickListener,FileDirentCreatedDialog.onFileDirentCreatedListener {
 
     private static final String DEBUG_TAG = "PersonalFragment";
 
+    @Bind(R.id.option_personal_ll)
+    LinearLayout optionLinearLayout;
     @Bind(R.id.category_personal_tv)
     TextView categoryTextView;
     @Bind(R.id.sort_personal_tv)
@@ -66,23 +69,32 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.recycler_view_personal_rl)
     ListView recyclerView;
+    @Bind(R.id.empty_rl)
+    RelativeLayout emptyRelativeLayout;
+    @Bind(R.id.empty_iv)
+    ImageView emptyImageView;
 
     private String[] categoryOptionalList;
     private String[] sortOptionalList;
 
     private FileOptionDialog categoryDialog;
     private FileOptionDialog sortDialog;
+    private FileDirentCreatedDialog fileDirentCreatedDialog;
 
     private List<SeafDirent> pictureList;
     private List<SeafDirent> videoList;
     private List<SeafDirent> movieList;
     private List<SeafDirent> txtList;
     private List<SeafDirent> appList;
+
+    private List<SeafDirent> fileNameDirentList;
+    private List<SeafDirent> dateDirentList;
+
     private List<SeafDirent> allDirentList;
 
     private String[] pictureFormat;
+    private String[] audioFormat;
     private String[] videoFormat;
-    private String[] movieFormat;
     private String[] txtFormat;
     private String[] appFormat;
 
@@ -117,13 +129,16 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         sortDialog = new FileOptionDialog();
         sortDialog.setList(sortOptionalList);
         sortDialog.setOnItemClickListener(this);
+        fileDirentCreatedDialog = new FileDirentCreatedDialog();
+        fileDirentCreatedDialog.setOnFileDirentCreatedListener(this);
+
 
         Resources resources = getResources();
         pictureFormat = resources.getStringArray(R.array.format_picture);
+        audioFormat = resources.getStringArray(R.array.format_audio);
         videoFormat = resources.getStringArray(R.array.format_video);
-        movieFormat = resources.getStringArray(R.array.format_movie);
         appFormat = resources.getStringArray(R.array.format_app);
-        txtFormat = resources.getStringArray(R.array.format_app);
+        txtFormat = resources.getStringArray(R.array.format_document);
 
         dataManager = ((MainActivity) mActivity).getDataManager();
 
@@ -146,7 +161,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 boolean inRepo = navContext.inRepo();
                 Log.e(DEBUG_TAG, "inRepo:" + inRepo + " " + navContext.getRepoID() + o.getClass());
 
-                if (inRepo == true) {
+                if (inRepo) {
                     if (o instanceof SeafDirent) {
                         SeafDirent seafDirent = (SeafDirent) o;
                         if (seafDirent.isDir()) {
@@ -203,6 +218,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 sortDialog.show(getFragmentManager(), "sortDialog");
                 break;
             case R.id.create_personal_tv:
+                fileDirentCreatedDialog.show(getFragmentManager(),"FileDirentCreatedDialog");
                 break;
             case R.id.transfer_personal_tv:
                 Intent intent = new Intent(mActivity, TransferActivity.class);
@@ -216,54 +232,63 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void OnItemClick(DialogInterface dialog, String[] list, int which) {
         switch (which) {
-            case 1:
+            case 0:
                 //照片,按文件排序
                 if (list.length > 2) {
                     //照片
                     pictureList = Utils.categoryFile(allDirentList, pictureFormat);
-                    setCagoryDataToAdapter(pictureList);
+                    setCategoryDataToAdapter(pictureList);
                 } else {
-
+                    fileNameDirentList = Utils.sortFileByFileName(allDirentList);
+                    setCategoryDataToAdapter(fileNameDirentList);
                 }
                 break;
-            case 2:
+            case 1:
                 //音乐,按时间倒序排序
                 if (list.length > 2) {
                     //音乐
-                    videoList = Utils.categoryFile(allDirentList, videoFormat);
-                    setCagoryDataToAdapter(videoList);
-
+                    videoList = Utils.categoryFile(allDirentList, audioFormat);
+                    setCategoryDataToAdapter(videoList);
+                }else {
+                    dateDirentList = Utils.sortFileByDate(allDirentList);
+                    setCategoryDataToAdapter(dateDirentList);
                 }
                 break;
-            case 3:
+            case 2:
                 //影视
-                movieList = Utils.categoryFile(allDirentList, movieFormat);
-                setCagoryDataToAdapter(movieList);
+                movieList = Utils.categoryFile(allDirentList, videoFormat);
+                setCategoryDataToAdapter(movieList);
                 break;
-            case 4:
+            case 3:
                 //文档
                 txtList = Utils.categoryFile(allDirentList, txtFormat);
-                setCagoryDataToAdapter(txtList);
+                setCategoryDataToAdapter(txtList);
                 break;
-            case 5:
+            case 4:
                 //应用
                 appList = Utils.categoryFile(allDirentList, appFormat);
-                setCagoryDataToAdapter(appList);
+                setCategoryDataToAdapter(appList);
                 break;
-            case 6:
+            case 5:
                 //全部
-                setCagoryDataToAdapter(allDirentList);
+                setCategoryDataToAdapter(allDirentList);
                 break;
         }
     }
 
-    private void setCagoryDataToAdapter(List<SeafDirent> list) {
+    private void setCategoryDataToAdapter(List<SeafDirent> list) {
         if (list.size() > 0) {
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+            emptyRelativeLayout.setVisibility(View.GONE);
+
             adapter.clear();
             for (SeafDirent seafDirent : list) {
                 adapter.add(seafDirent);
             }
             adapter.notifyDataSetChanged();
+        }else{
+            swipeRefreshLayout.setVisibility(View.GONE);
+            emptyRelativeLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -276,35 +301,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     public DataManager getDataManager() {
         return dataManager;
     }
-
-//	class PauseOnScrollListener extends RecyclerView.OnScrollListener {
-//		@Override
-//		public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-//			super.onScrollStateChanged(recyclerView, newState);
-//			switch (newState) {
-//				case RecyclerView.SCROLL_STATE_IDLE:
-//					//RecyclerView目前不滑动
-//					int size = recyclerView.getAdapter().getItemCount();
-//					if (lastVisibleItem + 1 == size && adapter.isFootViewShown() &&
-//							!adapter.getFooterViewText().equals(getString(R.string.load_data_adequate))) {
-//						onScrollLast();
-//					}
-//					break;
-//				case RecyclerView.SCROLL_STATE_DRAGGING:
-//					//RecyclerView开始滑动
-//					break;
-//				case RecyclerView.SCROLL_STATE_SETTLING:
-//					//RecyclerView惯性移动
-//					break;
-//			}
-//		}
-//
-//		@Override
-//		public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//			super.onScrolled(recyclerView, dx, dy);
-//			lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-//		}
-//	}
 
 
     @Override
@@ -345,13 +341,24 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 //                mActivity.enableUpButton();
 //            }
             navToDirectory(forceRefresh);
+            optionLinearLayout.setEnabled(true);
+            categoryTextView.setEnabled(true);
+            sortTextView.setEnabled(true);
+            createTextView.setEnabled(true);
+            transferTextView.setEnabled(true);
         } else {
 //            mActivity.disableUpButton();
             navToReposView(forceRefresh);
+            optionLinearLayout.setEnabled(false);
+            categoryTextView.setEnabled(false);
+            sortTextView.setEnabled(false);
+            createTextView.setEnabled(false);
+            transferTextView.setEnabled(false);
         }
     }
 
     private void navToReposView(boolean forceRefresh) {
+        emptyRelativeLayout.setVisibility(View.GONE);
 		ConcurrentAsyncTask.execute(new LoadTask(getDataManager()));
     }
 
@@ -373,6 +380,11 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         return ((MainActivity) mActivity).getNavContext();
     }
 
+    @Override
+    public void OnFileDirentCreated(String fileDirentName) {
+
+    }
+
     private class LoadTask extends AsyncTask<Void, Void, List<SeafRepo>> {
         SeafException err = null;
         DataManager dataManager;
@@ -386,15 +398,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             if (mActivity == null) {
                 return;
             }
-//			adapter.setFootViewShown(true);
-//			adapter.setFooterViewText(ContextCompat.getColor(mContext, R.string.loading_data));
-//			if (mRefreshType == REFRESH_ON_CLICK
-//					|| mRefreshType == REFRESH_ON_OVERFLOW_MENU
-//					|| mRefreshType == REFRESH_ON_RESUME) {
-//				showLoading(true);
-//			} else if (mRefreshType == REFRESH_ON_PULL) {
-//
-//			}
+
         }
 
         @Override
@@ -413,45 +417,12 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             }
         }
 
-//		private void displaySSLError() {
-//			if (mActivity == null)
-//				return;
-//
-//			if (getNavContext().inRepo()) {
-//				return;
-//			}
-//
-//			showError(R.string.ssl_error);
-//		}
-//ssl_error
-//		private void resend() {
-//			if (mActivity == null)
-//				return;
-//
-//			if (getNavContext().inRepo()) {
-//				return;
-//			}
-//			ConcurrentAsyncTask.execute(new LoadTask(dataManager));
-//		}
-
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(List<SeafRepo> rs) {
             if (mActivity == null)
                 // this occurs if user navigation to another activity
                 return;
-
-			/*if (mRefreshType == REFRESH_ON_CLICK
-                    || mRefreshType == REFRESH_ON_OVERFLOW_MENU
-					|| mRefreshType == REFRESH_ON_RESUME) {
-				showLoading(false);
-			} else if (mRefreshType == REFRESH_ON_PULL) {
-				String lastUpdate = ((TestActivity)mActivity).getDataManager().getLastPullToRefreshTime(DataManager.PULL_TO_REFRESH_LAST_TIME_FOR_REPOS_FRAGMENT);
-				//mListView.onRefreshComplete(lastUpdate);
-				refreshLayout.setRefreshing(false);
-				getDataManager().saveLastPullToRefreshTime(System.currentTimeMillis(), DataManager.PULL_TO_REFRESH_LAST_TIME_FOR_REPOS_FRAGMENT);
-				mPullToRefreshStopRefreshing = 0;
-			}*/
 
             if (getNavContext().inRepo()) {
                 // this occurs if user already navigate into a repo
@@ -467,45 +438,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 //            adapter.setFootViewShown(false);
             swipeRefreshLayout.setRefreshing(false);
 
-            // Prompt the user to accept the ssl certificate
-            /*if (err == SeafException.sslException) {
-				SslConfirmDialog dialog = new SslConfirmDialog(dataManager.getAccount(),
-						new SslConfirmDialog.Listener() {
-							@Override
-							public void onAccepted(boolean rememberChoice) {
-								Account account = dataManager.getAccount();
-								CertsManager.instance().saveCertForAccount(account, rememberChoice);
-								resend();
-							}
-
-							@Override
-							public void onRejected() {
-								displaySSLError();
-							}
-						});
-				dialog.show(getFragmentManager(), SslConfirmDialog.FRAGMENT_TAG);
-				return;
-			}*/
-
-		/*	if (err != null) {
-				if (err.getCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-					// Token expired, should login again
-					ToastUtils.show(mActivity, R.string.err_token_expired);
-					logoutWhenTokenExpired();
-				} else {
-					Log.e(DEBUG_TAG, "failed to load repos: " + err.getMessage());
-					showError(R.string.error_when_load_repos);
-					return;
-				}
-			}*/
-/*
-			if (rs != null) {
-				getDataManager().setReposRefreshTimeStamp();
-				updateAdapterWithRepos(rs);
-			} else {
-				Log.i(DEBUG_TAG, "failed to load repos");
-				showError(R.string.error_when_load_repos);
-			}*/
         }
     }
 
@@ -524,13 +456,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
         @Override
         protected void onPreExecute() {
-//                if (mRefreshType == REFRESH_ON_CLICK
-//                        || mRefreshType == REFRESH_ON_OVERFLOW_MENU
-//                        || mRefreshType == REFRESH_ON_RESUME) {
-//                    showLoading(true);
-//                } else if (mRefreshType == REFRESH_ON_PULL) {
-            // mHeadProgress.setVisibility(ProgressBar.VISIBLE);
-//                }
+
         }
 
         @Override
@@ -590,66 +516,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             }
             adapter.notifyDataSetChanged();
             swipeRefreshLayout.setRefreshing(false);
-//                if (mRefreshType == REFRESH_ON_CLICK
-//                        || mRefreshType == REFRESH_ON_OVERFLOW_MENU
-//                        || mRefreshType == REFRESH_ON_RESUME) {
-//                    showLoading(false);
-//                } else if (mRefreshType == REFRESH_ON_PULL) {
-//                    String lastUpdate = getDataManager().getLastPullToRefreshTime(DataManager.PULL_TO_REFRESH_LAST_TIME_FOR_REPOS_FRAGMENT);
-//                    //mListView.onRefreshComplete(lastUpdate);
-//                    swipeRefreshLayout.setRefreshing(false);
-//                    getDataManager().saveLastPullToRefreshTime(System.currentTimeMillis(), DataManager.PULL_TO_REFRESH_LAST_TIME_FOR_REPOS_FRAGMENT);
-//                    mPullToRefreshStopRefreshing = 0;
-//                }
 
             NavContext nav = getNavContext();
             if (!myRepoID.equals(nav.getRepoID()) || !myPath.equals(nav.getDirPath())) {
                 return;
             }
 
-//                if (err == SeafException.sslException) {
-//                    SslConfirmDialog dialog = new SslConfirmDialog(dataManager.getAccount(),
-//                            new SslConfirmDialog.Listener() {
-//                                @Override
-//                                public void onAccepted(boolean rememberChoice) {
-//                                    Account account = dataManager.getAccount();
-//                                    CertsManager.instance().saveCertForAccount(account, rememberChoice);
-//                                    resend();
-//                                }
-//
-//                                @Override
-//                                public void onRejected() {
-//                                    displaySSLError();
-//                                }
-//                            });
-//                    dialog.show(getFragmentManager(), SslConfirmDialog.FRAGMENT_TAG);
-//                    return;
-//                }
-//
-//                if (err != null) {
-//                    if (err.getCode() == SeafConnection.HTTP_STATUS_REPO_PASSWORD_REQUIRED) {
-//                        showPasswordDialog();
-//                    } else if (err.getCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-//                        // Token expired, should login again
-//                        ToastUtils.show(mActivity, R.string.err_token_expired);
-//                        logoutWhenTokenExpired();
-//                    } else if (err.getCode() == HttpURLConnection.HTTP_NOT_FOUND) {
-//                        ToastUtils.show(mActivity, String.format("The folder \"%s\" was deleted", myPath));
-//                    } else {
-//                        Log.d(DEBUG_TAG, "failed to load dirents: " + err.getMessage());
-//                        err.printStackTrace();
-//                        showError(R.string.error_when_load_dirents);
-//                    }
-//                    return;
-//                }
-//
-//                if (dirents == null) {
-//                    showError(R.string.error_when_load_dirents);
-//                    Log.i(DEBUG_TAG, "failed to load dir");
-//                    return;
-//                }
             getDataManager().setDirsRefreshTimeStamp(myRepoID, myPath);
-//                updateAdapterWithDirents(dirents);
         }
     }
 

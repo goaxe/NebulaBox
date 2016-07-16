@@ -488,9 +488,10 @@
         <item>.png</item>
         <item>.svg</item>
         <item>.raw</item>
+        <item>.jpg</item>
     </string-array>
 
-    <string-array name="format_movie">
+    <string-array name="format_video">
         <item>.avi</item>
         <item>.mov</item>
         <item>.mpeg</item>
@@ -509,7 +510,7 @@
         <item>.dmg</item>
     </string-array>
 
-    <string-array name="format_video">
+    <string-array name="format_audio">
         <item>.wav</item>
         <item>.mp3</item>
         <item>.wma</item>
@@ -520,6 +521,13 @@
     <string-array name="format_document">
         <item>.txt</item>
         <item>.doc</item>
+        <item>.html</item>
+        <item>.htm</item>
+        <item>.docx</item>
+        <item>.ppt</item>
+        <item>.pptx</item>
+        <item>.pdf</item>
+        <item>.wps</item>
     </string-array>
 
 </resources>
