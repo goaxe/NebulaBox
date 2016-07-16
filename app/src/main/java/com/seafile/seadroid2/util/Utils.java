@@ -767,13 +767,13 @@ public class Utils {
      * @param list  待筛选的文件列表
      * @param formatList 扩展名
      */
-    public static List<SeafRepo> categoryFile(List<SeafRepo> list,String[] formatList){
-        List<SeafRepo> filterList = new ArrayList<>();
+    public static List<SeafDirent> categoryFile(List<SeafDirent> list,String[] formatList){
+        List<SeafDirent> filterList = new ArrayList<>();
         for (int i = 0 ; i< list.size();i++){
-//            if (list.get(i).isDir()){
-//                //当前为目录而不是文件
-//                continue;
-//            }
+            if (list.get(i).isDir()){
+                //当前为目录而不是文件
+                continue;
+            }
             String fileName = list.get(i).getTitle();
             for (int j = 0; j < formatList.length;j++){
                 int formatLength = formatList[j].length();

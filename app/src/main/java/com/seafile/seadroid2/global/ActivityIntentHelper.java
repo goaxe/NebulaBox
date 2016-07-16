@@ -3,6 +3,7 @@ package com.seafile.seadroid2.global;
 import android.content.Context;
 import android.content.Intent;
 
+import com.seafile.seadroid2.ui.activity.MainActivity;
 import com.seafile.seadroid2.ui.activity.TestActivity;
 
 /**
@@ -12,7 +13,7 @@ import com.seafile.seadroid2.ui.activity.TestActivity;
 public class ActivityIntentHelper {
 
 	public static void gotoMainActivity(Context context){
-		Intent intent = new Intent(context, TestActivity.class);
+		Intent intent = new Intent(context, MainActivity.class);
 		context.startActivity(intent);
 	}
 }

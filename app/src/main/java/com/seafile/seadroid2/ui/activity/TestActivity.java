@@ -89,11 +89,11 @@ public class TestActivity extends BaseActivity implements View.OnClickListener {
     @Bind(R.id.content_main_fl)
     FrameLayout contentFrameLayout;
 
-    @Bind({R.id.personal_main_iv, R.id.share_main_iv, R.id.upload_main_iv, R.id.star_main_iv, R.id.usercenter_main_iv})
+    @Bind({R.id.personal_main_iv, R.id.upload_main_iv, R.id.star_main_iv, R.id.usercenter_main_iv})
     List<ImageView> tabsImageViewList;
-    @Bind({R.id.personal_main_ll, R.id.share_main_ll, R.id.upload_main_ll, R.id.star_main_ll, R.id.usercenter_main_ll})
+    @Bind({R.id.personal_main_ll, R.id.upload_main_ll, R.id.star_main_ll, R.id.usercenter_main_ll})
     List<LinearLayout> tabsLinearLayoutList;
-    @Bind({R.id.personal_main_tv, R.id.share_main_tv, R.id.upload_main_tv, R.id.star_main_tv, R.id.usercenter_main_tv})
+    @Bind({R.id.personal_main_tv, R.id.upload_main_tv, R.id.star_main_tv, R.id.usercenter_main_tv})
     List<TextView> tabsTextViewList;
 
     ServiceConnection mConnection = new ServiceConnection() {

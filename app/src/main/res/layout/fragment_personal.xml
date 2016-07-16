@@ -84,4 +84,16 @@
         android:layout_height="1dp"
         android:background="@color/fancy_dark_gray"/>
 
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_layout_personal_srlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/recycler_view_personal_rl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
 </LinearLayout>
