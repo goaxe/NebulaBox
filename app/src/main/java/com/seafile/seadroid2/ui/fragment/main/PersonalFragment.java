@@ -438,7 +438,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 					|| mRefreshType == REFRESH_ON_RESUME) {
 				showLoading(false);
 			} else if (mRefreshType == REFRESH_ON_PULL) {
-				String lastUpdate = ((MainActivity)mActivity).getDataManager().getLastPullToRefreshTime(DataManager.PULL_TO_REFRESH_LAST_TIME_FOR_REPOS_FRAGMENT);
+				String lastUpdate = ((TestActivity)mActivity).getDataManager().getLastPullToRefreshTime(DataManager.PULL_TO_REFRESH_LAST_TIME_FOR_REPOS_FRAGMENT);
 				//mListView.onRefreshComplete(lastUpdate);
 				refreshLayout.setRefreshing(false);
 				getDataManager().saveLastPullToRefreshTime(System.currentTimeMillis(), DataManager.PULL_TO_REFRESH_LAST_TIME_FOR_REPOS_FRAGMENT);
