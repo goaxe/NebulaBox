@@ -5,7 +5,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.common.collect.Lists;
 import com.seafile.seadroid2.SeadroidApplication;
-import com.seafile.seadroid2.bean.Account;
+import com.seafile.seadroid2.account.Account;
 import com.seafile.seadroid2.notification.UploadNotificationProvider;
 
 import java.util.List;

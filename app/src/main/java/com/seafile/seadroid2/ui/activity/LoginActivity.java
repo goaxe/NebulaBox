@@ -10,10 +10,10 @@ import android.widget.TextView;
 
 import com.seafile.seadroid2.R;
 import com.seafile.seadroid2.SeafException;
-import com.seafile.seadroid2.bean.Account;
-import com.seafile.seadroid2.bean.AccountInfo;
+import com.seafile.seadroid2.account.AccountManager;
+import com.seafile.seadroid2.account.Account;
+import com.seafile.seadroid2.account.AccountInfo;
 import com.seafile.seadroid2.data.DataManager;
-import com.seafile.seadroid2.global.AccountsSharedPreferencesHelper;
 import com.seafile.seadroid2.global.ActivityIntentHelper;
 import com.seafile.seadroid2.global.ActivityManager;
 import com.seafile.seadroid2.network.SeafConnection;
@@ -63,11 +63,14 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void checkAccountIfLogin() {
-		String account,token;
-		AccountsSharedPreferencesHelper accountsSharedPreferencesHelper = AccountsSharedPreferencesHelper.getInstance(this);
-		account = accountsSharedPreferencesHelper.getAccountName();
-		token = accountsSharedPreferencesHelper.getTokenName();
-		if (!TextUtils.isEmpty(account) && !TextUtils.isEmpty(token)){
+        AccountManager accountManager = new AccountManager(getApplicationContext());
+        Account account = accountManager.getAccount();
+        String token = account.getToken();
+//		String account,token;
+//		AccountsSharedPreferencesHelper accountsSharedPreferencesHelper = AccountsSharedPreferencesHelper.getInstance(this);
+//		account = accountsSharedPreferencesHelper.getAccountName();
+//		token = accountsSharedPreferencesHelper.getTokenName();
+		if (!TextUtils.isEmpty(token)){
 			ActivityIntentHelper.gotoMainActivity(this);
             ActivityManager.finishCurrent();
 		}
@@ -137,39 +140,11 @@ public class LoginActivity extends BaseActivity {
         @Override
         protected void onPostExecute(final String result) {
             dismissLoadingDialog();
-//            if (err == SeafException.sslException) {
-//                SslConfirmDialog dialog = new SslConfirmDialog(loginAccount,
-//                        new SslConfirmDialog.Listener() {
-//                            @Override
-//                            public void onAccepted(boolean rememberChoice) {
-//                                CertsManager.instance().saveCertForAccount(loginAccount, rememberChoice);
-//                                resend();
-//                            }
-//
-//                            @Override
-//                            public void onRejected() {
-//                                statusView.setText(result);
-//                                loginButton.setEnabled(true);
-//                            }
-//                        });
-//                dialog.show(getSupportFragmentManager(), SslConfirmDialog.FRAGMENT_TAG);
-//                return;
-//            }
 
             if (result != null && result.equals("Success")) {
+                AccountManager accountManager = new AccountManager(getApplicationContext());
+                accountManager.setAccount(loginAccount);
 
-//                Intent retData = new Intent();
-//                retData.putExtras(getIntent());
-//                retData.putExtra(android.accounts.AccountManager.KEY_ACCOUNT_NAME, loginAccount.getSignature());
-//                retData.putExtra(android.accounts.AccountManager.KEY_AUTHTOKEN, loginAccount.getToken());
-//                retData.putExtra(android.accounts.AccountManager.KEY_ACCOUNT_TYPE, getIntent().getStringExtra(SeafileAuthenticatorActivity.ARG_ACCOUNT_TYPE));
-//                retData.putExtra(SeafileAuthenticatorActivity.ARG_EMAIL, loginAccount.getEmail());
-//                retData.putExtra(SeafileAuthenticatorActivity.ARG_SERVER_URI, loginAccount.getServer());
-//
-//                setResult(RESULT_OK, retData);
-//                finish();
-				AccountsSharedPreferencesHelper helper = new AccountsSharedPreferencesHelper(LoginActivity.this);
-				helper.putAccountInfo(loginAccount.getServer(),loginAccount.getEmail(),loginAccount.getToken());
 				ActivityIntentHelper.gotoMainActivity(LoginActivity.this);
 				ActivityManager.finishCurrent();
             } else {

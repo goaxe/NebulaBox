@@ -6,7 +6,7 @@
 //import android.view.View;
 //
 //import com.seafile.seadroid2.R;
-//import com.seafile.seadroid2.bean.Account;
+//import com.seafile.seadroid2.account.Account;
 //import com.seafile.seadroid2.network.SeafConnection;
 //
 //public class GetShareLinkDialog extends TaskDialog {

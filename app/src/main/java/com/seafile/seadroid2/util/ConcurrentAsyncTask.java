@@ -1,6 +1,7 @@
 package com.seafile.seadroid2.util;
 
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -70,14 +71,11 @@ public class ConcurrentAsyncTask {
 
     public static <T> void execute(AsyncTask<T, ?, ?> task, T...args) {
 
-        Log.e(DEBUG_TAG, "in ConcurrentAsyncTask execute");
-        task.executeOnExecutor(threadPoolExecutor, args);
-        Log.e(DEBUG_TAG, "after onExecutor");
-        /*if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB_MR1) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB_MR1) {
             task.execute(args);
         } else {
             task.executeOnExecutor(threadPoolExecutor, args);
-        }*/
+        }
     }
 
     @NonNull

@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentActivity;
 import android.webkit.MimeTypeMap;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.seafile.seadroid2.R;
+import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.ui.activity.MainActivity;
 
 import java.io.File;
@@ -148,9 +150,9 @@ public class WidgetUtils {
 //	}
 
 	//
-//    public static int getThumbnailWidth() {
-//        return (int) SeadroidApplication.getAppContext().getResources().getDimension(R.dimen.lv_icon_width);
-//    }
+    public static int getThumbnailWidth() {
+        return (int) SeadroidApplication.getAppContext().getResources().getDimension(R.dimen.lv_icon_width);
+    }
 //
 	public static DisplayImageOptions iconOptions = new DisplayImageOptions.Builder()
 			.delayBeforeLoading(0)
