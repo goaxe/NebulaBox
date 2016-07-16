@@ -53,7 +53,7 @@ public class FileOptionDialog extends DialogFragment {
         if (!TextUtils.isEmpty(fileName)) {
             builder.setTitle(fileName);
         }
-
+        builder.setCancelable(true);
         builder.setItems(list, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
