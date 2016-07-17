@@ -29,6 +29,7 @@ import com.seafile.seadroid2.SeafException;
 import com.seafile.seadroid2.data.DataManager;
 import com.seafile.seadroid2.data.SeafCachedFile;
 import com.seafile.seadroid2.data.SeafDirent;
+import com.seafile.seadroid2.data.SeafGroup;
 import com.seafile.seadroid2.data.SeafItem;
 import com.seafile.seadroid2.data.SeafRepo;
 import com.seafile.seadroid2.interf.OnItemClickListener;
@@ -54,6 +55,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -367,8 +369,17 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     private void navToReposView(boolean forceRefresh) {
         emptyRelativeLayout.setVisibility(View.GONE);
+        if (!forceRefresh) {
+            List<SeafRepo> repos = getDataManager().getReposFromCache();
+            if (repos != null) {
+                updateAdapterWithRepos(repos);
+                return;
+            }
+        }
 		ConcurrentAsyncTask.execute(new LoadTask(getDataManager()));
     }
+
+
 
     private void navToDirectory(boolean forceRefresh) {
         NavContext navContext = getNavContext();
@@ -408,14 +419,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         protected List<SeafRepo> doInBackground(Void... params) {
             try {
                 List<SeafRepo> repos = dataManager.getReposFromServer();
+                Log.e(DEBUG_TAG, "========================");
                 for (SeafRepo repo : repos) {
                     Log.e(DEBUG_TAG, repo.getName() + " " + repo.id);
                 }
+                Log.e(DEBUG_TAG, "========================");
                 return repos;
             } catch (SeafException e) {
-                err = e;
-                e.printStackTrace();
-                Log.e(DEBUG_TAG, e.getMessage());
                 return null;
             }
         }
@@ -431,13 +441,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 // this occurs if user already navigate into a repo
                 return;
             }
-            adapter.clear();
-            if (rs.size() > 0) {
-                for (SeafRepo seafRepo : rs) {
-                    adapter.add(seafRepo);
-                }
-            }
-            adapter.notifyDataSetChanged();
+            updateAdapterWithRepos(rs);
 //            adapter.setFootViewShown(false);
             swipeRefreshLayout.setRefreshing(false);
 
@@ -583,7 +587,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         } else {
             builder.remove(R.id.update);
         }
-
     }
 
     public void showDirBottomSheet(String title, final SeafDirent dirent) {
@@ -712,4 +715,56 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             ToastUtils.show(mActivity, R.string.unknow_error);
         }
     }
+
+    private void addReposToAdapter(List<SeafRepo> repos) {
+        if (repos == null)
+            return;
+        Map<String, List<SeafRepo>> map = Utils.groupRepos(repos);
+        List<SeafRepo> personalRepos = map.get(Utils.PERSONAL_REPO);
+        if (personalRepos != null) {
+            SeafGroup personalGroup = new SeafGroup(mActivity.getResources().getString(R.string.personal));
+            adapter.add(personalGroup);
+            for (SeafRepo repo : personalRepos)
+                adapter.add(repo);
+        }
+
+        List<SeafRepo> sharedRepos = map.get(Utils.SHARED_REPO);
+        if (sharedRepos != null) {
+            SeafGroup sharedGroup = new SeafGroup(mActivity.getResources().getString(R.string.shared));
+            adapter.add(sharedGroup);
+            for (SeafRepo repo : sharedRepos)
+                adapter.add(repo);
+        }
+
+        for (Map.Entry<String, List<SeafRepo>> entry : map.entrySet()) {
+            String key = entry.getKey();
+            if (!key.equals(Utils.PERSONAL_REPO)
+                    && !key.endsWith(Utils.SHARED_REPO)) {
+                SeafGroup group = new SeafGroup(key);
+                adapter.add(group);
+                for (SeafRepo repo : entry.getValue()) {
+                    adapter.add(repo);
+                }
+            }
+        }
+    }
+
+
+    private void updateAdapterWithRepos(List<SeafRepo> repos) {
+        adapter.clear();
+        if (repos.size() > 0) {
+            addReposToAdapter(repos);
+//            adapter.sortFiles(SettingsManager.instance().getSortFilesTypePref(),
+//                    SettingsManager.instance().getSortFilesOrderPref());
+            adapter.notifyChanged();
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyImageView.setVisibility(View.GONE);
+        } else {
+            recyclerView.setVisibility(View.GONE);
+            emptyImageView.setVisibility(View.VISIBLE);
+        }
+        // Collapses the currently open view
+        //mListView.collapse();
+    }
+
 }

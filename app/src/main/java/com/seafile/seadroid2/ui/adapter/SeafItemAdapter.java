@@ -1,5 +1,6 @@
 package com.seafile.seadroid2.ui.adapter;
 
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class SeafItemAdapter extends BaseAdapter {
+
+    private static final String DEBUG_TAG = "SeafItemAdapter";
 
     private ArrayList<SeafItem> items;
     private MainActivity mActivity;
@@ -209,6 +212,7 @@ public class SeafItemAdapter extends BaseAdapter {
     }
 
     private View getGroupView(SeafGroup group) {
+        Log.e(DEBUG_TAG, "title============" + group.getTitle());
         View view = LayoutInflater.from(mActivity).inflate(R.layout.group_item, null);
         TextView tv = (TextView) view.findViewById(R.id.textview_groupname);
         tv.setText(group.getTitle());
