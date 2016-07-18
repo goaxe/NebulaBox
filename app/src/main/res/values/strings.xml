@@ -461,6 +461,8 @@
     <string name="navdrawer_description_a11y" translatable="false">Navigation Drawer used to switch between major
         features of the application</string>
 
+
+
     <string name="no_data">暂无数据</string>
     <string name="load_data_fail">加载失败</string>
     <string name="load_data_adequate">没有更多啦</string>

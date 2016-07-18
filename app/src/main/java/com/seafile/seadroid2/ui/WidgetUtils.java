@@ -9,6 +9,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.text.ClipboardManager;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.MimeTypeMap;
 
@@ -17,7 +18,13 @@ import com.seafile.seadroid2.R;
 import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.account.Account;
 import com.seafile.seadroid2.ui.activity.GalleryActivity;
+import com.seafile.seadroid2.account.Account;
 import com.seafile.seadroid2.ui.activity.MainActivity;
+import com.seafile.seadroid2.ui.dialog.AppChoiceDialog;
+import com.seafile.seadroid2.ui.dialog.GetShareLinkDialog;
+import com.seafile.seadroid2.ui.dialog.TaskDialog;
+import com.seafile.seadroid2.util.Utils;
+import com.seafile.seadroid2.ui.base.BaseActivity;
 import com.seafile.seadroid2.ui.dialog.AppChoiceDialog;
 import com.seafile.seadroid2.ui.dialog.GetShareLinkDialog;
 import com.seafile.seadroid2.ui.dialog.TaskDialog;
@@ -30,8 +37,8 @@ import java.util.List;
  * Activity Utils
  */
 public class WidgetUtils {
-//
-    public static void chooseShareApp(final AppCompatActivity activity,
+
+    public static void chooseShareApp(final BaseActivity activity,
                                       final String repoID,
                                       final String path,
                                       final boolean isdir,

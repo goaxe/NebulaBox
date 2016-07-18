@@ -546,31 +546,31 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case R.id.share:
-//                        mActivity.shareFile(repoID, path);
+                        mActivity.shareFile(repoID, path);
                         break;
                     case R.id.delete:
                         mActivity.deleteFile(repoID, repoName, path);
                         break;
                     case R.id.copy:
-//                        mActivity.copyFile(repoID, repoName, dir, filename, false);
+                        mActivity.copyFile(repoID, repoName, dir, filename, false);
                         break;
                     case R.id.move:
-//                        mActivity.moveFile(repoID, repoName, dir, filename, false);
+                        mActivity.moveFile(repoID, repoName, dir, filename, false);
                         break;
                     case R.id.rename:
-//                        mActivity.renameFile(repoID, repoName, path);
+                        mActivity.renameFile(repoID, repoName, path);
                         break;
                     case R.id.update:
 //                        mActivity.addUpdateTask(repoID, repoName, dir, localPath);
                         break;
                     case R.id.download:
-                        ((MainActivity)mActivity).downloadFile(dir, dirent.name);
+                        mActivity.downloadFile(dir, dirent.name);
                         break;
                     case R.id.export:
 //                        mActivity.exportFile(dirent.name);
                         break;
                     case R.id.star:
-                        ((MainActivity) mActivity).starFile(repoID, dir, filename);
+                        mActivity.starFile(repoID, dir, filename);
                         break;
                 }
             }
@@ -601,7 +601,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case R.id.share:
-//                        mActivity.shareDir(repoID, path);
+                        mActivity.shareDir(repoID, path);
                         break;
                     case R.id.delete:
 //                        mActivity.deleteDir(repoID, repoName, path);
@@ -613,7 +613,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 //                        mActivity.moveFile(repoID, repoName, dir, filename, false);
                         break;
                     case R.id.rename:
-//                        mActivity.renameDir(repoID, repoName, path);
+                        mActivity.renameDir(repoID, repoName, path);
                         break;
                     case R.id.download:
 //                        mActivity.downloadDir(dir, dirent.name, true);
