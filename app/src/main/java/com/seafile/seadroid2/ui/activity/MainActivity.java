@@ -34,6 +34,7 @@ import com.seafile.seadroid2.ui.adapter.SeafItemAdapter;
 import com.seafile.seadroid2.ui.base.BaseActivity;
 import com.seafile.seadroid2.ui.dialog.CopyMoveDialog;
 import com.seafile.seadroid2.ui.dialog.DeleteFileDialog;
+import com.seafile.seadroid2.ui.dialog.RenameFileDialog;
 import com.seafile.seadroid2.ui.dialog.TaskDialog;
 import com.seafile.seadroid2.ui.fragment.StarredFragment;
 import com.seafile.seadroid2.ui.fragment.main.PersonalFragment;
@@ -56,7 +57,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final String DEBUG_TAG = "MainActivity";
 
 
-        public static final String OPEN_FILE_DIALOG_FRAGMENT_TAG = "openfile_fragment";
+    public static final String OPEN_FILE_DIALOG_FRAGMENT_TAG = "openfile_fragment";
     public static final String PASSWORD_DIALOG_FRAGMENT_TAG = "password_fragment";
     public static final String CHOOSE_APP_DIALOG_FRAGMENT_TAG = "choose_app_fragment";
     public static final String PICK_FILE_DIALOG_FRAGMENT_TAG = "pick_file_fragment";
@@ -79,7 +80,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public static final int INDEX_LIBRARY_TAB = 0;
 
 
-
     public File takeCameraPhotoTempFile = null;
 
     private List<Integer> tabsImagesUnselectedList;
@@ -88,8 +88,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private AccountManager accountManager;
     private DataManager dataManager;
-	private TransferService txService = null;
-	private CopyMoveContext copyMoveContext;
+    private TransferService txService = null;
+    private CopyMoveContext copyMoveContext;
     private Intent copyMoveIntent;
 
     private int currentFragmentIndex = 0;
@@ -114,18 +114,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Bind({R.id.personal_main_tv, R.id.upload_main_tv, R.id.star_main_tv, R.id.usercenter_main_tv})
     List<TextView> tabsTextViewList;
 
-	ServiceConnection mConnection = new ServiceConnection() {
+    ServiceConnection mConnection = new ServiceConnection() {
         @Override
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			TransferService.TransferBinder binder = (TransferService.TransferBinder) service;
-			txService = binder.getService();
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            TransferService.TransferBinder binder = (TransferService.TransferBinder) service;
+            txService = binder.getService();
 
-		}
-		@Override
-		public void onServiceDisconnected(ComponentName arg0) {
-			txService = null;
-		}
-	};
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            txService = null;
+        }
+    };
 
 
     @Override
@@ -152,10 +153,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         accountManager = new AccountManager(getApplicationContext());
         dataManager = new DataManager(accountManager.getAccount());
 
-		Intent txIntent = new Intent(this, TransferService.class);
+        Intent txIntent = new Intent(this, TransferService.class);
         startService(txIntent);
-		Intent bIntent = new Intent(this, TransferService.class);
-		bindService(bIntent, mConnection, Context.BIND_AUTO_CREATE);
+        Intent bIntent = new Intent(this, TransferService.class);
+        bindService(bIntent, mConnection, Context.BIND_AUTO_CREATE);
 
         Intent intent = getIntent();
         String repoID = intent.getStringExtra("repoID");
@@ -246,10 +247,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void onDestroy() {
-		if (txService != null) {
-			unbindService(mConnection);
-			txService = null;
-		}
+        if (txService != null) {
+            unbindService(mConnection);
+            txService = null;
+        }
         super.onDestroy();
     }
 
@@ -372,6 +373,57 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         getStarredFragment().doStarFile(srcRepoId, srcDir, srcFn);
     }
 
+    public void renameFile(String repoID, String repoName, String path) {
+        doRename(repoID, repoName, path, false);
+    }
+
+    public void renameDir(String repoID, String repoName, String path) {
+        doRename(repoID, repoName, path, true);
+    }
+
+    public void copyFile(String srcRepoId, String srcRepoName, String srcDir, String srcFn, boolean isdir) {
+        chooseCopyMoveDest(srcRepoId, srcRepoName, srcDir, srcFn, isdir, CopyMoveContext.OP.COPY);
+    }
+
+    public void moveFile(String srcRepoId, String srcRepoName, String srcDir, String srcFn, boolean isdir) {
+        chooseCopyMoveDest(srcRepoId, srcRepoName, srcDir, srcFn, isdir, CopyMoveContext.OP.MOVE);
+    }
+
+    public void deleteDir(String repoID, String repoName, String path) {
+        doDelete(repoID, repoName, path, true);
+    }
+
+
+    private void doRename(String repoID, String repoName, String path, boolean isdir) {
+        final RenameFileDialog dialog = new RenameFileDialog();
+        dialog.init(repoID, path, isdir, getDataManager().getAccount());
+        dialog.setTaskDialogLisenter(new TaskDialog.TaskDialogListener() {
+            @Override
+            public void onTaskSuccess() {
+                ToastUtils.show(MainActivity.this, R.string.rename_successful);
+                PersonalFragment personalFragment = (PersonalFragment) fragmentList.get(0);
+                if (currentFragmentIndex == 0 && personalFragment != null) {
+                    personalFragment.refreshView(false);
+                }
+            }
+        });
+        dialog.show(getSupportFragmentManager(), TAG_RENAME_FILE_DIALOG_FRAGMENT);
+    }
+
+    private void chooseCopyMoveDest(String repoID, String repoName, String path,
+                                    String filename, boolean isdir, CopyMoveContext.OP op) {
+        copyMoveContext = new CopyMoveContext(repoID, repoName, path, filename,
+                isdir, op);
+        Intent intent = new Intent(this, SeafilePathChooserActivity.class);
+        intent.putExtra(SeafilePathChooserActivity.DATA_ACCOUNT, accountManager.getAccount());
+        SeafRepo repo = dataManager.getCachedRepoByID(repoID);
+        if (repo.encrypted) {
+            intent.putExtra(SeafilePathChooserActivity.ENCRYPTED_REPO_ID, repoID);
+        }
+        startActivityForResult(intent, CHOOSE_COPY_MOVE_DEST_REQUEST);
+        return;
+    }
+
     public void downloadFile(String dir, String fileName) {
         String filePath = Utils.pathJoin(dir, fileName);
         Account account = accountManager.getAccount();
@@ -396,10 +448,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     public void deleteFile(String repoID, String repoName, String path) {
         doDelete(repoID, repoName, path, false);
-    }
-
-        public void deleteDir(String repoID, String repoName, String path) {
-        doDelete(repoID, repoName, path, true);
     }
 
     private void doDelete(String repoID, String repoName, String path, boolean isdir) {
@@ -438,7 +486,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     ToastUtils.show(this, getString(R.string.added_to_upload_tasks));
                     for (String path : paths) {
                         Log.e(DEBUG_TAG, path);
-                        txService.addUploadTask(accountManager.getAccount(), navContext.getRepoID(), navContext.getRepoName(), navContext.getDirPath(),  path, false, false);
+                        txService.addUploadTask(accountManager.getAccount(), navContext.getRepoID(), navContext.getRepoName(), navContext.getDirPath(), path, false, false);
                     }
                 }
                 break;
@@ -463,7 +511,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         return;
                     }
 
-                    if(takeCameraPhotoTempFile == null) {
+                    if (takeCameraPhotoTempFile == null) {
                         ToastUtils.show(this, getString(R.string.saf_upload_path_not_available));
                         Log.i(DEBUG_TAG, "Pick file request did not return a path");
                         return;
@@ -491,7 +539,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     onPostResume();
                 }
                 break;
-        case PICK_FILE_REQUEST:
+            case PICK_FILE_REQUEST:
 //            if (resultCode == RESULT_OK) {
 //                if (!Utils.isNetworkOn()) {
 //                    ToastUtils.show(this, R.string.network_down);
@@ -514,7 +562,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //                    }
 //                }
 //            }
-            break;
+                break;
 
 
             default:
@@ -523,7 +571,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     public void onFileSelected(SeafDirent dirent) {
-        final String fileName= dirent.name;
+        final String fileName = dirent.name;
         final String repoName = navContext.getRepoName();
         final String repoID = navContext.getRepoID();
         final String dirPath = navContext.getDirPath();

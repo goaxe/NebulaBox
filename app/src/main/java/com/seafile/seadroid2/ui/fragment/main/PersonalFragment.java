@@ -606,20 +606,20 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                         mActivity.shareDir(repoID, path);
                         break;
                     case R.id.delete:
-//                        mActivity.deleteDir(repoID, repoName, path);
+                       mActivity.deleteDir(repoID, repoName, path);
                         break;
                     case R.id.copy:
-//                        mActivity.copyFile(repoID, repoName, dir, filename, false);
+                        mActivity.copyFile(repoID, repoName, dir, filename, false);
                         break;
                     case R.id.move:
-//                        mActivity.moveFile(repoID, repoName, dir, filename, false);
+                        mActivity.moveFile(repoID, repoName, dir, filename, false);
                         break;
                     case R.id.rename:
                         mActivity.renameDir(repoID, repoName, path);
                         break;
-                    case R.id.download:
+//                    case R.id.download:
 //                        mActivity.downloadDir(dir, dirent.name, true);
-                        break;
+//                        break;
                 }
             }
         }).show();
