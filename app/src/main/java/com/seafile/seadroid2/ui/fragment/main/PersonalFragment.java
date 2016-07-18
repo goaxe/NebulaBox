@@ -32,6 +32,7 @@ import com.seafile.seadroid2.data.SeafDirent;
 import com.seafile.seadroid2.data.SeafGroup;
 import com.seafile.seadroid2.data.SeafItem;
 import com.seafile.seadroid2.data.SeafRepo;
+import com.seafile.seadroid2.fileschooser.MultiFileChooserActivity;
 import com.seafile.seadroid2.interf.OnItemClickListener;
 import com.seafile.seadroid2.interf.OnItemLongClickListener;
 import com.seafile.seadroid2.ui.NavContext;
@@ -685,17 +686,20 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         dialog.show(mActivity.getSupportFragmentManager(), "NewDirDialogFragment");
     }
 
-        private void pickFile() {
-         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-        UploadChoiceDialog dialog = new UploadChoiceDialog();
-        dialog.show(mActivity.getSupportFragmentManager(), mActivity.PICK_FILE_DIALOG_FRAGMENT_TAG);
-        } else {
-            Intent target = Utils.createGetContentIntent();
-            Intent intent = Intent.createChooser(target, getString(R.string.choose_file));
-        Log.e(DEBUG_TAG, "start choose");
+    private void pickFile() {
+        Intent intent = new Intent(mActivity, MultiFileChooserActivity.class);
+        mActivity.startActivityForResult(intent, MainActivity.PICK_FILES_REQUEST);
 
-            startActivityForResult(intent, MainActivity.PICK_FILE_REQUEST);
-        }
+//         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+//        UploadChoiceDialog dialog = new UploadChoiceDialog();
+//        dialog.show(mActivity.getSupportFragmentManager(), mActivity.PICK_FILE_DIALOG_FRAGMENT_TAG);
+//        } else {
+//            Intent target = Utils.createGetContentIntent();
+//            Intent intent = Intent.createChooser(target, getString(R.string.choose_file));
+//        Log.e(DEBUG_TAG, "start choose");
+//
+//            startActivityForResult(intent, MainActivity.PICK_FILE_REQUEST);
+//        }
     }
 
     private void CameraTakePhoto() {
@@ -709,7 +713,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
             Uri photo = Uri.fromFile(mActivity.takeCameraPhotoTempFile);
             imageCaptureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photo);
-            startActivityForResult(imageCaptureIntent, mActivity.TAKE_PHOTO_REQUEST);
+            mActivity.startActivityForResult(imageCaptureIntent, mActivity.TAKE_PHOTO_REQUEST);
 
         } catch (IOException e) {
             ToastUtils.show(mActivity, R.string.unknow_error);
