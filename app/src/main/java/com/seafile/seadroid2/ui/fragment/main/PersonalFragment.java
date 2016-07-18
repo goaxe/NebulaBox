@@ -150,7 +150,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         appFormat = resources.getStringArray(R.array.format_app);
         txtFormat = resources.getStringArray(R.array.format_document);
 
-        dataManager = ((MainActivity) mActivity).getDataManager();
+        dataManager = mActivity.getDataManager();
 
         allDirentList = new ArrayList<>();
         adapter = new SeafItemAdapter((MainActivity) mActivity);
@@ -202,6 +202,11 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 //        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(mActivity,R.color.app_main_color));
         swipeRefreshLayout.setColorSchemeColors(R.color.swipe_refresh_color_1, R.color.swipe_refresh_color_2, R.color.swipe_refresh_color_3, R.color.swipe_refresh_color_4);
         refreshView(true);
+    }
+
+    public RelativeLayout getEmptyView(){
+
+        return emptyRelativeLayout;
     }
 
     @Override
@@ -565,9 +570,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                         break;
                     case R.id.download:
                         mActivity.downloadFile(dir, dirent.name);
-                        break;
-                    case R.id.export:
-//                        mActivity.exportFile(dirent.name);
                         break;
                     case R.id.star:
                         mActivity.starFile(repoID, dir, filename);

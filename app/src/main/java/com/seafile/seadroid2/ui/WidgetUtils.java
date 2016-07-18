@@ -9,7 +9,6 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.text.ClipboardManager;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.MimeTypeMap;
 

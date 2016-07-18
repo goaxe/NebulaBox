@@ -17,17 +17,22 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.seafile.seadroid2.R;
-import com.seafile.seadroid2.account.AccountManager;
 import com.seafile.seadroid2.account.Account;
+import com.seafile.seadroid2.account.AccountManager;
 import com.seafile.seadroid2.data.DataManager;
 import com.seafile.seadroid2.data.SeafDirent;
+import com.seafile.seadroid2.data.SeafRepo;
+import com.seafile.seadroid2.fileschooser.MultiFileChooserActivity;
 import com.seafile.seadroid2.notification.DownloadNotificationProvider;
 import com.seafile.seadroid2.transfer.DownloadTaskInfo;
 import com.seafile.seadroid2.transfer.TransferService;
+import com.seafile.seadroid2.ui.CopyMoveContext;
 import com.seafile.seadroid2.ui.NavContext;
 import com.seafile.seadroid2.ui.ToastUtils;
+import com.seafile.seadroid2.ui.WidgetUtils;
 import com.seafile.seadroid2.ui.adapter.SeafItemAdapter;
 import com.seafile.seadroid2.ui.base.BaseActivity;
+import com.seafile.seadroid2.ui.dialog.CopyMoveDialog;
 import com.seafile.seadroid2.ui.dialog.DeleteFileDialog;
 import com.seafile.seadroid2.ui.dialog.TaskDialog;
 import com.seafile.seadroid2.ui.fragment.StarredFragment;
@@ -38,6 +43,7 @@ import com.seafile.seadroid2.ui.widget.CircleImageView;
 import com.seafile.seadroid2.util.Utils;
 import com.seafile.seadroid2.util.log.KLog;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,11 +55,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private static final String DEBUG_TAG = "MainActivity";
 
+
+        public static final String OPEN_FILE_DIALOG_FRAGMENT_TAG = "openfile_fragment";
+    public static final String PASSWORD_DIALOG_FRAGMENT_TAG = "password_fragment";
+    public static final String CHOOSE_APP_DIALOG_FRAGMENT_TAG = "choose_app_fragment";
+    public static final String PICK_FILE_DIALOG_FRAGMENT_TAG = "pick_file_fragment";
+    public static final int REQUEST_PERMISSIONS_WRITE_EXTERNAL_STORAGE = 1;
+
     public static final String TAG_DELETE_FILE_DIALOG_FRAGMENT = "DeleteFileDialogFragment";
     public static final String TAG_DELETE_FILES_DIALOG_FRAGMENT = "DeleteFilesDialogFragment";
     public static final String TAG_RENAME_FILE_DIALOG_FRAGMENT = "RenameFileDialogFragment";
     public static final String TAG_COPY_MOVE_DIALOG_FRAGMENT = "CopyMoveDialogFragment";
     public static final String TAG_SORT_FILES_DIALOG_FRAGMENT = "SortFilesDialogFragment";
+
+
+    public static final int PICK_FILES_REQUEST = 1;
+    public static final int PICK_PHOTOS_VIDEOS_REQUEST = 2;
+    public static final int PICK_FILE_REQUEST = 3;
+    public static final int TAKE_PHOTO_REQUEST = 4;
+    public static final int CHOOSE_COPY_MOVE_DEST_REQUEST = 5;
+    public static final int DOWNLOAD_FILE_REQUEST = 6;
+
+    public static final int INDEX_LIBRARY_TAB = 0;
+
+
+
+    public File takeCameraPhotoTempFile = null;
 
     private List<Integer> tabsImagesUnselectedList;
     private List<Integer> tabsImagesSelectedList;
@@ -62,6 +89,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private AccountManager accountManager;
     private DataManager dataManager;
 	private TransferService txService = null;
+	private CopyMoveContext copyMoveContext;
+    private Intent copyMoveIntent;
 
     private int currentFragmentIndex = 0;
 
@@ -210,6 +239,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
 
+    public PersonalFragment getReposFragment() {
+        return (PersonalFragment) getFragment(0);
+    }
+
+
     @Override
     protected void onDestroy() {
 		if (txService != null) {
@@ -226,6 +260,64 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 switchFragment(i);
             }
         }
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        // We can't show the CopyMoveDialog in onActivityResult, this is a
+        // workaround found in
+        // http://stackoverflow.com/questions/16265733/failure-delivering-result-onactivityforresult/18345899#18345899
+        if (copyMoveIntent != null) {
+            String dstRepoId, dstDir;
+            dstRepoId = copyMoveIntent.getStringExtra(SeafilePathChooserActivity.DATA_REPO_ID);
+            dstDir = copyMoveIntent.getStringExtra(SeafilePathChooserActivity.DATA_DIR);
+            copyMoveContext.setDest(dstRepoId, dstDir);
+            doCopyMove();
+            copyMoveIntent = null;
+        }
+    }
+
+    private void doCopyMove() {
+        if (!copyMoveContext.checkCopyMoveToSubfolder()) {
+            ToastUtils.show(this, copyMoveContext.isCopy()
+                    ? R.string.cannot_copy_folder_to_subfolder
+                    : R.string.cannot_move_folder_to_subfolder);
+            return;
+        }
+        final CopyMoveDialog dialog = new CopyMoveDialog();
+        dialog.init(accountManager.getAccount(), copyMoveContext);
+        dialog.setCancelable(false);
+        dialog.setTaskDialogLisenter(new TaskDialog.TaskDialogListener() {
+            @Override
+            public void onTaskSuccess() {
+                ToastUtils.show(MainActivity.this, copyMoveContext.isCopy()
+                        ? R.string.copied_successfully
+                        : R.string.moved_successfully);
+                if (copyMoveContext.batch) {
+                    List<SeafDirent> cachedDirents = getDataManager().getCachedDirents(getNavContext().getRepoID(),
+                            getNavContext().getDirPath());
+
+                    // refresh view
+                    if (getReposFragment().getAdapter() != null) {
+                        getReposFragment().getAdapter().setItems(cachedDirents);
+                        getReposFragment().getAdapter().notifyDataSetChanged();
+                    }
+
+                    if (cachedDirents.size() == 0)
+                        getReposFragment().getEmptyView().setVisibility(View.VISIBLE);
+                    return;
+                }
+
+                if (copyMoveContext.isMove()) {
+                    PersonalFragment reposFragment = getReposFragment();
+                    if (currentFragmentIndex == INDEX_LIBRARY_TAB && reposFragment != null) {
+                        reposFragment.refreshView(false);
+                    }
+                }
+            }
+        });
+        dialog.show(getSupportFragmentManager(), TAG_COPY_MOVE_DIALOG_FRAGMENT);
     }
 
     public DataManager getDataManager() {
@@ -266,6 +358,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     public void showDirBottomSheet(String title, final SeafDirent dirent) {
         getPersonalFragment().showDirBottomSheet(title, dirent);
+    }
+
+    public void shareFile(String repoID, String path) {
+        WidgetUtils.chooseShareApp(this, repoID, path, false, accountManager.getAccount());
+    }
+
+    public void shareDir(String repoID, String path) {
+        WidgetUtils.chooseShareApp(this, repoID, path, true, accountManager.getAccount());
     }
 
     public void starFile(String srcRepoId, String srcDir, String srcFn) {
@@ -319,6 +419,150 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
 
+    public AccountManager getAccountManager() {
+        return accountManager;
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case PICK_FILES_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    Log.e(DEBUG_TAG, "in onActivityResult");
+                    String[] paths = data.getStringArrayExtra(MultiFileChooserActivity.MULTI_FILES_PATHS);
+                    if (paths == null) {
+                        Log.e(DEBUG_TAG, "paths is null");
+
+                        return;
+                    }
+                    ToastUtils.show(this, getString(R.string.added_to_upload_tasks));
+                    for (String path : paths) {
+                        Log.e(DEBUG_TAG, path);
+                        txService.addUploadTask(accountManager.getAccount(), navContext.getRepoID(), navContext.getRepoName(), navContext.getDirPath(),  path, false, false);
+                    }
+                }
+                break;
+
+            case PICK_PHOTOS_VIDEOS_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    ArrayList<String> paths = data.getStringArrayListExtra("photos");
+                    if (paths == null)
+                        return;
+                    ToastUtils.show(this, getString(R.string.added_to_upload_tasks));
+
+                    for (String path : paths) {
+                        txService.addUploadTask(accountManager.getAccount(), navContext.getRepoID(), navContext.getRepoName(), navContext.getDirPath(), path, false, false);
+                    }
+                }
+                break;
+            case TAKE_PHOTO_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    ToastUtils.show(this, getString(R.string.take_photo_successfully));
+                    if (!Utils.isNetworkOn()) {
+                        ToastUtils.show(this, R.string.network_down);
+                        return;
+                    }
+
+                    if(takeCameraPhotoTempFile == null) {
+                        ToastUtils.show(this, getString(R.string.saf_upload_path_not_available));
+                        Log.i(DEBUG_TAG, "Pick file request did not return a path");
+                        return;
+                    }
+                    ToastUtils.show(this, getString(R.string.added_to_upload_tasks));
+                    txService.addTaskToUploadQue(accountManager.getAccount(), navContext.getRepoID(), navContext.getRepoName(), navContext.getDirPath(), takeCameraPhotoTempFile.getAbsolutePath(), false, false);
+
+                }
+                break;
+            case DOWNLOAD_FILE_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    File file = new File(data.getStringExtra("path"));
+                    WidgetUtils.showFile(MainActivity.this, file);
+                }
+                break;
+            case CHOOSE_COPY_MOVE_DEST_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    if (!Utils.isNetworkOn()) {
+                        ToastUtils.show(this, R.string.network_down);
+                        return;
+                    }
+
+                    copyMoveIntent = data;
+
+                    onPostResume();
+                }
+                break;
+        case PICK_FILE_REQUEST:
+//            if (resultCode == RESULT_OK) {
+//                if (!Utils.isNetworkOn()) {
+//                    ToastUtils.show(this, R.string.network_down);
+//                    return;
+//                }
+//
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//                    List<Uri> uriList = UtilsJellyBean.extractUriListFromIntent(data);
+//                    if (uriList.size() > 0) {
+//                        ConcurrentAsyncTask.execute(new SAFLoadRemoteFileTask(), uriList.toArray(new Uri[]{}));
+//                    } else {
+//                        ToastUtils.show(BrowserActivity.this, R.string.saf_upload_path_not_available);
+//                    }
+//                } else {
+//                    Uri uri = data.getData();
+//                    if (uri != null) {
+//                        ConcurrentAsyncTask.execute(new SAFLoadRemoteFileTask(), uri);
+//                    } else {
+//                        ToastUtils.show(BrowserActivity.this, R.string.saf_upload_path_not_available);
+//                    }
+//                }
+//            }
+            break;
+
+
+            default:
+                break;
+        }
+    }
+
+    public void onFileSelected(SeafDirent dirent) {
+        final String fileName= dirent.name;
+        final String repoName = navContext.getRepoName();
+        final String repoID = navContext.getRepoID();
+        final String dirPath = navContext.getDirPath();
+        final String filePath = Utils.pathJoin(navContext.getDirPath(), fileName);
+        final SeafRepo repo = dataManager.getCachedRepoByID(repoID);
+
+        // Encrypted repo doesn\`t support gallery,
+        // because pic thumbnail under encrypted repo was not supported at the server side
+        if (Utils.isViewableImage(fileName)
+                && repo != null && !repo.encrypted) {
+            WidgetUtils.startGalleryActivity(this, repoName, repoID, dirPath, fileName, accountManager.getAccount());
+            return;
+        }
+
+        final File localFile = dataManager.getLocalCachedFile(repoName, repoID, filePath, dirent.id);
+        if (localFile != null) {
+            WidgetUtils.showFile(this, localFile);
+            return;
+        }
+
+        if (repo == null) return;
+
+        startFileActivity(repoName, repoID, filePath, repo.canLocalDecrypt(), repo.encVersion);
+    }
+
+    private void startFileActivity(String repoName, String repoID, String filePath, boolean byBlock, int encVersion) {
+        int taskID = 0;
+        if (byBlock) {
+            taskID = txService.addDownloadTask(accountManager.getAccount(), repoName, repoID, filePath, true, encVersion);
+        } else {
+            taskID = txService.addDownloadTask(accountManager.getAccount(), repoName, repoID, filePath);
+        }
+        Intent intent = new Intent(this, FileActivity.class);
+        intent.putExtra("repoName", repoName);
+        intent.putExtra("repoID", repoID);
+        intent.putExtra("filePath", filePath);
+        intent.putExtra("account", accountManager.getAccount());
+        intent.putExtra("taskID", taskID);
+        startActivityForResult(intent, DOWNLOAD_FILE_REQUEST);
+    }
 
 }

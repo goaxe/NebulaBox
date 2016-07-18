@@ -6,9 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.seafile.seadroid2.R;
+import com.seafile.seadroid2.SeafConnection;
 import com.seafile.seadroid2.SeafException;
 import com.seafile.seadroid2.account.Account;
-import com.seafile.seadroid2.network.SeafConnection;
 
 class GetShareLinkTask extends TaskDialog.Task {
     String repoID;

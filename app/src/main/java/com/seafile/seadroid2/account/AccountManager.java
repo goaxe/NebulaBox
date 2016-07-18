@@ -37,7 +37,9 @@ public class AccountManager {
      */
     public final static String KEY_SERVER_FEATURES = "features";
 
-    /** used to manage multi Accounts when user switch between different Accounts */
+    /**
+     * used to manage multi Accounts when user switch between different Accounts
+     */
     private SharedPreferences actMangeSharedPref;
     private SharedPreferences.Editor editor;
 
