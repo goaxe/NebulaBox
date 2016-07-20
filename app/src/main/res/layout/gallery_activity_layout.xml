@@ -4,11 +4,11 @@
              android:layout_height="fill_parent"
              android:layout_above="@+id/gallery_pager">
 
-    <com.seafile.seadroid2.ui.HackyViewPager xmlns:android="http://schemas.android.com/apk/res/android"
-                                             android:id="@+id/gallery_pager"
-                                             android:layout_width="match_parent"
-                                             android:layout_height="match_parent"
-                                             android:background="@color/black"/>
+    <com.tsinghua.nebulabox.ui.HackyViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+                                              android:id="@+id/gallery_pager"
+                                              android:layout_width="match_parent"
+                                              android:layout_height="match_parent"
+                                              android:background="@color/black"/>
 
     <LinearLayout
         android:fitsSystemWindows="true"
