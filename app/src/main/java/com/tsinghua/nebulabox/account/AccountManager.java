@@ -81,7 +81,7 @@ public class AccountManager {
     }
 
     public void signOutAccount(Account account) {
-        editor.putString(AUTHTOKEN_TYPE, "");
+        editor.putString(KEY_TOKEN, "");
         editor.commit();
     }
 }

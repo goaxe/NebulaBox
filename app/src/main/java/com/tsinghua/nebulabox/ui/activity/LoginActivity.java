@@ -80,7 +80,6 @@ Log.e("LoginActivity","hello world ! ");
 
     @OnClick(R.id.login_button_login_btn)
     public void login() {
-        Log.e("dfasfd","====================================================");
 
         String serverURL = serverUrlEditText.getText().toString().trim();
         String email = emailAddressEditText.getText().toString().trim();

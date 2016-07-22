@@ -176,11 +176,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         tabsImagesUnselectedList = new ArrayList<>();
         tabsImagesUnselectedList.add(R.drawable.ic_filter_drama_white_36dp);
         tabsImagesUnselectedList.add(R.drawable.ic_share_white_36dp);
-        tabsImagesUnselectedList.add(R.drawable.self_48);
+        tabsImagesUnselectedList.add(R.drawable.ic_center_blue);
 
         tabsImagesSelectedList = new ArrayList<>();
-        tabsImagesSelectedList.add(R.drawable.ic_filter_drama_black_36dp);
-        tabsImagesSelectedList.add(R.drawable.share_grey_36);
+        tabsImagesSelectedList.add(R.drawable.ic_self_grey);
+        tabsImagesSelectedList.add(R.drawable.ic_share_grey);
         tabsImagesSelectedList.add(R.drawable.self_grey_48);
 
         fragmentList = new ArrayList<>();

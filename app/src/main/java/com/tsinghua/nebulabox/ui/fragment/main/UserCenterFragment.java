@@ -1,3 +1,4 @@
+
 package com.tsinghua.nebulabox.ui.fragment.main;
 
 import android.content.DialogInterface;
@@ -11,24 +12,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.collect.Maps;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.tsinghua.nebulabox.R;
+import com.tsinghua.nebulabox.SeafConnection;
 import com.tsinghua.nebulabox.SeafException;
 import com.tsinghua.nebulabox.account.Account;
 import com.tsinghua.nebulabox.account.AccountInfo;
 import com.tsinghua.nebulabox.account.AccountManager;
+import com.tsinghua.nebulabox.avatar.Avatar;
+import com.tsinghua.nebulabox.avatar.AvatarManager;
 import com.tsinghua.nebulabox.data.DataManager;
 import com.tsinghua.nebulabox.data.StorageManager;
 import com.tsinghua.nebulabox.ui.activity.LoginActivity;
 import com.tsinghua.nebulabox.ui.base.BaseFragment;
 import com.tsinghua.nebulabox.ui.dialog.ClearCacheTaskDialog;
 import com.tsinghua.nebulabox.ui.dialog.TaskDialog;
-import com.tsinghua.nebulabox.ui.widget.CircleImageView;
 import com.tsinghua.nebulabox.util.ConcurrentAsyncTask;
 import com.tsinghua.nebulabox.util.log.KLog;
 
@@ -46,7 +53,7 @@ import butterknife.OnClick;
 public class UserCenterFragment extends BaseFragment {
 
     @Bind(R.id.avatar_user_center_iv)
-    CircleImageView avatarImageView;
+    ImageView avatarImageView;
     @Bind(R.id.nick_name_user_center_tv)
     TextView nickTextView;
     @Bind(R.id.capacity_user_center_pb)
@@ -67,6 +74,7 @@ public class UserCenterFragment extends BaseFragment {
     Button logoutButton;
 
     private AccountManager accountManager;
+    private AvatarManager avatarManager;
     private DataManager dataManager;
     private StorageManager storageManager = StorageManager.getInstance();
     private static Map<String, AccountInfo> accountInfoMap = Maps.newHashMap();
@@ -85,18 +93,22 @@ public class UserCenterFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
 
         accountManager = mActivity.getAccountManager();
+        avatarManager = new AvatarManager();
         dataManager = new DataManager(accountManager.getAccount());
-        nickTextView.setText(accountManager.getAccount().getServer());
+        nickTextView.setText(accountManager.getAccount().getEmail());
 
 
         String signature = accountManager.getAccount().getSignature();
         AccountInfo info = getAccountInfoBySignature(signature);
         if (info != null) {
             String spaceUsed = info.getSpaceUsed();
-            nickTextView.setText(spaceUsed);
+            capacityTextView.setText(spaceUsed);
         }
 
         calculateCacheSize();
+        loadAvatarUrls(48);
+        ConcurrentAsyncTask.execute(new RequestAccountInfoTask(), accountManager.getAccount());
+
 
         String appVersion = null;
         try {
@@ -226,7 +238,7 @@ public class UserCenterFragment extends BaseFragment {
             // update Account info settings
             nickTextView.setText(getCurrentUserIdentifier());
             String spaceUsage = accountInfo.getSpaceUsed();
-            cacheSizeTextView.setText(spaceUsage);
+            capacityTextView.setText(spaceUsage);
             Account currentAccount = dataManager.getAccount();
             if (currentAccount != null)
                 saveAccountInfo(currentAccount.getSignature(), accountInfo);
@@ -252,6 +264,128 @@ public class UserCenterFragment extends BaseFragment {
             return "";
 
         return account.getDisplayName();
+    }
+
+    /**
+     * asynchronously load avatars
+     *
+     * @param avatarSize set a avatar size in one of 24*24, 32*32, 48*48, 64*64, 72*72, 96*96
+     */
+    public void loadAvatarUrls(int avatarSize) {
+//        List<Avatar> avatars;
+//
+//        if (!Utils.isNetworkOn() || !avatarManager.isNeedToLoadNewAvatars()) {
+//            // Toast.makeText(AccountsActivity.this, getString(R.string.network_down), Toast.LENGTH_SHORT).show();
+//
+//            // use cached avatars
+//            avatars = avatarManager.getAvatarList();
+//
+//            if (avatars == null) {
+//                return;
+//            }
+//
+//            // set avatars url to adapter
+//            adapter.setAvatars((ArrayList<Avatar>) avatars);
+//
+//            // notify adapter data changed
+//            adapter.notifyDataSetChanged();
+//
+//            return;
+//        }
+
+        LoadAvatarUrlsTask task = new LoadAvatarUrlsTask(avatarSize);
+
+        ConcurrentAsyncTask.execute(task);
+
+    }
+
+    private class LoadAvatarUrlsTask extends AsyncTask<Void, Void, Avatar> {
+
+//        private List<Avatar> avatars;
+        private int avatarSize;
+        private SeafConnection httpConnection;
+
+        public LoadAvatarUrlsTask(int avatarSize) {
+            this.avatarSize = avatarSize;
+//            this.avatars = Lists.newArrayList();
+        }
+
+        @Override
+        protected Avatar doInBackground(Void... params) {
+            // reuse cached avatars
+//            avatars = avatarManager.getAvatarList();
+
+            // contains accounts who don`t have avatars yet
+//            List<Account> acts = avatarManager.getAccountsWithoutAvatars();
+
+            // contains new avatars in order to persist them to database
+//            List<Avatar> newAvatars = new ArrayList<Avatar>(acts.size());
+
+            // load avatars from server
+//            for (Account account : acts) {
+                httpConnection = new SeafConnection(accountManager.getAccount());
+
+                String avatarRawData = null;
+                try {
+                    avatarRawData = httpConnection.getAvatar(accountManager.getAccount().getEmail(), avatarSize);
+                } catch (SeafException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+
+                Avatar avatar = avatarManager.parseAvatar(avatarRawData);
+                if (avatar == null)
+                    return null;
+
+                avatar.setSignature(accountManager.getAccount().getSignature());
+
+//                avatars.add(avatar);
+
+//                newAvatars.add(avatar);
+//            }
+
+            // save new added avatars to database
+//            avatarManager.saveAvatarList(newAvatars);
+
+            return avatar;
+        }
+
+        @Override
+        protected void onPostExecute(Avatar avatar) {
+            if (avatar == null) {
+                return;
+            }
+
+            if (getAvatarUrl(accountManager.getAccount(),avatar) != null) {
+                DisplayImageOptions options = new DisplayImageOptions.Builder()
+                        .extraForDownloader(accountManager.getAccount())
+                        .showStubImage(R.drawable.default_avatar)
+                        // .delayBeforeLoading(1000)
+                        .showImageOnLoading(R.drawable.default_avatar)
+                        .showImageForEmptyUri(R.drawable.default_avatar)
+                        .showImageOnFail(R.drawable.default_avatar)
+                        .resetViewBeforeLoading()
+                        .cacheInMemory(true)
+                        .cacheOnDisk(true)
+                        .considerExifParams(true)
+                        .displayer(new RoundedBitmapDisplayer(1000))
+                        .build();
+                ImageLoader.getInstance().displayImage(getAvatarUrl(accountManager.getAccount(),avatar), avatarImageView, options);
+            }
+            ImageLoader.getInstance().handleSlowNetwork(true);
+        }
+        private String getAvatarUrl(Account account,Avatar avatar) {
+            if (avatar == null) {
+                return null;
+            }
+//            for (Avatar avatar : avatars) {
+                if (avatar.getSignature().equals(account.getSignature())) {
+                    return avatar.getUrl();
+                }
+//            }
+
+            return null;
+        }
     }
 
 }
