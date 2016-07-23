@@ -78,6 +78,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     TextView createTextView;
     @Bind(R.id.transfer_personal_tv)
     TextView transferTextView;
+    @Bind(R.id.line_personal_view)
+    View lineView;
     @Bind(R.id.refresh_layout_personal_srlayout)
     SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.recycler_view_personal_rl)
@@ -203,7 +205,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         refreshView(true);
     }
 
-    public RelativeLayout getEmptyView(){
+    public RelativeLayout getEmptyView() {
 
         return emptyRelativeLayout;
     }
@@ -263,7 +265,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                     //音乐
                     videoList = Utils.categoryFile(allDirentList, audioFormat);
                     setCategoryDataToAdapter(videoList);
-                }else {
+                } else {
                     dateDirentList = Utils.sortFileByDate(allDirentList);
                     setCategoryDataToAdapter(dateDirentList);
                 }
@@ -300,7 +302,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 adapter.add(seafDirent);
             }
             adapter.notifyDataSetChanged();
-        }else{
+        } else {
             swipeRefreshLayout.setVisibility(View.GONE);
             emptyRelativeLayout.setVisibility(View.VISIBLE);
         }
@@ -355,19 +357,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 //                mActivity.enableUpButton();
 //            }
             navToDirectory(forceRefresh);
-            optionLinearLayout.setEnabled(true);
-            categoryTextView.setEnabled(true);
-            sortTextView.setEnabled(true);
-            createTextView.setEnabled(true);
-            transferTextView.setEnabled(true);
+            optionLinearLayout.setVisibility(View.VISIBLE);
+            lineView.setVisibility(View.VISIBLE);
         } else {
 //            mActivity.disableUpButton();
             navToReposView(forceRefresh);
-            optionLinearLayout.setEnabled(false);
-            categoryTextView.setEnabled(false);
-            sortTextView.setEnabled(false);
-            createTextView.setEnabled(false);
-            transferTextView.setEnabled(false);
+            optionLinearLayout.setVisibility(View.GONE);
+            lineView.setVisibility(View.GONE);
         }
     }
 
@@ -380,9 +376,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 return;
             }
         }
-		ConcurrentAsyncTask.execute(new LoadTask(getDataManager()));
+        ConcurrentAsyncTask.execute(new LoadTask(getDataManager()));
     }
-
 
 
     private void navToDirectory(boolean forceRefresh) {
@@ -583,7 +578,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         }
 
         SeafCachedFile cf = getDataManager().getCachedFile(repoName, repoID, path);
-        if (cf!= null) {
+        if (cf != null) {
             builder.remove(R.id.download);
         } else {
             builder.remove(R.id.update);
@@ -605,7 +600,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                         mActivity.shareDir(repoID, path);
                         break;
                     case R.id.delete:
-                       mActivity.deleteDir(repoID, repoName, path);
+                        mActivity.deleteDir(repoID, repoName, path);
                         break;
                     case R.id.copy:
                         mActivity.copyFile(repoID, repoName, dir, filename, false);
@@ -641,16 +636,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 if (which == 0) {
                     // create file
                     showNewFileDialog();
-                }
-                else if (which == 1) {
+                } else if (which == 1) {
                     // create folder
                     showNewDirDialog();
-                }
-                else if (which == 2) {
+                } else if (which == 2) {
                     // upload file
                     pickFile();
-                }
-                else if (which == 3) {
+                } else if (which == 3) {
                     // take a photo
                     CameraTakePhoto();
                 }
