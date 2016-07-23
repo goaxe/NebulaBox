@@ -21,10 +21,10 @@
         android:id="@+id/move"
         android:icon="@drawable/action_move"
         android:title="@string/file_action_move" />
-    <group android:id="@+id/group_update">
-        <item
-            android:id="@+id/download"
-            android:icon="@drawable/action_download"
-            android:title="@string/file_action_download" />
-    </group>
+    <!--<group android:id="@+id/group_update">-->
+        <!--<item-->
+            <!--android:id="@+id/download"-->
+            <!--android:icon="@drawable/action_download"-->
+            <!--android:title="@string/file_action_download" />-->
+    <!--</group>-->
 </menu>
