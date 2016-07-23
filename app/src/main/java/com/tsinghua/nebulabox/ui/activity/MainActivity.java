@@ -94,7 +94,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private NavContext navContext = new NavContext();
 
-//    @Bind(R.id.avatar_toolbar_main_iv)
+    //    @Bind(R.id.avatar_toolbar_main_iv)
 //    CircleImageView avatarImageView;
 //    @Bind(R.id.username_toolbar_main_tv)
 //    TextView userNameTextView;
@@ -102,12 +102,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //    ImageView searchImageView;
 //    @Bind(R.id.more_toolbar_main_iv)
 //    ImageView moreImageView;
+    @Bind(R.id.title_toolbar_main_tv)
+    TextView titleTextView;
     @Bind(R.id.content_main_fl)
     FrameLayout contentFrameLayout;
 
     @Bind({R.id.personal_main_iv, R.id.star_main_iv, R.id.usercenter_main_iv})
     List<ImageView> tabsImageViewList;
-    @Bind({R.id.personal_main_ll,  R.id.star_main_ll, R.id.usercenter_main_ll})
+    @Bind({R.id.personal_main_ll, R.id.star_main_ll, R.id.usercenter_main_ll})
     List<LinearLayout> tabsLinearLayoutList;
     @Bind({R.id.personal_main_tv, R.id.star_main_tv, R.id.usercenter_main_tv})
     List<TextView> tabsTextViewList;
@@ -233,6 +235,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         tabsImageViewList.get(tabIndex).setImageResource(tabsImagesSelectedList.get(tabIndex));
         tabsTextViewList.get(currentFragmentIndex).setTextColor(ContextCompat.getColor(this, R.color.tab_main_unselected));
         tabsTextViewList.get(tabIndex).setTextColor(ContextCompat.getColor(this, R.color.tab_main_selected));
+
+        if (tabIndex == 0) {
+            titleTextView.setText("个人空间");
+        } else if (tabIndex == 1) {
+            titleTextView.setText("星标");
+        } else {
+            titleTextView.setText("个人中心");
+        }
     }
 
 
