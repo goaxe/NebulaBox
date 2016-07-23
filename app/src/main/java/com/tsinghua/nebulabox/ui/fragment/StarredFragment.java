@@ -30,6 +30,7 @@ import com.tsinghua.nebulabox.ui.adapter.StarredItemAdapter;
 import com.tsinghua.nebulabox.util.ConcurrentAsyncTask;
 import com.tsinghua.nebulabox.util.Utils;
 
+import java.net.URLEncoder;
 import java.util.List;
 
 public class StarredFragment extends ListFragment {
@@ -219,7 +220,6 @@ public class StarredFragment extends ListFragment {
 
     @Override
     public void onListItemClick(final ListView l, final View v, final int position, final long id) {
-        // handle action mode selections
         if (mActionMode != null) {
             // add or remove selection for current list item
             if (adapter == null) return;
@@ -230,8 +230,7 @@ public class StarredFragment extends ListFragment {
         }
 
         final SeafStarredFile starredFile = (SeafStarredFile)adapter.getItem(position);
-        // TODO: 16-7-17
-//        mActivity.onStarredFileSelected(starredFile);
+        mActivity.onStarredFileSelected(starredFile);
     }
 
     private void unStarFiles(List<SeafStarredFile> starredFiles) {
@@ -368,9 +367,13 @@ public class StarredFragment extends ListFragment {
         protected Void doInBackground(Void... params) {
 
             try {
-                mActivity.getDataManager().unstar(repoId, path);
+                Log.e("xxx", repoId + " " + path);
+                mActivity.getDataManager().unstar(repoId, URLEncoder.encode(path, "utf-8"));
             } catch (SeafException e) {
                 err = e;
+                e.printStackTrace();
+            } catch (Exception e0) {
+                e0.printStackTrace();
             }
 
             return null;
@@ -483,9 +486,11 @@ public class StarredFragment extends ListFragment {
             String repoName = nav.getRepoName();
             String dirPath = nav.getDirPath();
             final List<SeafStarredFile> starredFiles = adapter.getSelectedItemsValues();
+            Log.e(DEBUG_TAG, "starredFiles size: " + starredFiles.size());
+            Log.e(DEBUG_TAG, repoName + " " + repoID + dirPath);
             if (starredFiles.size() == 0
-                    || repoID == null
-                    || dirPath == null) {
+/*                    || repoID == null
+                    || dirPath == null*/) {
                 if (item.getItemId() != R.id.action_mode_select_all) {
                     ToastUtils.show(mActivity, R.string.action_mode_no_items_selected);
                     return true;

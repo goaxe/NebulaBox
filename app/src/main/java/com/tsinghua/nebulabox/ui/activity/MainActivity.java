@@ -22,6 +22,7 @@ import com.tsinghua.nebulabox.account.AccountManager;
 import com.tsinghua.nebulabox.data.DataManager;
 import com.tsinghua.nebulabox.data.SeafDirent;
 import com.tsinghua.nebulabox.data.SeafRepo;
+import com.tsinghua.nebulabox.data.SeafStarredFile;
 import com.tsinghua.nebulabox.fileschooser.MultiFileChooserActivity;
 import com.tsinghua.nebulabox.notification.DownloadNotificationProvider;
 import com.tsinghua.nebulabox.transfer.DownloadTaskInfo;
@@ -50,7 +51,34 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, StarredFragment.OnStarredFileSelectedListener {
+
+    @Override
+    public void onStarredFileSelected(SeafStarredFile starredFile) {
+                final String repoID = starredFile.getRepoID();
+        final SeafRepo repo = dataManager.getCachedRepoByID(repoID);
+        if (repo == null) return;
+
+        final String repoName = repo.getName();
+        final String filePath = starredFile.getPath();
+        final String dirPath = Utils.getParentPath(filePath);
+
+        // Encrypted repo doesn\`t support gallery,
+        // because pic thumbnail under encrypted repo was not supported at the server side
+        if (Utils.isViewableImage(starredFile.getTitle()) && !repo.encrypted) {
+            WidgetUtils.startGalleryActivity(this, repoName, repoID, dirPath, starredFile.getTitle(), accountManager.getAccount());
+            return;
+        }
+
+        final File localFile = dataManager.getLocalCachedFile(repoName, repoID, filePath, null);
+        if (localFile != null) {
+            WidgetUtils.showFile(this, localFile);
+            return;
+        }
+
+        startFileActivity(repoName, repoID, filePath, repo.canLocalDecrypt(), repo.encVersion);
+
+    }
 
     private static final String DEBUG_TAG = "MainActivity";
 
@@ -341,12 +369,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         return fragmentList.get(index);
     }
 
-    private PersonalFragment getPersonalFragment() {
+    public PersonalFragment getPersonalFragment() {
         return (PersonalFragment) getFragment(0);
     }
 
-    private StarredFragment getStarredFragment() {
-        return (StarredFragment) getFragment(2);
+    public StarredFragment getStarredFragment() {
+        return (StarredFragment) getFragment(1);
     }
 
     public void showFileBottomSheet(String title, final SeafDirent dirent) {

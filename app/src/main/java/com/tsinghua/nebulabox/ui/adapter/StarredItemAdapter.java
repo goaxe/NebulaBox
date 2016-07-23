@@ -1,5 +1,6 @@
 package com.tsinghua.nebulabox.ui.adapter;
 
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StarredItemAdapter extends BaseAdapter {
+
+    private static final String DEBUG_TAG = "StarredItemAdapter";
 
     private ArrayList<SeafItem> items;
     private MainActivity mActivity;
@@ -80,8 +83,7 @@ public class StarredItemAdapter extends BaseAdapter {
             mSelectedItemsValues.add((SeafStarredFile) items.get(position));
         }
 
-        // TODO: 16-7-17
-//        mActivity.getStarredFragment().updateContextualActionBar();
+        mActivity.getStarredFragment().updateContextualActionBar();
         notifyDataSetChanged();
     }
 
@@ -117,6 +119,8 @@ public class StarredItemAdapter extends BaseAdapter {
             mSelectedItemsPositions.add(i);
             mSelectedItemsValues.add((SeafStarredFile) items.get(i));
         }
+
+        Log.e(DEBUG_TAG, "select All items" + mSelectedItemsValues.size());
         notifyDataSetChanged();
     }
 
