@@ -13,7 +13,9 @@
     <string name="server_hint">服务器地址</string>
     <string name="email_hint">用户名或邮箱</string>
     <string name="passwd_hint">密码</string>
+    <string name="passwd_confirm_hint">确认密码</string>
     <string name="login">登录</string>
+    <string name="register">注册</string>
     <string name="open_file">打开</string>
     <string name="download_file">下载</string>
     <string name="redownload_file">重新下载</string>
@@ -125,12 +127,6 @@
         <item>下载文件夹及其子文件夹</item>
     </string-array>
     <string name="add_file">添加</string>
-    <string-array name="add_file_options_array">
-        <item>新建文件</item>
-        <item>新建文件夹</item>
-        <item>上传文件</item>
-        <item>拍照上传</item>
-    </string-array>
     <string name="create_new_file">创建新文件</string>
     <string name="create_new_dir">创建新文件夹</string>
     <string name="camera">拍照上传</string>
@@ -162,7 +158,7 @@
     <string name="added_to_upload_tasks">开始上传</string>
     <string name="added_photo_to_upload_tasks">图片开始上传</string>
     <string name="take_photo_successfully">拍照成功</string>
-    <string name="tabs_main_personal">个人</string>
+    <string name="tabs_main_personal">空间</string>
     <string name="tabs_main_share">分享</string>
     <string name="tabs_main_upload">上传</string>
     <string name="tabs_main_star">星标</string>
@@ -462,74 +458,10 @@
         features of the application</string>
 
 
-
     <string name="no_data">暂无数据</string>
     <string name="load_data_fail">加载失败</string>
     <string name="load_data_adequate">没有更多啦</string>
     <string name="loading_data">加载中...</string>
 
-    <string-array name="category_files_options_array">
-        <item>照片</item>
-        <item>音乐</item>
-        <item>影片</item>
-        <item>文档</item>
-        <item>应用</item>
-        <item>全部</item>
-    </string-array>
-
-    <string-array name="sorts_files_options_array">
-        <item>按文件名称排序</item>
-        <item>按时间倒序排序</item>
-    </string-array>
-
-    <string-array name="format_picture">
-        <item>.bmp</item>
-        <item>.exif</item>
-        <item>.gif</item>
-        <item>.jpeg</item>
-        <item>.png</item>
-        <item>.svg</item>
-        <item>.raw</item>
-        <item>.jpg</item>
-    </string-array>
-
-    <string-array name="format_video">
-        <item>.avi</item>
-        <item>.mov</item>
-        <item>.mpeg</item>
-        <item>.rm</item>
-        <item>.mp4</item>
-        <item>.wmv</item>
-        <item>.rmvb</item>
-        <item>.rmvb</item>
-        <item>.mpg</item>
-    </string-array>
-
-    <string-array name="format_app">
-        <item>.apk</item>
-        <item>.exe</item>
-        <item>.ipa</item>
-        <item>.dmg</item>
-    </string-array>
-
-    <string-array name="format_audio">
-        <item>.wav</item>
-        <item>.mp3</item>
-        <item>.wma</item>
-        <item>.ape</item>
-        <item>.aac</item>
-    </string-array>
-
-    <string-array name="format_document">
-        <item>.txt</item>
-        <item>.doc</item>
-        <item>.html</item>
-        <item>.htm</item>
-        <item>.docx</item>
-        <item>.ppt</item>
-        <item>.pptx</item>
-        <item>.pdf</item>
-        <item>.wps</item>
-    </string-array>
 
 </resources>

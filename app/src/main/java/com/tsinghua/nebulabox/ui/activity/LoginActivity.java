@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -34,7 +33,7 @@ import butterknife.OnClick;
 
 /**
  * 登录页面
- * <p/>
+ * <p>
  * Created by Alfred on 2016/7/8.
  */
 public class LoginActivity extends BaseActivity {
@@ -49,13 +48,14 @@ public class LoginActivity extends BaseActivity {
     Button loginBtn;
     @Bind(R.id.status_login_tv)
     TextView statusTextView;
+//    @Bind(R.id.register_login_tv)
+//    TextView regitsterTextView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-Log.e("LoginActivity","hello world ! ");
         checkAccountIfLogin();
     }
 
@@ -109,14 +109,7 @@ Log.e("LoginActivity","hello world ! ");
         }
 
         loginBtn.setEnabled(false);
-        Log.e("dfasfd","====================================================");
         Account account = new Account(serverURL, email, null);
-        try {
-            Log.e("dfasfd","====================================================");
-            Log.e("",""+Class.forName("android.os.AsyncTask"));
-        }catch (Exception e){
-            e.printStackTrace();
-        }
 
         ConcurrentAsyncTask.execute(new LoginTask(account, password));
     }

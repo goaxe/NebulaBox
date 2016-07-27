@@ -3,6 +3,7 @@ package com.tsinghua.nebulabox.ui.fragment.main;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,13 +13,17 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -44,6 +49,7 @@ import com.tsinghua.nebulabox.ui.dialog.FileOptionDialog;
 import com.tsinghua.nebulabox.ui.dialog.NewDirDialog;
 import com.tsinghua.nebulabox.ui.dialog.NewFileDialog;
 import com.tsinghua.nebulabox.ui.dialog.TaskDialog;
+import com.tsinghua.nebulabox.ui.widget.CircleImageView;
 import com.tsinghua.nebulabox.util.ConcurrentAsyncTask;
 import com.tsinghua.nebulabox.util.Utils;
 import com.tsinghua.nebulabox.util.log.KLog;
@@ -89,8 +95,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     @Bind(R.id.empty_iv)
     ImageView emptyImageView;
 
-    private String[] categoryOptionalList;
-    private String[] sortOptionalList;
+    private String[] categoryOptionalTextList;
+    private String[] sortOptionalTextList;
+    private String[] uploadOptionalTextList;
+
+    private int[] categoryOptionalIconList = new int[]{R.drawable.icon_picture,R.drawable.icon_music,R.drawable.icon_video,R.drawable.icon_document,R.drawable.icon_app,R.drawable.icon_all};
+    private int[] sortOptionalIconList = new int[]{R.drawable.icon_sort_name_reverse,R.drawable.icon_sort_date_reverse};
+    private int[] uploadOptionaIconList = new int[]{R.drawable.icon_folder_created,R.drawable.icon_upload_file,R.drawable.icon_play_camera};
 
     private FileOptionDialog categoryDialog;
     private FileOptionDialog sortDialog;
@@ -134,17 +145,18 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        categoryOptionalList = getResources().getStringArray(R.array.category_files_options_array);
-        sortOptionalList = getResources().getStringArray(R.array.sorts_files_options_array);
+        Resources resources = getResources();
+        categoryOptionalTextList = resources.getStringArray(R.array.category_files_options_array);
+        sortOptionalTextList = resources.getStringArray(R.array.sorts_files_options_array);
+        uploadOptionalTextList = resources.getStringArray(R.array.add_file_options_array);
 
         categoryDialog = new FileOptionDialog();
-        categoryDialog.setList(categoryOptionalList);
+        categoryDialog.setList(categoryOptionalTextList);
         categoryDialog.setOnItemClickListener(this);
         sortDialog = new FileOptionDialog();
-        sortDialog.setList(sortOptionalList);
+        sortDialog.setList(sortOptionalTextList);
         sortDialog.setOnItemClickListener(this);
 
-        Resources resources = getResources();
         pictureFormat = resources.getStringArray(R.array.format_picture);
         audioFormat = resources.getStringArray(R.array.format_audio);
         videoFormat = resources.getStringArray(R.array.format_video);
@@ -154,7 +166,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         dataManager = mActivity.getDataManager();
 
         allDirentList = new ArrayList<>();
-        adapter = new SeafItemAdapter((MainActivity) mActivity);
+        adapter = new SeafItemAdapter(mActivity);
 //		adapter.setOnItemClickListener(this);
 //		adapter.setOnItemLongClickListener(this);
 
@@ -168,32 +180,33 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 NavContext navContext = getNavContext();
-                SeafItem o = adapter.getItem(i);
+                SeafItem seafItem = adapter.getItem(i);
                 boolean inRepo = navContext.inRepo();
-                Log.e(DEBUG_TAG, "inRepo:" + inRepo + " " + navContext.getRepoID() + o.getClass());
 
                 if (inRepo) {
-                    if (o instanceof SeafDirent) {
-                        SeafDirent seafDirent = (SeafDirent) o;
+                    if (seafItem instanceof SeafDirent) {
+                        SeafDirent seafDirent = (SeafDirent) seafItem;
                         if (seafDirent.isDir()) {
                             String currentPath = navContext.getDirPath();
                             String newPath = currentPath.endsWith("/") ?
                                     currentPath + seafDirent.name : currentPath + "/" + seafDirent.name;
                             navContext.setDir(newPath, seafDirent.id);
                             refreshView(false);
+                            mActivity.subTitleTextView.setText(newPath);
                         } else {
                             mActivity.onFileSelected(seafDirent);
                         }
-                    } else
+                    } else {
                         return;
+                    }
                 } else {
-                    SeafRepo seafRepo = (SeafRepo) o;
+                    SeafRepo seafRepo = (SeafRepo) seafItem;
                     navContext.setRepoID(seafRepo.id);
                     navContext.setRepoName(seafRepo.getName());
                     navContext.setDir("/", seafRepo.root);
                     refreshView(false);
+                    mActivity.subTitleTextView.setText(seafRepo.getName());
                 }
-
             }
         });
 
@@ -210,6 +223,162 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         return emptyRelativeLayout;
     }
 
+    private void initOptionalPopupWindow(final int index) {
+        View view = LayoutInflater.from(mActivity).inflate(R.layout.popup_categoty, null);
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
+        GridView gridView = (GridView) view.findViewById(R.id.grid_popup_category_gv);
+        final PopupWindow popupWindow = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        popupWindow.setFocusable(true);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setBackgroundDrawable(new BitmapDrawable());
+        popupWindow.showAsDropDown(optionLinearLayout);
+        popupWindow.getContentView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if (i == KeyEvent.KEYCODE_BACK){
+                    popupWindow.dismiss();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        OptionalGridViewAdapter adapter = loadOptionalPopupData(index);
+        if (adapter == null) {
+            return;
+        }
+        gridView.setAdapter(adapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        //照片,按文件排序
+                        if (index == 0) {
+                            //照片
+                            pictureList = Utils.categoryFile(allDirentList, pictureFormat);
+                            setCategoryDataToAdapter(pictureList);
+                        } else if (index == 1) {
+                            fileNameDirentList = Utils.sortFileByFileName(allDirentList);
+                            setCategoryDataToAdapter(fileNameDirentList);
+                        } else if (index == 2) {
+                            showNewDirDialog();
+                        }
+                        break;
+                    case 1:
+                        //音乐,按时间倒序排序
+                        if (index == 0) {
+                            //音乐
+                            videoList = Utils.categoryFile(allDirentList, audioFormat);
+                            setCategoryDataToAdapter(videoList);
+                        } else if (index == 1) {
+                            dateDirentList = Utils.sortFileByDate(allDirentList);
+                            setCategoryDataToAdapter(dateDirentList);
+                        } else if (index == 2) {
+                            pickFile();
+                        }
+                        break;
+                    case 2:
+                        //影视
+                        if (index == 0) {
+                            movieList = Utils.categoryFile(allDirentList, videoFormat);
+                            setCategoryDataToAdapter(movieList);
+                        } else if (index == 2) {
+                            CameraTakePhoto();
+                        }
+                        break;
+                    case 3:
+                        //文档
+                        txtList = Utils.categoryFile(allDirentList, txtFormat);
+                        setCategoryDataToAdapter(txtList);
+                        break;
+                    case 4:
+                        //应用
+                        appList = Utils.categoryFile(allDirentList, appFormat);
+                        setCategoryDataToAdapter(appList);
+                        break;
+                    case 5:
+                        //全部
+                        setCategoryDataToAdapter(allDirentList);
+                        break;
+                }
+                popupWindow.dismiss();
+            }
+
+        });
+    }
+
+    public OptionalGridViewAdapter loadOptionalPopupData(int index) {
+        OptionalGridViewAdapter adapter = new OptionalGridViewAdapter();
+        if (index == 0) {
+            adapter.setIconList(categoryOptionalIconList);
+            adapter.setTitleList(categoryOptionalTextList);
+        } else if (index == 1) {
+            adapter.setIconList(sortOptionalIconList);
+            adapter.setTitleList(sortOptionalTextList);
+        } else if (index == 2) {
+            adapter.setTitleList(uploadOptionalTextList);
+            adapter.setIconList(uploadOptionaIconList);
+        } else {
+            return null;
+        }
+        return adapter;
+    }
+
+    private class OptionalGridViewAdapter extends BaseAdapter {
+
+        private String[] titleList;
+        private int[] iconList;
+
+        public void setTitleList(String[] titleList) {
+            this.titleList = titleList;
+        }
+
+        public void setIconList(int[] iconList) {
+            this.iconList = iconList;
+        }
+
+        @Override
+        public int getCount() {
+            return titleList.length;
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder = null;
+            if (convertView == null) {
+                convertView = LayoutInflater.from(mActivity).inflate(R.layout.item_popup_category, parent, false);
+                viewHolder = new ViewHolder();
+                viewHolder.iconImageView = (CircleImageView) convertView.findViewById(R.id.icon_item_popup_category_iv);
+                viewHolder.titleTextView = (TextView) convertView.findViewById(R.id.title_item_popup_category_tv);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+
+            viewHolder.titleTextView.setText(titleList[position]);
+            viewHolder.iconImageView.setImageResource(iconList[position]);
+
+            return convertView;
+        }
+    }
+
+    class ViewHolder {
+        CircleImageView iconImageView;
+        TextView titleTextView;
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -221,20 +390,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.category_personal_tv:
-                KLog.i("sortDialog = " + sortDialog);
-                if (sortDialog.isVisible()) {
-                    sortDialog.dismiss();
-                }
-                categoryDialog.show(getFragmentManager(), "categoryDialog");
+                initOptionalPopupWindow(0);
                 break;
             case R.id.sort_personal_tv:
-                if (categoryDialog.isVisible()) {
-                    categoryDialog.dismiss();
-                }
-                sortDialog.show(getFragmentManager(), "sortDialog");
+                initOptionalPopupWindow(1);
                 break;
             case R.id.create_personal_tv:
-                addFile();
+                initOptionalPopupWindow(2);
                 break;
             case R.id.transfer_personal_tv:
                 Intent intent = new Intent(mActivity, TransferActivity.class);
@@ -359,11 +521,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             navToDirectory(forceRefresh);
             optionLinearLayout.setVisibility(View.VISIBLE);
             lineView.setVisibility(View.VISIBLE);
+            mActivity.subTitleTextView.setVisibility(View.VISIBLE);
         } else {
 //            mActivity.disableUpButton();
             navToReposView(forceRefresh);
             optionLinearLayout.setVisibility(View.GONE);
             lineView.setVisibility(View.GONE);
+            mActivity.subTitleTextView.setVisibility(View.GONE);
         }
     }
 
@@ -418,11 +582,9 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         protected List<SeafRepo> doInBackground(Void... params) {
             try {
                 List<SeafRepo> repos = dataManager.getReposFromServer();
-                Log.e(DEBUG_TAG, "========================");
                 for (SeafRepo repo : repos) {
                     Log.e(DEBUG_TAG, repo.getName() + " " + repo.id);
                 }
-                Log.e(DEBUG_TAG, "========================");
                 return repos;
             } catch (SeafException e) {
                 return null;
@@ -509,7 +671,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(List<SeafDirent> dirents) {
-            if (mActivity == null)
+            KLog.i(dirents);
+            if (mActivity == null || dirents == null)
                 // this occurs if user navigation to another activity
                 return;
             allDirentList.clear();
@@ -634,15 +797,12 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
-                    // create file
-                    showNewFileDialog();
-                } else if (which == 1) {
                     // create folder
                     showNewDirDialog();
-                } else if (which == 2) {
+                } else if (which == 1) {
                     // upload file
                     pickFile();
-                } else if (which == 3) {
+                } else if (which == 2) {
                     // take a photo
                     CameraTakePhoto();
                 }

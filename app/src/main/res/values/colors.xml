@@ -28,8 +28,8 @@
 
     <color name="app_main_color">#1483DA</color>
 
-    <color name="tab_main_unselected">#0064B8</color>
-    <color name="tab_main_selected">#5D5D5D</color>
+    <color name="tab_main_selected">#0064B8</color>
+    <color name="tab_main_unselected">#5D5D5D</color>
     <color name="line">#CCCCCC</color>
 
     <!-- material design black font color -->

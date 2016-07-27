@@ -38,7 +38,7 @@
                 android:id="@+id/personal_main_iv"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/ic_self_grey"/>
+                android:src="@drawable/ic_filter_drama_white_36dp"/>
 
             <TextView
                 android:id="@+id/personal_main_tv"
@@ -85,7 +85,7 @@
                 android:id="@+id/star_main_iv"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/ic_share_white_36dp"/>
+                android:src="@drawable/ic_star_gray"/>
 
             <TextView
                 android:id="@+id/star_main_tv"
@@ -108,7 +108,7 @@
                 android:id="@+id/usercenter_main_iv"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/ic_center_blue"/>
+                android:src="@drawable/self_grey_48"/>
 
             <TextView
                 android:id="@+id/usercenter_main_tv"
