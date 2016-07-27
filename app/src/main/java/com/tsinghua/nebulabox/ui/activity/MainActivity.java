@@ -41,7 +41,6 @@ import com.tsinghua.nebulabox.ui.fragment.StarredFragment;
 import com.tsinghua.nebulabox.ui.fragment.main.PersonalFragment;
 import com.tsinghua.nebulabox.ui.fragment.main.UserCenterFragment;
 import com.tsinghua.nebulabox.util.Utils;
-import com.tsinghua.nebulabox.util.log.KLog;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onStarredFileSelected(SeafStarredFile starredFile) {
-                final String repoID = starredFile.getRepoID();
+        final String repoID = starredFile.getRepoID();
         final SeafRepo repo = dataManager.getCachedRepoByID(repoID);
         if (repo == null) return;
 
@@ -132,6 +131,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 //    ImageView moreImageView;
     @Bind(R.id.title_toolbar_main_tv)
     TextView titleTextView;
+    @Bind(R.id.subtitle_toolbar_main_tv)
+    public TextView subTitleTextView;
     @Bind(R.id.content_main_fl)
     FrameLayout contentFrameLayout;
 
@@ -169,8 +170,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             transaction.add(R.id.content_main_fl, fragment);
         }
         transaction.commitAllowingStateLoss();
-        KLog.e("=================" + currentFragmentIndex);
-        Log.e(DEBUG_TAG, "==============" + currentFragmentIndex);
         switchFragment(currentFragmentIndex);
 
 //        getSupportFragmentManager().beginTransaction().add(R.id.content_main_fl, fragmentList.get(currentFragmentIndex)).commitAllowingStateLoss();
@@ -203,15 +202,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void initVariable() {
-        tabsImagesUnselectedList = new ArrayList<>();
-        tabsImagesUnselectedList.add(R.drawable.ic_filter_drama_white_36dp);
-        tabsImagesUnselectedList.add(R.drawable.ic_share_white_36dp);
-        tabsImagesUnselectedList.add(R.drawable.ic_center_blue);
-
         tabsImagesSelectedList = new ArrayList<>();
-        tabsImagesSelectedList.add(R.drawable.ic_self_grey);
-        tabsImagesSelectedList.add(R.drawable.ic_share_grey);
-        tabsImagesSelectedList.add(R.drawable.self_grey_48);
+        tabsImagesSelectedList.add(R.drawable.ic_filter_drama_white_36dp);
+        tabsImagesSelectedList.add(R.drawable.ic_star_blue);
+        tabsImagesSelectedList.add(R.drawable.ic_center_blue);
+
+        tabsImagesUnselectedList = new ArrayList<>();
+        tabsImagesUnselectedList.add(R.drawable.ic_self_grey);
+        tabsImagesUnselectedList.add(R.drawable.ic_star_gray);
+        tabsImagesUnselectedList.add(R.drawable.self_grey_48);
 
         fragmentList = new ArrayList<>();
         fragmentList.add(PersonalFragment.newInstance(new PersonalFragment()));
@@ -265,11 +264,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         tabsTextViewList.get(tabIndex).setTextColor(ContextCompat.getColor(this, R.color.tab_main_selected));
 
         if (tabIndex == 0) {
-            titleTextView.setText("个人空间");
+            titleTextView.setText("空间");
+            subTitleTextView.setVisibility(View.VISIBLE);
         } else if (tabIndex == 1) {
             titleTextView.setText("星标");
+            subTitleTextView.setVisibility(View.GONE);
         } else {
             titleTextView.setText("个人中心");
+            subTitleTextView.setVisibility(View.GONE);
         }
     }
 
@@ -363,6 +365,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void onBackPressed() {
         if (currentFragmentIndex != 0 || !navContext.inRepo()) {
             super.onBackPressed();
+            return;
         }
         if (navContext.isRepoRoot()) {
             navContext.setRepoID(null);
@@ -371,6 +374,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     .getDirPath());
             navContext.setDir(parentPath, null);
         }
+        subTitleTextView.setText(navContext.getDirPath());
         PersonalFragment personalFragment = (PersonalFragment) fragmentList.get(currentFragmentIndex);
         personalFragment.refreshView(false);
     }

@@ -49,8 +49,8 @@
                 android:layout_marginLeft="@dimen/et_margin_left"
                 android:layout_marginRight="@dimen/et_margin_right"
                 android:hint="@string/server_hint"
-                android:text="http://166.111.131.117:8000/"
                 android:inputType="textUri"
+                android:text="http://166.111.131.117:8000/"
                 android:textSize="@dimen/et_txt_size"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -68,8 +68,8 @@
                 android:layout_marginRight="@dimen/auto_complete_ed_margin_right"
                 android:ems="10"
                 android:hint="@string/email_hint"
-                android:text="1@qq.com "
-                android:inputType="textEmailAddress"/>
+                android:inputType="textEmailAddress"
+                android:text="1@qq.com "/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -85,8 +85,8 @@
                 android:layout_marginLeft="@dimen/auto_complete_ed_margin_left"
                 android:layout_marginRight="@dimen/auto_complete_ed_margin_right"
                 android:hint="@string/passwd_hint"
-                android:text="123456"
-                android:inputType="textPassword"/>
+                android:inputType="textPassword"
+                android:text="123456"/>
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 
@@ -95,15 +95,26 @@
         android:id="@+id/login_button_login_btn"
         android:layout_width="match_parent"
         android:layout_height="@dimen/long_btn_height"
-        android:layout_marginLeft="@dimen/long_btn_margin_left"
-        android:layout_marginStart="@dimen/long_btn_margin_left"
-        android:layout_marginRight="@dimen/long_btn_margin_right"
         android:layout_marginEnd="@dimen/long_btn_margin_right"
+        android:layout_marginLeft="@dimen/long_btn_margin_left"
+        android:layout_marginRight="@dimen/long_btn_margin_right"
+        android:layout_marginStart="@dimen/long_btn_margin_left"
         android:paddingBottom="@dimen/long_btn_padding_bottom"
         android:paddingTop="@dimen/long_btn_padding_top"
         android:text="@string/login"
         android:textColor="@color/white"
         android:textSize="@dimen/long_btn_txt_size"/>
+
+    <!--<TextView-->
+        <!--android:id="@+id/register_login_tv"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="end"-->
+        <!--android:layout_marginEnd="@dimen/long_btn_margin_right"-->
+        <!--android:layout_marginRight="@dimen/long_btn_margin_right"-->
+        <!--android:text="@string/register"-->
+        <!--android:textColor="@color/app_main_color"-->
+        <!--android:textSize="16sp"/>-->
 
     <TextView
         android:id="@+id/status_login_tv"
