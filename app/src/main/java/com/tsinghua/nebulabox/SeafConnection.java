@@ -148,6 +148,56 @@ public class SeafConnection {
         return prepareHttpsCheck(req);
     }
 
+    public String getShareLinks() throws SeafException {
+        String result;
+        try {
+            HttpRequest req = prepareApiGetRequest("api/v2.1/share-links/");
+            checkRequestResponseStatus(req, HttpURLConnection.HTTP_OK);
+            result = new String(req.bytes(), "UTF-8");
+        } catch (SeafException e) {
+            throw e;
+        } catch (HttpRequestException e) {
+            throw getSeafExceptionFromHttpRequestException(e);
+        } catch (IOException e) {
+            throw SeafException.networkException;
+        }
+        return result;
+    }
+
+    public String getFileHistory(String repoId, String path) throws SeafException {
+        String result;
+        try {
+            HttpRequest req = prepareApiGetRequest("api2/repos/" + repoId + "/file/history/?p=" + path);
+            checkRequestResponseStatus(req, HttpURLConnection.HTTP_OK);
+            result = new String(req.bytes(), "UTF-8");
+        } catch (SeafException e) {
+            throw e;
+        } catch (HttpRequestException e) {
+            throw getSeafExceptionFromHttpRequestException(e);
+        } catch (IOException e) {
+            throw SeafException.networkException;
+        }
+        return result;
+    }
+
+    public String getLibraryHistory(String repoId) throws SeafException {
+        String result;
+        try {
+            HttpRequest req = prepareApiGetRequest("api2/repos/" + repoId + "/history/");
+            checkRequestResponseStatus(req, HttpURLConnection.HTTP_OK);
+            result = new String(req.bytes(), "UTF-8");
+        } catch (SeafException e) {
+            throw e;
+        } catch (HttpRequestException e) {
+            throw getSeafExceptionFromHttpRequestException(e);
+        } catch (IOException e) {
+            throw SeafException.networkException;
+        }
+        return result;
+    }
+
+
+
     /**
      * Login into the server
      * @return true if login success, false otherwise
@@ -228,6 +278,7 @@ public class SeafConnection {
 
         return result;
     }
+
 
     public String getServerInfo() throws SeafException {
 

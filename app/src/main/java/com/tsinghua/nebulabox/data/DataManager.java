@@ -1,6 +1,7 @@
 package com.tsinghua.nebulabox.data;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 
 import com.google.common.collect.Lists;
@@ -12,6 +13,7 @@ import com.tsinghua.nebulabox.account.Account;
 import com.tsinghua.nebulabox.account.AccountInfo;
 import com.tsinghua.nebulabox.crypto.Crypto;
 import com.tsinghua.nebulabox.SeafConnection;
+import com.tsinghua.nebulabox.gallery.Util;
 import com.tsinghua.nebulabox.util.Utils;
 import com.tsinghua.nebulabox.util.log.KLog;
 
@@ -143,6 +145,7 @@ public class DataManager {
         String json = sc.getServerInfo();
         return parseServerInfo(json);
     }
+
 
     private ServerInfo parseServerInfo(String json) throws JSONException {
         JSONObject object = Utils.parseJsonObject(json);
@@ -1119,4 +1122,93 @@ public class DataManager {
         // Update file cache entry
         addCachedFile(repoName, repoID, path, newFileID, fileInRepo);
     }
+
+    public List<SeafShare> getShareLinks() throws SeafException, JSONException {
+        String json = sc.getShareLinks();
+        try {
+            // may throw ClassCastException
+            JSONArray array = Utils.parseJsonArray(json);
+            if (array.length() == 0)
+                return Lists.newArrayListWithCapacity(0);
+
+            ArrayList<SeafShare> shares = Lists.newArrayList();
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+                SeafShare share = SeafShare.fromJson(obj);
+                if (share != null)
+                    shares.add(share);
+            }
+            return shares;
+        } catch (JSONException e) {
+            KLog.e(DEBUG_TAG, "parse json error");
+            return null;
+        } catch (Exception e) {
+            // other exception, for example ClassCastException
+            KLog.e(DEBUG_TAG, "parseRepos exception");
+            return null;
+        }
+    }
+
+
+    public List<SeafCommit> getFileHistory(String repoId, String path) throws SeafException, JSONException {
+        String json = sc.getFileHistory(repoId, path);
+        try {
+            // may throw ClassCastException
+            Log.e(DEBUG_TAG, json);
+            JSONArray array = Utils.parseJsonObject(json).getJSONArray("commits");
+            if (array.length() == 0)
+                return Lists.newArrayListWithCapacity(0);
+
+            ArrayList<SeafCommit> commits = Lists.newArrayList();
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+                SeafCommit commit = SeafCommit.fromJson(obj);
+                if (commit != null) {
+                    commits.add(commit);
+                }
+            }
+            return commits;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e(DEBUG_TAG, e.toString());
+            KLog.e(DEBUG_TAG, "parse json error");
+            return null;
+        } catch (Exception e) {
+            // other exception, for example ClassCastException
+            KLog.e(DEBUG_TAG, "parseRepos exception");
+            return null;
+        }
+    }
+
+    public List<SeafCommit> getLibraryHistory(String repoId) throws SeafException, JSONException {
+        String json = sc.getLibraryHistory(repoId);
+        try {
+            // may throw ClassCastException
+            Log.e(DEBUG_TAG, json);
+            JSONArray array = Utils.parseJsonObject(json).getJSONArray("commits");
+            if (array.length() == 0)
+                return Lists.newArrayListWithCapacity(0);
+
+            ArrayList<SeafCommit> commits = Lists.newArrayList();
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+                SeafCommit commit = SeafCommit.fromJson(obj);
+                if (commit != null) {
+                    commits.add(commit);
+                }
+            }
+            return commits;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e(DEBUG_TAG, e.toString());
+            KLog.e(DEBUG_TAG, "parse json error");
+            return null;
+        } catch (Exception e) {
+            // other exception, for example ClassCastException
+            KLog.e(DEBUG_TAG, "parseRepos exception");
+            return null;
+        }
+    }
+
+
 }

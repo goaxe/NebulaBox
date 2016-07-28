@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,6 +16,8 @@ import com.tsinghua.nebulabox.account.Account;
 import com.tsinghua.nebulabox.account.AccountInfo;
 import com.tsinghua.nebulabox.account.AccountManager;
 import com.tsinghua.nebulabox.data.DataManager;
+import com.tsinghua.nebulabox.data.SeafCommit;
+import com.tsinghua.nebulabox.data.SeafShare;
 import com.tsinghua.nebulabox.global.ActivityIntentHelper;
 import com.tsinghua.nebulabox.global.ActivityManager;
 import com.tsinghua.nebulabox.ui.base.BaseActivity;
@@ -26,6 +29,7 @@ import org.json.JSONException;
 
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -37,6 +41,8 @@ import butterknife.OnClick;
  * Created by Alfred on 2016/7/8.
  */
 public class LoginActivity extends BaseActivity {
+
+    private static final String DEBUG_TAG = "LoginActivity";
 
     @Bind(R.id.server_url_login_et)
     EditText serverUrlEditText;
@@ -51,12 +57,53 @@ public class LoginActivity extends BaseActivity {
 //    @Bind(R.id.register_login_tv)
 //    TextView regitsterTextView;
 
+    public class MyThread extends Thread {
+
+        @Override
+        public void run() {
+            AccountManager accountManager = new AccountManager(getApplicationContext());
+            DataManager dataManager = new DataManager(accountManager.getAccount());
+            try {
+                List<SeafShare> shares = dataManager.getShareLinks();
+                if (shares.isEmpty()) {
+                    Log.e(DEBUG_TAG, "shares is empty");
+                }
+                for (SeafShare share : shares) {
+                    Log.e(DEBUG_TAG, share.getPath());
+                }
+
+                List<SeafCommit> commits = dataManager.getFileHistory("d8206f34-af9f-4534-861d-31f129071453", "/seafile-tutorial.doc");
+                if (commits.isEmpty()) {
+                    Log.e(DEBUG_TAG, "commits is empty");
+                } else {
+                    for (SeafCommit commit : commits) {
+                        Log.e(DEBUG_TAG, commit.getCreatorName());
+                    }
+                }
+
+                commits = dataManager.getLibraryHistory("d8206f34-af9f-4534-861d-31f129071453");
+                if (commits.isEmpty()) {
+                    Log.e(DEBUG_TAG, "commits is empty");
+                } else {
+                    for (SeafCommit commit : commits) {
+                        Log.e(DEBUG_TAG, commit.getCreatorName());
+                    }
+                }
+
+            } catch (Exception e) {
+                Log.e(DEBUG_TAG, e.toString());
+            }
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        checkAccountIfLogin();
+        new MyThread().start();
+
+//        checkAccountIfLogin();
     }
 
     @Override
@@ -68,10 +115,6 @@ public class LoginActivity extends BaseActivity {
         AccountManager accountManager = new AccountManager(getApplicationContext());
         Account account = accountManager.getAccount();
         String token = account.getToken();
-//		String account,token;
-//		AccountsSharedPreferencesHelper accountsSharedPreferencesHelper = AccountsSharedPreferencesHelper.getInstance(this);
-//		account = accountsSharedPreferencesHelper.getAccountName();
-//		token = accountsSharedPreferencesHelper.getTokenName();
         if (!TextUtils.isEmpty(token)) {
             ActivityIntentHelper.gotoMainActivity(this);
             ActivityManager.finishCurrent();
@@ -196,5 +239,4 @@ public class LoginActivity extends BaseActivity {
             }
         }
     }
-
 }
