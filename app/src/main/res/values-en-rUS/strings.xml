@@ -505,10 +505,5 @@
         <!--features of the application</string>-->
 
 
-    <string name="no_data">no data</string>
-    <string name="load_data_fail">load fail</string>
-    <string name="load_data_adequate">no more</string>
-    <string name="loading_data">loading</string>
-
 
 </resources>

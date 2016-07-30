@@ -103,7 +103,7 @@ public class LoginActivity extends BaseActivity {
         ButterKnife.bind(this);
 //        new MyThread().start();
 
-        checkAccountIfLogin();
+        //checkAccountIfLogin();
     }
 
 
