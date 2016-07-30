@@ -45,7 +45,8 @@ import com.tsinghua.nebulabox.ui.dialog.CopyMoveDialog;
 import com.tsinghua.nebulabox.ui.dialog.DeleteFileDialog;
 import com.tsinghua.nebulabox.ui.dialog.RenameFileDialog;
 import com.tsinghua.nebulabox.ui.dialog.TaskDialog;
-import com.tsinghua.nebulabox.ui.fragment.StarredFragment;
+import com.tsinghua.nebulabox.ui.fragment.main.ShareFragment;
+import com.tsinghua.nebulabox.ui.fragment.main.StarredFragment;
 import com.tsinghua.nebulabox.ui.fragment.main.ReposFragment;
 import com.tsinghua.nebulabox.ui.fragment.main.UserCenterFragment;
 import com.tsinghua.nebulabox.util.ConcurrentAsyncTask;
@@ -154,11 +155,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Bind(R.id.content_main_fl)
     FrameLayout contentFrameLayout;
 
-    @Bind({R.id.personal_main_iv, R.id.star_main_iv, R.id.usercenter_main_iv})
+    @Bind({R.id.personal_main_iv, R.id.share_main_iv, R.id.star_main_iv, R.id.usercenter_main_iv})
     List<ImageView> tabsImageViewList;
-    @Bind({R.id.personal_main_ll, R.id.star_main_ll, R.id.usercenter_main_ll})
+    @Bind({R.id.personal_main_ll, R.id.share_main_ll, R.id.star_main_ll, R.id.usercenter_main_ll})
     List<LinearLayout> tabsLinearLayoutList;
-    @Bind({R.id.personal_main_tv, R.id.star_main_tv, R.id.usercenter_main_tv})
+    @Bind({R.id.personal_main_tv, R.id.share_main_tv, R.id.star_main_tv, R.id.usercenter_main_tv})
     List<TextView> tabsTextViewList;
 
     ServiceConnection mConnection = new ServiceConnection() {
@@ -222,17 +223,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void initVariable() {
         tabsImagesSelectedList = new ArrayList<>();
         tabsImagesSelectedList.add(R.drawable.ic_filter_drama_white_36dp);
+        tabsImagesSelectedList.add(R.drawable.share_48);
         tabsImagesSelectedList.add(R.drawable.ic_star_blue);
         tabsImagesSelectedList.add(R.drawable.ic_center_blue);
 
         tabsImagesUnselectedList = new ArrayList<>();
         tabsImagesUnselectedList.add(R.drawable.ic_self_grey);
+        tabsImagesUnselectedList.add(R.drawable.share_grey_48);
         tabsImagesUnselectedList.add(R.drawable.ic_star_gray);
         tabsImagesUnselectedList.add(R.drawable.self_grey_48);
 
         fragmentList = new ArrayList<>();
         fragmentList.add(ReposFragment.newInstance(new ReposFragment()));
-//        fragmentList.add(UploadFragment.newInstance(new UploadFragment()));
+        fragmentList.add(ShareFragment.newInstance(new ShareFragment()));
 //        fragmentList.add(StarListFragment.newInstance(new StarListFragment()));
         fragmentList.add(new StarredFragment());
         fragmentList.add(UserCenterFragment.newInstance(new UserCenterFragment()));
@@ -294,9 +297,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
 
-    public ReposFragment getReposFragment() {
-        return (ReposFragment) getFragment(0);
-    }
 
 
     @Override
@@ -401,20 +401,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         return fragmentList.get(index);
     }
 
-    public ReposFragment getPersonalFragment() {
+    public ReposFragment getReposFragment() {
         return (ReposFragment) getFragment(0);
     }
 
+    public ShareFragment getShareFragment() {
+        return (ShareFragment) getFragment(1);
+    }
+
     public StarredFragment getStarredFragment() {
-        return (StarredFragment) getFragment(1);
+        return (StarredFragment) getFragment(2);
     }
 
     public void showFileBottomSheet(String title, final SeafDirent dirent) {
-        getPersonalFragment().showFileBottomSheet(title, dirent);
+        getReposFragment().showFileBottomSheet(title, dirent);
     }
 
     public void showDirBottomSheet(String title, final SeafDirent dirent) {
-        getPersonalFragment().showDirBottomSheet(title, dirent);
+        getReposFragment().showDirBottomSheet(title, dirent);
     }
 
     public void shareFile(String repoID, String path) {
@@ -435,9 +439,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     public void historyFile(String repoID, String path) {
         Log.e(DEBUG_TAG, "hostoryFile");
-        Intent intent = new Intent(MainActivity.this, FileHistoryActivity.class);
+        Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+        intent.putExtra("TITLE", getString(R.string.file_history));
         intent.putExtra("PATH", path);
         intent.putExtra("REPO_ID", repoID);
+        startActivity(intent);
+    }
+
+    public void historyRepo(String repoId) {
+        Log.e(DEBUG_TAG, "historyRepo");
+        Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+        intent.putExtra("TITLE", getString(R.string.repo_history));
+        intent.putExtra("REPO_ID", repoId);
         startActivity(intent);
     }
 
@@ -513,7 +526,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             txService.saveDownloadNotifProvider(provider);
         }
 
-        SeafItemAdapter adapter = getPersonalFragment().getAdapter();
+        SeafItemAdapter adapter = getReposFragment().getAdapter();
         List<DownloadTaskInfo> infos = txService.getDownloadTaskInfosByPath(navContext.getRepoID(), dir);
         // update downloading progress
         adapter.setDownloadTaskList(infos);
@@ -530,7 +543,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public void onTaskSuccess() {
                 ToastUtils.show(MainActivity.this, R.string.delete_successful);
-                ReposFragment reposFragment = getPersonalFragment();
+                ReposFragment reposFragment = getReposFragment();
                 if (currentFragmentIndex == 0 && reposFragment != null) {
                     reposFragment.refreshView(true);
                 }

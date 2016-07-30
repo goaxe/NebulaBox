@@ -512,5 +512,13 @@
     <string name="load_data_adequate">no more</string>
     <string name="loading_data">loading</string>
 
+    <string name="file_history">file history</string>
+    <string name="repo_history">reposity history</string>
+
+    <string name="tabs_main_personal">reposity</string>
+    <string name="tabs_main_share">share</string>
+    <string name="tabs_main_upload">upload</string>
+    <string name="tabs_main_star">start</string>
+    <string name="tabs_main_usercenter">settings</string>
 
 </resources>

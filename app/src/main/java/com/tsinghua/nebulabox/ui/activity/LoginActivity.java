@@ -101,9 +101,8 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-//        new GetLocalContactThread().start();
 
-        //checkAccountIfLogin();
+        checkAccountIfLogin();
     }
 
 

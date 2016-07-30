@@ -1,4 +1,4 @@
-package com.tsinghua.nebulabox.ui.fragment;
+package com.tsinghua.nebulabox.ui.fragment.main;
 
 import android.app.Activity;
 import android.os.AsyncTask;

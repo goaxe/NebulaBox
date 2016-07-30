@@ -78,7 +78,7 @@
 
         <service android:name=".transfer.TransferService" />
 
-        <activity android:name=".ui.activity.FileHistoryActivity" />
+        <activity android:name=".ui.activity.HistoryActivity" />
     </application>
 
 </manifest>

@@ -774,9 +774,6 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
                     case R.id.rename:
                         mActivity.renameFile(repoID, repoName, path);
                         break;
-                    case R.id.update:
-//                        mActivity.addUpdateTask(repoID, repoName, dir, localPath);
-                        break;
                     case R.id.download:
                         mActivity.downloadFile(dir, dirent.name);
                         break;
@@ -972,7 +969,7 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
 
     private void updateAdapterWithRepos(List<SeafRepo> repos) {
         adapter.clear();
-        if (repos.size() > 0) {
+        if (repos != null && repos.size() > 0) {
             addReposToAdapter(repos);
 //            adapter.sortFiles(SettingsManager.instance().getSortFilesTypePref(),
 //                    SettingsManager.instance().getSortFilesOrderPref());

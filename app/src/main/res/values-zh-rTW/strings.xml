@@ -120,5 +120,14 @@
     <string name="load_data_adequate">沒有更多啦</string>
     <string name="loading_data">加載中...</string>
 
+    <string name="file_history">文件历史</string>
+    <string name="repo_history">空间历史</string>
+
+    <string name="tabs_main_personal">空间</string>
+    <string name="tabs_main_share">分享</string>
+    <string name="tabs_main_upload">上传</string>
+    <string name="tabs_main_star">星标</string>
+    <string name="tabs_main_usercenter">我</string>
+
 
 </resources>

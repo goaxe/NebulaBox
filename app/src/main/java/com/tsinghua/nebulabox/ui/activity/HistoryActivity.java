@@ -21,9 +21,9 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class FileHistoryActivity extends BaseActivity {
+public class HistoryActivity extends BaseActivity {
 
-    private static final String DEBUG_TAG = "FileHistoryActivity";
+    private static final String DEBUG_TAG = "HistoryActivity";
 
     @Bind(R.id.title_toolbar_main_tv)
     TextView titleTextView;
@@ -42,16 +42,19 @@ public class FileHistoryActivity extends BaseActivity {
         setContentView(R.layout.activity_file_history);
         ButterKnife.bind(this);
 
-        titleTextView.setText("文件历史");
+        String title = getIntent().getStringExtra("TITLE");
+        String path = getIntent().getStringExtra("PATH");
+        String repoId = getIntent().getStringExtra("REPO_ID");
+
+        titleTextView.setText(title);
         subTitleTextView.setVisibility(View.GONE);
 
         mListAdapter = new ListAdapter();
         mListview.setAdapter(mListAdapter);
 
-        String path = getIntent().getStringExtra("PATH");
-        String repoId = getIntent().getStringExtra("REPO_ID");
         Log.e(DEBUG_TAG, path + " " + repoId);
-        new MyThread(repoId, path).start();
+
+        new GetHistoryThread(repoId, path).start();
     }
 
     class ListAdapter extends BaseAdapter {
@@ -78,13 +81,13 @@ public class FileHistoryActivity extends BaseActivity {
             if (convertView != null) {
                 viewHolder = (ViewHolder) convertView.getTag();
             } else {
-                convertView = LayoutInflater.from(FileHistoryActivity.this).inflate(R.layout.file_history_item_layout, viewGroup, false);
+                convertView = LayoutInflater.from(HistoryActivity.this).inflate(R.layout.file_history_item_layout, viewGroup, false);
                 viewHolder = new ViewHolder(convertView);
                 convertView.setTag(viewHolder);
             }
 
             viewHolder.creatorNameTextView.setText(commit.getCreatorName());
-            viewHolder.dateTextView.setText(Utils.translateCommitTime(commit.getCtime()));
+            viewHolder.dateTextView.setText(Utils.translateCommitTime(commit.getCtime()*1000));
             viewHolder.descTextView.setText(commit.getDesc());
 //            viewHolder.sizeTextView.setText(commit.get);
             return convertView;
@@ -107,11 +110,11 @@ public class FileHistoryActivity extends BaseActivity {
         }
     }
 
-    class MyThread extends Thread {
+    class GetHistoryThread extends Thread {
         private String repoID;
         private String path;
 
-        public MyThread(String repoID, String path) {
+        public GetHistoryThread(String repoID, String path) {
             this.repoID = repoID;
             this.path = path;
         }
@@ -121,7 +124,11 @@ public class FileHistoryActivity extends BaseActivity {
             AccountManager accountManager = new AccountManager(getApplicationContext());
             DataManager dataManager = new DataManager(accountManager.getAccount());
             try {
-                commits = dataManager.getFileHistory(repoID, path);
+                if (this.path == null) {
+                    commits = dataManager.getLibraryHistory(repoID);
+                } else {
+                    commits = dataManager.getFileHistory(repoID, path);
+                }
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
