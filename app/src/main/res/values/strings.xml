@@ -75,6 +75,7 @@
     <string name="file_action_rename">重命名</string>
     <string name="file_action_copy">复制</string>
     <string name="file_action_move">移动</string>
+    <string name="file_action_history">历史</string>
     <string name="file_action_open_as">打开为</string>
     <string name="file_action_more">更多</string>
     <string name="file_action_more_title">选择你喜欢的选项</string>

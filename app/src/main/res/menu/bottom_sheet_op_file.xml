@@ -29,6 +29,11 @@
             android:id="@+id/move"
             android:icon="@drawable/action_move"
             android:title="@string/file_action_move" />
+        <item
+            android:id="@+id/history"
+            android:icon="@drawable/action_move"
+            android:title="@string/file_action_history" />
+
     </group>
     <group android:id="@+id/group_update">
         <item
