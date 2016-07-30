@@ -771,6 +771,8 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
                     case R.id.move:
                         mActivity.moveFile(repoID, repoName, dir, filename, false);
                         break;
+                    case R.id.history:
+                        mActivity.historyFile(repoID, path);
                     case R.id.rename:
                         mActivity.renameFile(repoID, repoName, path);
                         break;

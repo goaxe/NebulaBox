@@ -427,6 +427,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         doRename(repoID, repoName, path, false);
     }
 
+    public void historyFile(String repoID, String path) {
+        Log.e(DEBUG_TAG, "hostoryFile");
+        Intent intent = new Intent(MainActivity.this, FileHistoryActivity.class);
+        intent.putExtra("PATH", path);
+        intent.putExtra("REPO_ID", repoID);
+        startActivity(intent);
+    }
+
+
     public void renameDir(String repoID, String repoName, String path) {
         doRename(repoID, repoName, path, true);
     }
@@ -546,7 +555,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     List<Uri> uriList = UtilsJellyBean.extractUriListFromIntent(data);
                     Log.e(DEBUG_TAG, "pick_file_request, uriSize = " + uriList.size());
                     if (uriList.size() > 0) {
-//                        ConcurrentAsyncTask.execute(new SAFLoadRemoteFileTask(), uriList.toArray(new Uri[]{}));
                         for (Uri uri : uriList) {
                             InputStream in = null;
                             OutputStream out = null;
