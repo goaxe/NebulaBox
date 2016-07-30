@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -54,6 +55,7 @@ import com.tsinghua.nebulabox.ui.dialog.FileOptionDialog;
 import com.tsinghua.nebulabox.ui.dialog.NewDirDialog;
 import com.tsinghua.nebulabox.ui.dialog.NewFileDialog;
 import com.tsinghua.nebulabox.ui.dialog.TaskDialog;
+import com.tsinghua.nebulabox.ui.dialog.UploadChoiceDialog;
 import com.tsinghua.nebulabox.ui.widget.CircleImageView;
 import com.tsinghua.nebulabox.util.ConcurrentAsyncTask;
 import com.tsinghua.nebulabox.util.Utils;
@@ -325,8 +327,8 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
                             dateDirentList = Utils.sortFileByDate(allDirentList);
                             setCategoryDataToAdapter(dateDirentList);
                         } else if (index == 2) {
-//                            pickFile();
-                            pickPhotos();
+                            pickFile();
+//                            pickPhotos();
                         }
                         break;
                     case 2:
@@ -889,8 +891,17 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
     }
 
     private void pickFile() {
-        Intent intent = new Intent(mActivity, MultiFileChooserActivity.class);
-        mActivity.startActivityForResult(intent, MainActivity.PICK_FILES_REQUEST);
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+//            UploadChoiceDialog dialog = new UploadChoiceDialog();
+//            dialog.show(getSupportFragmentManager(), PICK_FILE_DIALOG_FRAGMENT_TAG);
+//        } else {
+            Intent target = Utils.createGetContentIntent();
+            Intent intent = Intent.createChooser(target, getString(R.string.choose_file));
+            mActivity.startActivityForResult(intent, MainActivity.PICK_FILE_REQUEST);
+//        }
+
+//        Intent intent = new Intent(mActivity, MultiFileChooserActivity.class);
+//        mActivity.startActivityForResult(intent, MainActivity.PICK_FILES_REQUEST);
     }
 
     private void pickPhotos() {

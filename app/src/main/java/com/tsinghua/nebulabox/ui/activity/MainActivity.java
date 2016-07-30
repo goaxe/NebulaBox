@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -45,8 +46,15 @@ import com.tsinghua.nebulabox.ui.fragment.main.ReposFragment;
 import com.tsinghua.nebulabox.ui.fragment.main.UserCenterFragment;
 import com.tsinghua.nebulabox.util.ConcurrentAsyncTask;
 import com.tsinghua.nebulabox.util.Utils;
+import com.tsinghua.nebulabox.util.UtilsJellyBean;
+
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -533,6 +541,47 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 }
                 break;
 
+            case PICK_FILE_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    List<Uri> uriList = UtilsJellyBean.extractUriListFromIntent(data);
+                    Log.e(DEBUG_TAG, "pick_file_request, uriSize = " + uriList.size());
+                    if (uriList.size() > 0) {
+//                        ConcurrentAsyncTask.execute(new SAFLoadRemoteFileTask(), uriList.toArray(new Uri[]{}));
+                        for (Uri uri : uriList) {
+                            InputStream in = null;
+                            OutputStream out = null;
+
+                            try {
+                                File tempDir = DataManager.createTempDir();
+                                File tempFile = new File(tempDir, Utils.getFilenamefromUri(MainActivity.this, uri));
+
+                                if (!tempFile.createNewFile()) {
+                                    throw new RuntimeException("could not create temporary file");
+                                }
+
+                                in = getContentResolver().openInputStream(uri);
+                                out = new FileOutputStream(tempFile);
+                                IOUtils.copy(in, out);
+
+                                String path = tempFile.getAbsolutePath();
+                                Log.e(DEBUG_TAG, "path is " + path);
+                                txService.addUploadTask(accountManager.getAccount(), navContext.getRepoID(), navContext.getRepoName(), navContext.getDirPath(), path, false, false);
+
+                            } catch (IOException e) {
+                                Log.d(DEBUG_TAG, "Could not open requested document", e);
+                            } catch (RuntimeException e) {
+                                Log.d(DEBUG_TAG, "Could not open requested document", e);
+                            } finally {
+                                IOUtils.closeQuietly(in);
+                                IOUtils.closeQuietly(out);
+                            }
+                        }
+                    } else {
+                        ToastUtils.show(MainActivity.this, R.string.saf_upload_path_not_available);
+                    }
+                }
+                break;
+
             case PICK_PHOTOS_VIDEOS_REQUEST:
                 if (resultCode == RESULT_OK) {
                     ArrayList<String> paths = data.getStringArrayListExtra("photos");
@@ -581,31 +630,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     onPostResume();
                 }
                 break;
-            case PICK_FILE_REQUEST:
-//            if (resultCode == RESULT_OK) {
-//                if (!Utils.isNetworkOn()) {
-//                    ToastUtils.show(this, R.string.network_down);
-//                    return;
-//                }
-//
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//                    List<Uri> uriList = UtilsJellyBean.extractUriListFromIntent(data);
-//                    if (uriList.size() > 0) {
-//                        ConcurrentAsyncTask.execute(new SAFLoadRemoteFileTask(), uriList.toArray(new Uri[]{}));
-//                    } else {
-//                        ToastUtils.show(BrowserActivity.this, R.string.saf_upload_path_not_available);
-//                    }
-//                } else {
-//                    Uri uri = data.getData();
-//                    if (uri != null) {
-//                        ConcurrentAsyncTask.execute(new SAFLoadRemoteFileTask(), uri);
-//                    } else {
-//                        ToastUtils.show(BrowserActivity.this, R.string.saf_upload_path_not_available);
-//                    }
-//                }
-//            }
-                break;
-
 
             default:
                 break;
