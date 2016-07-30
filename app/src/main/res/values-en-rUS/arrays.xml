@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="category_files_options_array">
+        <item>picture</item>
+        <item>audio</item>
+        <item>video</item>
+        <item>document</item>
+        <item>application</item>
+        <item>all</item>
+    </string-array>
+
+    <string-array name="sorts_files_options_array">
+        <item>sort by file name</item>
+        <item>sort by reverse date</item>
+    </string-array>
+    <string-array name="add_file_options_array">
+        <item>new folder</item>
+        <item>upload file</item>
+        <item>upload for play camera</item>
+    </string-array>
+
+    <integer-array name="category_files_options_icon_array" translatable="false">
+        <item>@drawable/icon_picture</item>
+        <item>@drawable/icon_music</item>
+        <item>@drawable/icon_video</item>
+        <item>@drawable/icon_document</item>
+        <item>@drawable/icon_app</item>
+        <item>@drawable/icon_all</item>
+        <item>123456</item>
+    </integer-array>
+    <integer-array name="sort_files_options_icon_array" translatable="false">
+        <item>@drawable/icon_sort_name_reverse</item>
+        <item>@drawable/icon_sort_date_reverse</item>
+    </integer-array>
+    <integer-array name="add_files_options_icon_array" translatable="false">
+        <item>@drawable/icon_folder_created</item>
+        <item>@drawable/icon_upload_file</item>
+        <item>@drawable/icon_play_camera</item>
+    </integer-array>
+
+    <string-array name="format_picture">
+        <item>.bmp</item>
+        <item>.exif</item>
+        <item>.gif</item>
+        <item>.jpeg</item>
+        <item>.png</item>
+        <item>.svg</item>
+        <item>.raw</item>
+        <item>.jpg</item>
+    </string-array>
+
+    <string-array name="format_video">
+        <item>.avi</item>
+        <item>.mov</item>
+        <item>.mpeg</item>
+        <item>.rm</item>
+        <item>.mp4</item>
+        <item>.wmv</item>
+        <item>.rmvb</item>
+        <item>.rmvb</item>
+        <item>.mpg</item>
+    </string-array>
+
+    <string-array name="format_app">
+        <item>.apk</item>
+        <item>.exe</item>
+        <item>.ipa</item>
+        <item>.dmg</item>
+    </string-array>
+
+    <string-array name="format_audio">
+        <item>.wav</item>
+        <item>.mp3</item>
+        <item>.wma</item>
+        <item>.ape</item>
+        <item>.aac</item>
+    </string-array>
+
+    <string-array name="format_document">
+        <item>.txt</item>
+        <item>.doc</item>
+        <item>.html</item>
+        <item>.htm</item>
+        <item>.docx</item>
+        <item>.ppt</item>
+        <item>.pptx</item>
+        <item>.pdf</item>
+        <item>.wps</item>
+    </string-array>
+
+</resources>

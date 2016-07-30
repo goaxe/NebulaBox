@@ -103,7 +103,7 @@ public class LoginActivity extends BaseActivity {
         ButterKnife.bind(this);
 //        new GetLocalContactThread().start();
 
-        checkAccountIfLogin();
+        //checkAccountIfLogin();
     }
 
 

@@ -82,7 +82,6 @@
     <string name="file_action_open_as">Open as</string>
     <string name="file_action_more">More</string>
     <string name="file_action_more_title">Choose your preferred option</string>
-
     <string-array name="file_action_more_array">
         <item>Export</item>
         <item>Copy</item>
@@ -505,11 +504,6 @@
     <!--<string name="navdrawer_description_a11y" translatable="false">Navigation Drawer used to switch between major-->
         <!--features of the application</string>-->
 
-
-    <string name="no_data">no data</string>
-    <string name="load_data_fail">load fail</string>
-    <string name="load_data_adequate">no more</string>
-    <string name="loading_data">loading</string>
 
 
 </resources>
