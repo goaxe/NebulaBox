@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -37,6 +38,7 @@ import com.tsinghua.nebulabox.R;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+
 
 public class MultipleImageSelectionActivity extends NoSearchActivity implements
         GridViewSpecial.Listener, GridViewSpecial.DrawAdapter {
@@ -83,12 +85,14 @@ public class MultipleImageSelectionActivity extends NoSearchActivity implements
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         // Must be called before setContentView().
+        // TODO: 7/30/16
 //        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 
         setContentView(R.layout.multiple_image_selection);
 
-        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,
-                R.layout.custom_gallery_title);
+        // TODO: 7/30/16
+//        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,
+//                R.layout.custom_gallery_title);
 
         mNoImagesView = findViewById(R.id.no_images);
         mSelectionStatus = (TextView)findViewById(R.id.upload_selection_status);
@@ -554,12 +558,13 @@ public class MultipleImageSelectionActivity extends NoSearchActivity implements
 
     // According to the intent, setup what we include (image/video) in the
     // gallery and the title of the gallery.
-    private void setupTitle() {
-        mInclusion = ImageManager.INCLUDE_IMAGES | ImageManager.INCLUDE_VIDEOS;
-
-        TextView leftText = (TextView) findViewById(R.id.left_text);
-        leftText.setText(R.string.pick_photo_video_title);
-    }
+    // TODO: 7/30/16
+//    private void setupTitle() {
+//        mInclusion = ImageManager.INCLUDE_IMAGES | ImageManager.INCLUDE_VIDEOS;
+//
+//        TextView leftText = (TextView) findViewById(R.id.left_text);
+//        leftText.setText(R.string.pick_photo_video_title);
+//    }
 
     // Returns the image list parameter which contains the subset of image/video
     // we want.
@@ -571,8 +576,8 @@ public class MultipleImageSelectionActivity extends NoSearchActivity implements
                     ImageManager.DataLocation.EXTERNAL,
                     mInclusion,
                     mSortAscending
-                    ? ImageManager.SORT_ASCENDING
-                    : ImageManager.SORT_DESCENDING,
+                            ? ImageManager.SORT_ASCENDING
+                            : ImageManager.SORT_DESCENDING,
                     ImageManager.CAMERA_IMAGE_BUCKET_ID);
 
         }
@@ -593,7 +598,6 @@ public class MultipleImageSelectionActivity extends NoSearchActivity implements
         if (!mMultiSelected.add(image)) {
             mMultiSelected.remove(image);
         }
-
 //        Log.d(TAG, "add/remove: " + image.getDataPath());
 
         updateSelectionStatus();
@@ -751,7 +755,7 @@ public class MultipleImageSelectionActivity extends NoSearchActivity implements
     private final Paint mPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
 
     public void drawImage(Canvas canvas, IImage image,
-            Bitmap b, int xPos, int yPos, int w, int h) {
+                          Bitmap b, int xPos, int yPos, int w, int h) {
         if (b != null) {
             // if the image is close to the target size then crop,
             // otherwise scale both the bitmap and the view should be
@@ -764,7 +768,7 @@ public class MultipleImageSelectionActivity extends NoSearchActivity implements
             int deltaH = bh - h;
 
             if (deltaW >= 0 && deltaW < 10 &&
-                deltaH >= 0 && deltaH < 10) {
+                    deltaH >= 0 && deltaH < 10) {
                 int halfDeltaW = deltaW / 2;
                 int halfDeltaH = deltaH / 2;
                 mSrcRect.set(0 + halfDeltaW, 0 + halfDeltaH,
@@ -819,7 +823,7 @@ public class MultipleImageSelectionActivity extends NoSearchActivity implements
     }
 
     public void drawDecoration(Canvas canvas, IImage image,
-            int xPos, int yPos, int w, int h) {
+                               int xPos, int yPos, int w, int h) {
 
         initializeMultiSelectDrawables();
 
@@ -975,3 +979,4 @@ public class MultipleImageSelectionActivity extends NoSearchActivity implements
     //     hideFooter();
     // }
 }
+

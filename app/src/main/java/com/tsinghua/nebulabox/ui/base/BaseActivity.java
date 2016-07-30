@@ -67,11 +67,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         return mActionBarToolbar;
     }
 
-//    @Override
-//    public void setContentView(int layoutResID) {
-//        super.setContentView(layoutResID);
-//        getActionBarToolbar();
-//    }
+    @Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+        getActionBarToolbar();
+    }
 
         /**
      * Initializes the Action Bar auto-hide (aka Quick Recall) effect.
@@ -84,32 +84,30 @@ public abstract class BaseActivity extends AppCompatActivity {
                 R.dimen.action_bar_auto_hide_sensivity);
     }
 
-    //布局文件ID
-//    protected abstract int getContentViewId();
 
-    //布局中Fragment的ID
-    protected int getFragmentContentId(){
-		return 0;
-	}
-
-    //添加fragment
-    protected void addFragment(BaseFragment fragment) {
-        if (fragment != null) {
-            mFragmentManager.beginTransaction()
-                    .replace(getFragmentContentId(), fragment, fragment.getClass().getSimpleName())
-                    .addToBackStack(fragment.getClass().getSimpleName())
-                    .commitAllowingStateLoss();
-        }
-    }
-
-    //移除fragment
-    protected void removeFragment() {
-        if (mFragmentManager.getBackStackEntryCount() > 1) {
-            mFragmentManager.popBackStack();
-        } else {
-            finish();
-        }
-    }
+//    //布局中Fragment的ID
+//    protected int getFragmentContentId(){
+//		return 0;
+//	}
+//
+//    //添加fragment
+//    protected void addFragment(BaseFragment fragment) {
+//        if (fragment != null) {
+//            mFragmentManager.beginTransaction()
+//                    .replace(getFragmentContentId(), fragment, fragment.getClass().getSimpleName())
+//                    .addToBackStack(fragment.getClass().getSimpleName())
+//                    .commitAllowingStateLoss();
+//        }
+//    }
+//
+//    //移除fragment
+//    protected void removeFragment() {
+//        if (mFragmentManager.getBackStackEntryCount() > 1) {
+//            mFragmentManager.popBackStack();
+//        } else {
+//            finish();
+//        }
+//    }
 
     //返回键返回事件
     @Override

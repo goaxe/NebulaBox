@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -16,7 +17,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.common.collect.Lists;
 import com.tsinghua.nebulabox.R;
+import com.tsinghua.nebulabox.SeafException;
 import com.tsinghua.nebulabox.account.Account;
 import com.tsinghua.nebulabox.account.AccountManager;
 import com.tsinghua.nebulabox.data.DataManager;
@@ -38,8 +41,9 @@ import com.tsinghua.nebulabox.ui.dialog.DeleteFileDialog;
 import com.tsinghua.nebulabox.ui.dialog.RenameFileDialog;
 import com.tsinghua.nebulabox.ui.dialog.TaskDialog;
 import com.tsinghua.nebulabox.ui.fragment.StarredFragment;
-import com.tsinghua.nebulabox.ui.fragment.main.PersonalFragment;
+import com.tsinghua.nebulabox.ui.fragment.main.ReposFragment;
 import com.tsinghua.nebulabox.ui.fragment.main.UserCenterFragment;
+import com.tsinghua.nebulabox.util.ConcurrentAsyncTask;
 import com.tsinghua.nebulabox.util.Utils;
 
 import java.io.File;
@@ -213,7 +217,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         tabsImagesUnselectedList.add(R.drawable.self_grey_48);
 
         fragmentList = new ArrayList<>();
-        fragmentList.add(PersonalFragment.newInstance(new PersonalFragment()));
+        fragmentList.add(ReposFragment.newInstance(new ReposFragment()));
 //        fragmentList.add(UploadFragment.newInstance(new UploadFragment()));
 //        fragmentList.add(StarListFragment.newInstance(new StarListFragment()));
         fragmentList.add(new StarredFragment());
@@ -276,8 +280,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
 
-    public PersonalFragment getReposFragment() {
-        return (PersonalFragment) getFragment(0);
+    public ReposFragment getReposFragment() {
+        return (ReposFragment) getFragment(0);
     }
 
 
@@ -347,7 +351,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 }
 
                 if (copyMoveContext.isMove()) {
-                    PersonalFragment reposFragment = getReposFragment();
+                    ReposFragment reposFragment = getReposFragment();
                     if (currentFragmentIndex == INDEX_LIBRARY_TAB && reposFragment != null) {
                         reposFragment.refreshView(false);
                     }
@@ -375,16 +379,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             navContext.setDir(parentPath, null);
         }
         subTitleTextView.setText(navContext.getDirPath());
-        PersonalFragment personalFragment = (PersonalFragment) fragmentList.get(currentFragmentIndex);
-        personalFragment.refreshView(false);
+        ReposFragment reposFragment = (ReposFragment) fragmentList.get(currentFragmentIndex);
+        reposFragment.refreshView(false);
     }
 
     private Fragment getFragment(int index) {
         return fragmentList.get(index);
     }
 
-    public PersonalFragment getPersonalFragment() {
-        return (PersonalFragment) getFragment(0);
+    public ReposFragment getPersonalFragment() {
+        return (ReposFragment) getFragment(0);
     }
 
     public StarredFragment getStarredFragment() {
@@ -439,9 +443,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public void onTaskSuccess() {
                 ToastUtils.show(MainActivity.this, R.string.rename_successful);
-                PersonalFragment personalFragment = (PersonalFragment) fragmentList.get(0);
-                if (currentFragmentIndex == 0 && personalFragment != null) {
-                    personalFragment.refreshView(false);
+                ReposFragment reposFragment = (ReposFragment) fragmentList.get(0);
+                if (currentFragmentIndex == 0 && reposFragment != null) {
+                    reposFragment.refreshView(false);
                 }
             }
         });
@@ -495,7 +499,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public void onTaskSuccess() {
                 ToastUtils.show(MainActivity.this, R.string.delete_successful);
-                PersonalFragment reposFragment = getPersonalFragment();
+                ReposFragment reposFragment = getPersonalFragment();
                 if (currentFragmentIndex == 0 && reposFragment != null) {
                     reposFragment.refreshView(true);
                 }
@@ -649,6 +653,166 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         intent.putExtra("account", accountManager.getAccount());
         intent.putExtra("taskID", taskID);
         startActivityForResult(intent, DOWNLOAD_FILE_REQUEST);
+    }
+
+    public void deleteFiles(final String repoID, String path, List<SeafDirent> dirents) {
+        final DeleteFileDialog dialog = new DeleteFileDialog();
+        dialog.init(repoID, path, dirents, accountManager.getAccount());
+        dialog.setCancelable(false);
+        dialog.setTaskDialogLisenter(new TaskDialog.TaskDialogListener() {
+            @Override
+            public void onTaskSuccess() {
+                ToastUtils.show(MainActivity.this, R.string.delete_successful);
+                if (getDataManager() != null) {
+                    List<SeafDirent> cachedDirents = getDataManager().getCachedDirents(repoID,
+                            getNavContext().getDirPath());
+                    getReposFragment().getAdapter().setItems(cachedDirents);
+                    getReposFragment().getAdapter().notifyDataSetChanged();
+                    // update contextual action bar (CAB) title
+                    getReposFragment().updateContextualActionBar();
+                    if (cachedDirents.size() == 0)
+                        getReposFragment().getEmptyView().setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        dialog.show(getSupportFragmentManager(), TAG_DELETE_FILES_DIALOG_FRAGMENT);
+    }
+
+    public void copyFiles(String srcRepoId, String srcRepoName, String srcDir, List<SeafDirent> dirents) {
+        chooseCopyMoveDestForMultiFiles(srcRepoId, srcRepoName, srcDir, dirents, CopyMoveContext.OP.COPY);
+    }
+
+    private void chooseCopyMoveDestForMultiFiles(String repoID, String repoName, String dirPath, List<SeafDirent> dirents, CopyMoveContext.OP op) {
+        copyMoveContext = new CopyMoveContext(repoID, repoName, dirPath, dirents, op);
+        Intent intent = new Intent(this, SeafilePathChooserActivity.class);
+        intent.putExtra(SeafilePathChooserActivity.DATA_ACCOUNT, accountManager.getAccount());
+        SeafRepo repo = getDataManager().getCachedRepoByID(repoID);
+        if (repo.encrypted) {
+            intent.putExtra(SeafilePathChooserActivity.ENCRYPTED_REPO_ID, repoID);
+        }
+        startActivityForResult(intent, MainActivity.CHOOSE_COPY_MOVE_DEST_REQUEST);
+    }
+
+    public void moveFiles(String srcRepoId, String srcRepoName, String srcDir, List<SeafDirent> dirents) {
+        chooseCopyMoveDestForMultiFiles(srcRepoId, srcRepoName, srcDir, dirents, CopyMoveContext.OP.MOVE);
+    }
+
+    public void downloadFiles(String repoID, String repoName, String dirPath, List<SeafDirent> dirents) {
+        if (!Utils.isNetworkOn()) {
+            ToastUtils.show(this, R.string.network_down);
+            return;
+        }
+
+        DownloadFilesTask task = new DownloadFilesTask(repoID, repoName, dirPath, dirents);
+        ConcurrentAsyncTask.execute(task);
+    }
+
+    class DownloadFilesTask extends AsyncTask<Void, Void, Void> {
+        private String repoID, repoName, dirPath;
+        private List<SeafDirent> dirents;
+        private SeafException err;
+        private int fileCount;
+
+        public DownloadFilesTask(String repoID, String repoName, String dirPath, List<SeafDirent> dirents) {
+            this.repoID = repoID;
+            this.repoName = repoName;
+            this.dirPath = dirPath;
+            this.dirents = dirents;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            showLoadingDialog();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            ArrayList<String> dirPaths = Lists.newArrayList(dirPath);
+            for (int i = 0; i < dirPaths.size(); i++) {
+                if (i > 0) {
+                    try {
+                        dirents = getDataManager().getDirentsFromServer(repoID, dirPaths.get(i));
+                    } catch (SeafException e) {
+                        err = e;
+                        Log.e(DEBUG_TAG, e.getMessage() + e.getCode());
+                    }
+                }
+
+                if (dirents == null)
+                    continue;
+
+                for (SeafDirent seafDirent : dirents) {
+                    if (seafDirent.isDir()) {
+                        // download files recursively
+                        dirPaths.add(Utils.pathJoin(dirPaths.get(i), seafDirent.name));
+                    } else {
+                        File localCachedFile = getDataManager().getLocalCachedFile(repoName,
+                                repoID,
+                                Utils.pathJoin(dirPaths.get(i),
+                                        seafDirent.name),
+                                seafDirent.id);
+                        if (localCachedFile != null) {
+                            continue;
+                        }
+
+                        // txService maybe null if layout orientation has changed
+                        // e.g. landscape and portrait switch
+                        if (txService == null)
+                            return null;
+
+                        final SeafRepo repo = dataManager.getCachedRepoByID(repoID);
+                        if (repo != null && repo.canLocalDecrypt()) {
+                            txService.addTaskToDownloadQue(accountManager.getAccount(),
+                                    repoName,
+                                    repoID,
+                                    Utils.pathJoin(dirPaths.get(i),
+                                            seafDirent.name),
+                                    true,
+                                    repo.encVersion);
+                        } else {
+                            txService.addTaskToDownloadQue(accountManager.getAccount(),
+                                    repoName,
+                                    repoID,
+                                    Utils.pathJoin(dirPaths.get(i),
+                                            seafDirent.name));
+                        }
+                        fileCount++;
+                    }
+
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            // update ui
+            dismissLoadingDialog();
+
+            if (err != null) {
+                ToastUtils.show(MainActivity.this, R.string.transfer_list_network_error);
+                return;
+            }
+
+            if (fileCount == 0)
+                ToastUtils.show(MainActivity.this, R.string.transfer_download_no_task);
+            else {
+                ToastUtils.show(MainActivity.this,
+                        getResources().getQuantityString(R.plurals.transfer_download_started,
+                                fileCount,
+                                fileCount));
+
+                if (!txService.hasDownloadNotifProvider()) {
+                    DownloadNotificationProvider provider =
+                            new DownloadNotificationProvider(txService.getDownloadTaskManager(),
+                            txService);
+                    txService.saveDownloadNotifProvider(provider);
+                }
+
+            }
+        }
     }
 
 }

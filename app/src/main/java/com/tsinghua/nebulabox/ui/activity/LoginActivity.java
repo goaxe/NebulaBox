@@ -101,15 +101,11 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        new MyThread().start();
+//        new MyThread().start();
 
-//        checkAccountIfLogin();
+        checkAccountIfLogin();
     }
 
-    @Override
-    protected int getFragmentContentId() {
-        return 0;
-    }
 
     private void checkAccountIfLogin() {
         AccountManager accountManager = new AccountManager(getApplicationContext());

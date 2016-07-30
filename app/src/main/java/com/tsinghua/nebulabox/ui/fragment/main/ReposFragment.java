@@ -11,10 +11,14 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -37,6 +41,7 @@ import com.tsinghua.nebulabox.data.SeafGroup;
 import com.tsinghua.nebulabox.data.SeafItem;
 import com.tsinghua.nebulabox.data.SeafRepo;
 import com.tsinghua.nebulabox.fileschooser.MultiFileChooserActivity;
+import com.tsinghua.nebulabox.gallery.MultipleImageSelectionActivity;
 import com.tsinghua.nebulabox.interf.OnItemClickListener;
 import com.tsinghua.nebulabox.interf.OnItemLongClickListener;
 import com.tsinghua.nebulabox.ui.NavContext;
@@ -70,9 +75,9 @@ import butterknife.OnClick;
  * 个人
  * Created by Alfred on 2016/7/11.
  */
-public class PersonalFragment extends BaseFragment implements View.OnClickListener, OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, FileOptionDialog.OnItemClickListener, OnItemLongClickListener {
+public class ReposFragment extends BaseFragment implements View.OnClickListener, OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, FileOptionDialog.OnItemClickListener, OnItemLongClickListener {
 
-    private static final String DEBUG_TAG = "PersonalFragment";
+    private static final String DEBUG_TAG = "ReposFragment";
 
     @Bind(R.id.option_personal_ll)
     LinearLayout optionLinearLayout;
@@ -89,7 +94,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     @Bind(R.id.refresh_layout_personal_srlayout)
     SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.recycler_view_personal_rl)
-    ListView recyclerView;
+    ListView mListView;
     @Bind(R.id.empty_rl)
     RelativeLayout emptyRelativeLayout;
     @Bind(R.id.empty_iv)
@@ -124,6 +129,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private String[] appFormat;
 
     private SeafItemAdapter adapter;
+    private ActionMode mActionMode;
     private int lastVisibleItem;
     private LinearLayoutManager linearLayoutManager;
 
@@ -131,7 +137,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_personal, container, false);
+        View view = inflater.inflate(R.layout.fragment_repos, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
@@ -167,16 +173,11 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
         allDirentList = new ArrayList<>();
         adapter = new SeafItemAdapter(mActivity);
-//		adapter.setOnItemClickListener(this);
-//		adapter.setOnItemLongClickListener(this);
 
         linearLayoutManager = new LinearLayoutManager(mActivity);
-//		recyclerView.addItemDecoration(new RecycleViewDivider(mContext, LinearLayoutManager.VERTICAL, 10, ContextCompat.getColor(mContext, R.color.app_main_color)));
-//        recyclerView.addOnScrollListener(new PauseOnScrollListener());
-//		recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(adapter);
+        mListView.setAdapter(adapter);
 
-        recyclerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 NavContext navContext = getNavContext();
@@ -210,6 +211,15 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             }
         });
 
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                startContextualActionMode(position);
+                return true;
+            }
+        });
+
+
 
         swipeRefreshLayout.setOnRefreshListener(this);
 //        swipeRefreshLayout.setSize(SwipeRefreshLayout.LARGE);
@@ -217,6 +227,45 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         swipeRefreshLayout.setColorSchemeColors(R.color.swipe_refresh_color_1, R.color.swipe_refresh_color_2, R.color.swipe_refresh_color_3, R.color.swipe_refresh_color_4);
         refreshView(true);
     }
+
+    public void startContextualActionMode(int position) {
+        startContextualActionMode();
+
+        NavContext nav = getNavContext();
+        if (adapter == null || !nav.inRepo()) return;
+
+        adapter.toggleSelection(position);
+        updateContextualActionBar();
+
+    }
+
+    public void startContextualActionMode() {
+        NavContext nav = getNavContext();
+        if (!nav.inRepo()) return;
+
+        if (mActionMode == null) {
+            // start the actionMode
+            mActionMode = mActivity.startSupportActionMode(new ActionModeCallback());
+        }
+
+    }
+
+    public void updateContextualActionBar() {
+
+        if (mActionMode == null) {
+            // there are some selected items, start the actionMode
+            mActionMode = mActivity.startSupportActionMode(new ActionModeCallback());
+        } else {
+            // Log.d(DEBUG_TAG, "mActionMode.setTitle " + adapter.getCheckedItemCount());
+            mActionMode.setTitle(getResources().getQuantityString(
+                    R.plurals.transfer_list_items_selected,
+                    adapter.getCheckedItemCount(),
+                    adapter.getCheckedItemCount()));
+        }
+
+    }
+
+
 
     public RelativeLayout getEmptyView() {
 
@@ -276,7 +325,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                             dateDirentList = Utils.sortFileByDate(allDirentList);
                             setCategoryDataToAdapter(dateDirentList);
                         } else if (index == 2) {
-                            pickFile();
+//                            pickFile();
+                            pickPhotos();
                         }
                         break;
                     case 2:
@@ -841,17 +891,20 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private void pickFile() {
         Intent intent = new Intent(mActivity, MultiFileChooserActivity.class);
         mActivity.startActivityForResult(intent, MainActivity.PICK_FILES_REQUEST);
+    }
 
-//         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-//        UploadChoiceDialog dialog = new UploadChoiceDialog();
-//        dialog.show(mActivity.getSupportFragmentManager(), mActivity.PICK_FILE_DIALOG_FRAGMENT_TAG);
-//        } else {
-//            Intent target = Utils.createGetContentIntent();
-//            Intent intent = Intent.createChooser(target, getString(R.string.choose_file));
-//        Log.e(DEBUG_TAG, "start choose");
-//
-//            startActivityForResult(intent, MainActivity.PICK_FILE_REQUEST);
-//        }
+    private void pickPhotos() {
+        Intent intent = new Intent(mActivity, MultipleImageSelectionActivity.class);
+        mActivity.startActivityForResult(intent, MainActivity.PICK_PHOTOS_VIDEOS_REQUEST);
+
+    }
+
+    private void pickVideos() {
+
+    }
+
+    private void pickMusic() {
+
     }
 
     private void CameraTakePhoto() {
@@ -913,14 +966,121 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 //            adapter.sortFiles(SettingsManager.instance().getSortFilesTypePref(),
 //                    SettingsManager.instance().getSortFilesOrderPref());
             adapter.notifyChanged();
-            recyclerView.setVisibility(View.VISIBLE);
+            mListView.setVisibility(View.VISIBLE);
             emptyImageView.setVisibility(View.GONE);
         } else {
-            recyclerView.setVisibility(View.GONE);
+            mListView.setVisibility(View.GONE);
             emptyImageView.setVisibility(View.VISIBLE);
         }
         // Collapses the currently open view
         //mListView.collapse();
+    }
+
+    class ActionModeCallback implements ActionMode.Callback {
+        private boolean allItemsSelected;
+
+        public ActionModeCallback() {
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Inflate the menu for the contextual action bar (CAB)
+            MenuInflater inflater = mode.getMenuInflater();
+//            inflater.inflate(R.menu.repos_fragment_menu, menu);
+            inflater.inflate(R.menu.repos_fragment_menu, menu);
+
+            if (adapter == null) return true;
+
+            adapter.setActionModeOn(true);
+            adapter.notifyDataSetChanged();
+
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            /*
+             * The ActionBarPolicy determines how many action button to place in the ActionBar
+             * and the default amount is 2.
+             */
+            menu.findItem(R.id.action_mode_delete).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            menu.findItem(R.id.action_mode_copy).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            menu.findItem(R.id.action_mode_select_all).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+            // Here you can perform updates to the contextual action bar (CAB) due to
+            // an invalidate() request
+            return true;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            // Respond to clicks on the actions in the contextual action bar (CAB)
+            NavContext nav = mActivity.getNavContext();
+            String repoID = nav.getRepoID();
+            String repoName = nav.getRepoName();
+            String dirPath = nav.getDirPath();
+            final List<SeafDirent> selectedDirents = adapter.getSelectedItemsValues();
+            if (selectedDirents.size() == 0
+                    || repoID == null
+                    || dirPath == null) {
+                if (item.getItemId() != R.id.action_mode_select_all) {
+                    ToastUtils.show(mActivity, R.string.action_mode_no_items_selected);
+                    return true;
+                }
+            }
+
+            switch (item.getItemId()) {
+                case R.id.action_mode_select_all:
+                    if (!allItemsSelected) {
+                        if (adapter == null) return true;
+
+                        adapter.selectAllItems();
+                        updateContextualActionBar();
+                    } else {
+                        if (adapter == null) return true;
+
+                        adapter.deselectAllItems();
+                        updateContextualActionBar();
+                    }
+
+                    allItemsSelected = !allItemsSelected;
+                    break;
+                case R.id.action_mode_delete:
+                    Log.e(DEBUG_TAG, "delete");
+                    mActivity.deleteFiles(repoID, dirPath, selectedDirents);
+                    break;
+                case R.id.action_mode_copy:
+                    Log.e(DEBUG_TAG, "copy");
+                    mActivity.copyFiles(repoID, repoName, dirPath, selectedDirents);
+                    break;
+                case R.id.action_mode_move:
+                    Log.e(DEBUG_TAG, "move");
+                    mActivity.moveFiles(repoID, repoName, dirPath, selectedDirents);
+                    break;
+                case R.id.action_mode_download:
+                    Log.e(DEBUG_TAG, "download");
+                    mActivity.downloadFiles(repoID, repoName, dirPath, selectedDirents);
+                    break;
+
+                default:
+                    return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            if (adapter == null) return;
+
+            adapter.setActionModeOn(false);
+            adapter.deselectAllItems();
+
+            // Here you can make any necessary updates to the activity when
+            // the contextual action bar (CAB) is removed. By default, selected items are deselected/unchecked.
+            mActionMode = null;
+        }
+
     }
 
 }
