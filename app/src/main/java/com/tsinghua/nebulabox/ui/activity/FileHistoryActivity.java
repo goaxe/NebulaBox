@@ -15,13 +15,14 @@ import com.tsinghua.nebulabox.SeafException;
 import com.tsinghua.nebulabox.account.AccountManager;
 import com.tsinghua.nebulabox.data.DataManager;
 import com.tsinghua.nebulabox.data.SeafCommit;
+import com.tsinghua.nebulabox.ui.base.BaseActivity;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileHistoryActivity extends AppCompatActivity {
+public class FileHistoryActivity extends BaseActivity {
 
     private static final String DEBUG_TAG = "FileHistoryActivity";
 
@@ -98,8 +99,6 @@ public class FileHistoryActivity extends AppCompatActivity {
             } catch (SeafException e) {
                 e.printStackTrace();
             }
-
         }
     }
-
 }

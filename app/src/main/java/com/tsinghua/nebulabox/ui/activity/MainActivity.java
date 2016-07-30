@@ -4,14 +4,18 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -55,7 +59,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;
@@ -446,6 +452,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     public void moveFile(String srcRepoId, String srcRepoName, String srcDir, String srcFn, boolean isdir) {
         chooseCopyMoveDest(srcRepoId, srcRepoName, srcDir, srcFn, isdir, CopyMoveContext.OP.MOVE);
+    }
+
+    public void backupLocalContact() {
+        new BackupLocalContactThread().start();
+    }
+
+    public void backupLocalMsg() {
+        new BackupLocalMsgThread().start();
     }
 
     public void deleteDir(String repoID, String repoName, String path) {
@@ -844,6 +858,169 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 }
 
             }
+        }
+    }
+
+    private void backupFile(String fileName, String content) {
+        try {
+            Log.e(DEBUG_TAG, fileName);
+            File file = new File(fileName);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            OutputStream outputStream = new FileOutputStream(file);
+            outputStream.write(content.getBytes());
+            outputStream.close();
+
+            txService.addUploadTask(accountManager.getAccount(), navContext.getRepoID(), navContext.getRepoName(), navContext.getDirPath(), fileName, false, false);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    class BackupLocalContactThread extends Thread {
+
+        public BackupLocalContactThread() {
+
+        }
+
+        @Override
+        public void run() {
+            try {
+                String content = getContacts();
+                File dir = DataManager.createTempDir();
+                Date now = new Date();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+                String fileName = dir.getAbsolutePath() + "/contact-" + dateFormat.format(now) + ".csv";
+                Log.e(DEBUG_TAG, fileName);
+                backupFile(fileName, content);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String getContacts() {
+        List<Pair<String, String>> contacts = new ArrayList<>();
+        Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        while (cursor.moveToNext()) {
+            String contactId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
+            String hasPhone = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+            // Log.e(DEBUG_TAG, name);
+            String phoneNumber = "";
+            if (hasPhone.equalsIgnoreCase("1")) {
+                Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId, null, null);
+                while (phones.moveToNext()) {
+                    phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    break;
+                }
+                phones.close();
+
+            }
+            contacts.add(Pair.create(name, phoneNumber));
+        }
+        cursor.close();
+
+        String str = "";
+        for (Pair<String, String> contact : contacts) {
+            Log.e(DEBUG_TAG, contact.first + " " + contact.second);
+            str = str + contact.first + "," + contact.second + "\n";
+        }
+        return str;
+    }
+
+    class BackupLocalMsgThread extends Thread {
+
+        @Override
+        public void run() {
+            try {
+                String content = getSmsInPhone();
+                Log.e(DEBUG_TAG, "message============\n" + content);
+
+                File dir = DataManager.createTempDir();
+                Date now = new Date();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+                String fileName = dir.getAbsolutePath() + "/message-" + dateFormat.format(now) + ".txt";
+                Log.e(DEBUG_TAG, fileName);
+                backupFile(fileName, content);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public String getSmsInPhone() {
+            final String SMS_URI_ALL = "content://sms/";
+            final String SMS_URI_INBOX = "content://sms/inbox";
+            final String SMS_URI_SEND = "content://sms/sent";
+            final String SMS_URI_DRAFT = "content://sms/draft";
+            final String SMS_URI_OUTBOX = "content://sms/outbox";
+            final String SMS_URI_FAILED = "content://sms/failed";
+            final String SMS_URI_QUEUED = "content://sms/queued";
+
+            StringBuilder smsBuilder = new StringBuilder();
+
+            try {
+                Uri uri = Uri.parse(SMS_URI_ALL);
+                String[] projection = new String[] { "_id", "address", "person", "body", "date", "type" };
+                Cursor cur = getContentResolver().query(uri, projection, null, null, "date desc");      // 获取手机内部短信
+
+                if (cur.moveToFirst()) {
+                    int index_Address = cur.getColumnIndex("address");
+                    int index_Person = cur.getColumnIndex("person");
+                    int index_Body = cur.getColumnIndex("body");
+                    int index_Date = cur.getColumnIndex("date");
+                    int index_Type = cur.getColumnIndex("type");
+
+                    do {
+                        String strAddress = cur.getString(index_Address);
+                        int intPerson = cur.getInt(index_Person);
+                        String strbody = cur.getString(index_Body);
+                        long longDate = cur.getLong(index_Date);
+                        int intType = cur.getInt(index_Type);
+
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                        Date d = new Date(longDate);
+                        String strDate = dateFormat.format(d);
+
+                        String strType = "";
+                        if (intType == 1) {
+                            strType = "接收";
+                        } else if (intType == 2) {
+                            strType = "发送";
+                        } else {
+                            strType = "null";
+                        }
+
+                        smsBuilder.append("[ ");
+                        smsBuilder.append(strAddress + ", ");
+                        smsBuilder.append(intPerson + ", ");
+                        smsBuilder.append(strbody + ", ");
+                        smsBuilder.append(strDate + ", ");
+                        smsBuilder.append(strType);
+                        smsBuilder.append(" ]\n\n");
+                    } while (cur.moveToNext());
+
+                    if (!cur.isClosed()) {
+                        cur.close();
+                        cur = null;
+                    }
+                } else {
+                    smsBuilder.append("no result!");
+                } // end if
+
+                smsBuilder.append("getSmsInPhone has executed!");
+
+            } catch (SQLiteException e) {
+                e.printStackTrace();
+            }
+
+            return smsBuilder.toString();
         }
     }
 
