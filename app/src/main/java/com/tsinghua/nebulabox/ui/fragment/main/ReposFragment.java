@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Debug;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -199,13 +200,15 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
                     } else {
                         return;
                     }
-                } else {
+                } else if (seafItem instanceof SeafRepo) {
                     SeafRepo seafRepo = (SeafRepo) seafItem;
                     navContext.setRepoID(seafRepo.id);
                     navContext.setRepoName(seafRepo.getName());
                     navContext.setDir("/", seafRepo.root);
                     refreshView(false);
                     mActivity.subTitleTextView.setText(seafRepo.getName());
+                } else {
+                    Log.e(DEBUG_TAG, "split line");
                 }
             }
         });
