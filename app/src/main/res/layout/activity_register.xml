@@ -27,7 +27,7 @@
                 android:ems="10"
                 android:hint="@string/email_hint"
                 android:inputType="textEmailAddress"
-                android:text="1@qq.com "/>
+                android:text="a@qq.com "/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
