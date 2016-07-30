@@ -10,8 +10,8 @@ public class SeafCommit {
 
     private Long revFileSize;
     private String revFileId;
-    private Long ctime;
-    private String creatorName;
+    private Long ctime;//
+    private String creatorName;//
     private String creator;
     private String rootId;
     private String revRenamedOldPath;
@@ -20,7 +20,7 @@ public class SeafCommit {
     private Boolean newMerge;
     private String repoId;
     private int version;
-    private String desc;
+    private String desc;//
     private String id;
     private Boolean conflict;
     private String secondParentId;

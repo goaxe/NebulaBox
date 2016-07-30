@@ -35,7 +35,6 @@
             android:id="@+id/title_toolbar_main_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:text="个人空间"
             android:textColor="#0066cc"
             android:textSize="18sp"/>
@@ -44,8 +43,6 @@
             android:id="@+id/subtitle_toolbar_main_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/title_toolbar_main_tv"
-            android:layout_centerHorizontal="true"
             android:layout_marginTop="3dp"
             android:text="subtitle"
             android:textSize="14sp"/>

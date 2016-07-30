@@ -53,6 +53,7 @@
     <string name="file_action_download">下载</string>
     <string name="file_action_update">上傳</string>
     <string name="file_action_export">導出</string>
+    <string name="file_action_history">歷史</string>
     <string name="file_action_delete">刪除</string>
     <string name="file_action_rename">重命名</string>
     <string name="file_action_copy">複製</string>
