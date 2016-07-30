@@ -1,6 +1,5 @@
 package com.tsinghua.nebulabox.ui.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,23 +8,20 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.tsinghua.nebulabox.R;
 import com.tsinghua.nebulabox.SeafException;
 import com.tsinghua.nebulabox.account.AccountManager;
 import com.tsinghua.nebulabox.data.DataManager;
 import com.tsinghua.nebulabox.data.SeafCommit;
 import com.tsinghua.nebulabox.util.Utils;
-
+import com.tsinghua.nebulabox.ui.base.BaseActivity;
 import org.json.JSONException;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class FileHistoryActivity extends AppCompatActivity {
+public class FileHistoryActivity extends BaseActivity {
 
     private static final String DEBUG_TAG = "FileHistoryActivity";
 
@@ -79,10 +75,10 @@ public class FileHistoryActivity extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup viewGroup) {
             ViewHolder viewHolder;
             SeafCommit commit = commits.get(position);
-            if (convertView != null){
+            if (convertView != null) {
                 viewHolder = (ViewHolder) convertView.getTag();
-            }else{
-                convertView = LayoutInflater.from(FileHistoryActivity.this).inflate(R.layout.file_history_item_layout, viewGroup,false);
+            } else {
+                convertView = LayoutInflater.from(FileHistoryActivity.this).inflate(R.layout.file_history_item_layout, viewGroup, false);
                 viewHolder = new ViewHolder(convertView);
                 convertView.setTag(viewHolder);
             }
@@ -96,7 +92,7 @@ public class FileHistoryActivity extends AppCompatActivity {
         }
     }
 
-    static class ViewHolder{
+    static class ViewHolder {
         @Bind(R.id.creator_name_item_file_history_tv)
         TextView creatorNameTextView;
         @Bind(R.id.date_item_file_history_tv)
@@ -106,8 +102,8 @@ public class FileHistoryActivity extends AppCompatActivity {
 //        @Bind(R.id.size_item_file_history_tv)
 //        TextView sizeTextView;
 
-        public ViewHolder(View view){
-            ButterKnife.bind(this,view);
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
         }
     }
 
@@ -137,8 +133,6 @@ public class FileHistoryActivity extends AppCompatActivity {
             } catch (SeafException e) {
                 e.printStackTrace();
             }
-
         }
     }
-
 }

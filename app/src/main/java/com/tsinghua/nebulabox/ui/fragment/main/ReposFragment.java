@@ -6,7 +6,6 @@ import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -41,7 +40,6 @@ import com.tsinghua.nebulabox.data.SeafDirent;
 import com.tsinghua.nebulabox.data.SeafGroup;
 import com.tsinghua.nebulabox.data.SeafItem;
 import com.tsinghua.nebulabox.data.SeafRepo;
-import com.tsinghua.nebulabox.fileschooser.MultiFileChooserActivity;
 import com.tsinghua.nebulabox.gallery.MultipleImageSelectionActivity;
 import com.tsinghua.nebulabox.interf.OnItemClickListener;
 import com.tsinghua.nebulabox.interf.OnItemLongClickListener;
@@ -55,7 +53,6 @@ import com.tsinghua.nebulabox.ui.dialog.FileOptionDialog;
 import com.tsinghua.nebulabox.ui.dialog.NewDirDialog;
 import com.tsinghua.nebulabox.ui.dialog.NewFileDialog;
 import com.tsinghua.nebulabox.ui.dialog.TaskDialog;
-import com.tsinghua.nebulabox.ui.dialog.UploadChoiceDialog;
 import com.tsinghua.nebulabox.ui.widget.CircleImageView;
 import com.tsinghua.nebulabox.util.ConcurrentAsyncTask;
 import com.tsinghua.nebulabox.util.Utils;
@@ -773,6 +770,7 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
                         break;
                     case R.id.history:
                         mActivity.historyFile(repoID, path);
+                       break;
                     case R.id.rename:
                         mActivity.renameFile(repoID, repoName, path);
                         break;
