@@ -3,6 +3,7 @@ package com.tsinghua.nebulabox.ui.fragment.main;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.tsinghua.nebulabox.R;
 import com.tsinghua.nebulabox.SeafConnection;
 import com.tsinghua.nebulabox.SeafException;
+import com.tsinghua.nebulabox.SettingsManager;
 import com.tsinghua.nebulabox.account.Account;
 import com.tsinghua.nebulabox.account.AccountInfo;
 import com.tsinghua.nebulabox.account.AccountManager;
@@ -35,6 +37,7 @@ import com.tsinghua.nebulabox.data.StorageManager;
 import com.tsinghua.nebulabox.ui.activity.LoginActivity;
 import com.tsinghua.nebulabox.ui.base.BaseFragment;
 import com.tsinghua.nebulabox.ui.dialog.ClearCacheTaskDialog;
+import com.tsinghua.nebulabox.ui.dialog.SwitchStorageTaskDialog;
 import com.tsinghua.nebulabox.ui.dialog.TaskDialog;
 import com.tsinghua.nebulabox.util.ConcurrentAsyncTask;
 import com.tsinghua.nebulabox.util.log.KLog;
@@ -64,6 +67,12 @@ public class UserCenterFragment extends BaseFragment {
     RelativeLayout cacheClearRelativeLayout;
     @Bind(R.id.size_cache_user_center_tv)
     TextView cacheSizeTextView;
+    @Bind(R.id.cache_location_user_center_rl)
+    RelativeLayout cacheLocationRelativeLayout;
+    @Bind(R.id.cache_location_user_center_tv)
+    TextView cacheLocationTextView;
+//    @Bind(R.id.cache_location_view)
+//    View cacheLocationView;
     @Bind(R.id.version_code_user_center_rl)
     RelativeLayout versionRelativeLayout;
     @Bind(R.id.version_code_user_center_tv)
@@ -76,6 +85,7 @@ public class UserCenterFragment extends BaseFragment {
     private AccountManager accountManager;
     private AvatarManager avatarManager;
     private DataManager dataManager;
+    private SettingsManager settingsManager;
     private StorageManager storageManager = StorageManager.getInstance();
     private static Map<String, AccountInfo> accountInfoMap = Maps.newHashMap();
 
@@ -94,6 +104,7 @@ public class UserCenterFragment extends BaseFragment {
 
         accountManager = mActivity.getAccountManager();
         avatarManager = new AvatarManager();
+        settingsManager =SettingsManager.instance();
         dataManager = new DataManager(accountManager.getAccount());
         nickTextView.setText(accountManager.getAccount().getEmail());
 
@@ -118,6 +129,19 @@ public class UserCenterFragment extends BaseFragment {
             appVersion = getString(R.string.not_available);
         }
         versionTextView.setText(appVersion);
+
+        if (storageManager.supportsMultipleStorageLocations()) {
+            updateStorageLocationSummary();
+        } else {
+            cacheLocationRelativeLayout.setVisibility(View.GONE);
+//            cacheLocationView.setVisibility(View.GONE);
+        }
+        settingsManager.registerSharedPreferencesListener(settingsListener);
+    }
+
+    private void updateStorageLocationSummary() {
+        String summary = storageManager.getStorageLocation().description;
+        cacheLocationTextView.setText(summary);
     }
 
     @OnClick(R.id.logout_user_center_btn)
@@ -156,6 +180,11 @@ public class UserCenterFragment extends BaseFragment {
         builder.show();
     }
 
+    @OnClick(R.id.cache_location_user_center_rl)
+    public void changeCacheLocation() {
+        new SwitchStorageTaskDialog().show(getFragmentManager(), "Select cache location");
+    }
+
     @OnClick(R.id.clear_cache_user_center_rl)
     public void clearCache() {
         ClearCacheTaskDialog dialog = new ClearCacheTaskDialog();
@@ -187,6 +216,12 @@ public class UserCenterFragment extends BaseFragment {
         ConcurrentAsyncTask.execute(new CalculateCacheTask());
     }
 
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        settingsManager.unregisterSharedPreferencesListener(settingsListener);
+    }
 
     class CalculateCacheTask extends AsyncTask<String, Void, Long> {
 
@@ -301,7 +336,7 @@ public class UserCenterFragment extends BaseFragment {
 
     private class LoadAvatarUrlsTask extends AsyncTask<Void, Void, Avatar> {
 
-//        private List<Avatar> avatars;
+        //        private List<Avatar> avatars;
         private int avatarSize;
         private SeafConnection httpConnection;
 
@@ -323,21 +358,21 @@ public class UserCenterFragment extends BaseFragment {
 
             // load avatars from server
 //            for (Account account : acts) {
-                httpConnection = new SeafConnection(accountManager.getAccount());
+            httpConnection = new SeafConnection(accountManager.getAccount());
 
-                String avatarRawData = null;
-                try {
-                    avatarRawData = httpConnection.getAvatar(accountManager.getAccount().getEmail(), avatarSize);
-                } catch (SeafException e) {
-                    e.printStackTrace();
-                    return null;
-                }
+            String avatarRawData = null;
+            try {
+                avatarRawData = httpConnection.getAvatar(accountManager.getAccount().getEmail(), avatarSize);
+            } catch (SeafException e) {
+                e.printStackTrace();
+                return null;
+            }
 
-                Avatar avatar = avatarManager.parseAvatar(avatarRawData);
-                if (avatar == null)
-                    return null;
+            Avatar avatar = avatarManager.parseAvatar(avatarRawData);
+            if (avatar == null)
+                return null;
 
-                avatar.setSignature(accountManager.getAccount().getSignature());
+            avatar.setSignature(accountManager.getAccount().getSignature());
 
 //                avatars.add(avatar);
 
@@ -356,7 +391,7 @@ public class UserCenterFragment extends BaseFragment {
                 return;
             }
 
-            if (getAvatarUrl(accountManager.getAccount(),avatar) != null) {
+            if (getAvatarUrl(accountManager.getAccount(), avatar) != null) {
                 DisplayImageOptions options = new DisplayImageOptions.Builder()
                         .extraForDownloader(accountManager.getAccount())
                         .showStubImage(R.drawable.default_avatar)
@@ -370,22 +405,51 @@ public class UserCenterFragment extends BaseFragment {
                         .considerExifParams(true)
                         .displayer(new RoundedBitmapDisplayer(1000))
                         .build();
-                ImageLoader.getInstance().displayImage(getAvatarUrl(accountManager.getAccount(),avatar), avatarImageView, options);
+                ImageLoader.getInstance().displayImage(getAvatarUrl(accountManager.getAccount(), avatar), avatarImageView, options);
             }
             ImageLoader.getInstance().handleSlowNetwork(true);
         }
-        private String getAvatarUrl(Account account,Avatar avatar) {
+
+        private String getAvatarUrl(Account account, Avatar avatar) {
             if (avatar == null) {
                 return null;
             }
 //            for (Avatar avatar : avatars) {
-                if (avatar.getSignature().equals(account.getSignature())) {
-                    return avatar.getUrl();
-                }
+            if (avatar.getSignature().equals(account.getSignature())) {
+                return avatar.getUrl();
+            }
 //            }
 
             return null;
         }
     }
+
+    class UpdateStorageSLocationSummaryTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void ret) {
+            updateStorageLocationSummary();
+        }
+
+    }
+
+    private SharedPreferences.OnSharedPreferenceChangeListener settingsListener =
+            new SharedPreferences.OnSharedPreferenceChangeListener() {
+
+                @Override
+                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+                    switch (key) {
+                        case SettingsManager.SHARED_PREF_STORAGE_DIR:
+                            ConcurrentAsyncTask.execute(new UpdateStorageSLocationSummaryTask());
+                            break;
+                    }
+                }
+            };
 
 }
