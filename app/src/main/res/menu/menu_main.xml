@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:title="@string/search_menu_item"
+        android:id="@+id/search_meny_main"
+        android:icon="@drawable/search"
+        android:orderInCategory="90"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:title="@string/search_menu_item"
+        android:id="@+id/recovery_meny_main"
+        android:icon="@drawable/search"
+        android:orderInCategory="90"
+        app:showAsAction="ifRoom"/>
+
+
+
+</menu>

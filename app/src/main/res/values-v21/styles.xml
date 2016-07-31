@@ -15,11 +15,15 @@
 -->
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-
+    
     <style name="AppTheme.Base" parent="Theme.AppCompat">
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
     </style>
+
+    <!--<style name="AppTheme.NoToolBar" parent="AppTheme">-->
+        <!--<item name="android:toolbarStyle"-->
+    <!--</style>-->
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -46,6 +50,7 @@
         <!--<item name="android:colorButtonNormal">@color/fancy_orange</item>-->
         <item name="colorButtonNormal">@color/fancy_orange</item>
         <item name="alertDialogTheme">@style/AppCompatAlertDialogStyle</item>
+        <item name="android:navigationBarColor">@color/color_primary</item>
     </style>
 
     <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">

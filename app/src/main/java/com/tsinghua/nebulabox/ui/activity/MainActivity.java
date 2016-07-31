@@ -14,8 +14,11 @@ import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -148,10 +151,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 //    ImageView searchImageView;
 //    @Bind(R.id.more_toolbar_main_iv)
 //    ImageView moreImageView;
-    @Bind(R.id.title_toolbar_main_tv)
-    TextView titleTextView;
-    @Bind(R.id.subtitle_toolbar_main_tv)
-    public TextView subTitleTextView;
+    @Bind(R.id.toolbar_actionbar)
+    public Toolbar toolbar;
+    //    @Bind(R.id.title_toolbar_main_tv)
+//    TextView titleTextView;
+//    @Bind(R.id.subtitle_toolbar_main_tv)
+//    public TextView subTitleTextView;
     @Bind(R.id.content_main_fl)
     FrameLayout contentFrameLayout;
 
@@ -182,6 +187,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+        toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
 
         initVariable();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -285,18 +298,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         tabsTextViewList.get(tabIndex).setTextColor(ContextCompat.getColor(this, R.color.tab_main_selected));
 
         if (tabIndex == 0) {
-            titleTextView.setText("空间");
-            subTitleTextView.setVisibility(View.VISIBLE);
+            toolbar.setTitle(getResources().getString(R.string.tabs_main_personal));
+//            subTitleTextView.setVisibility(View.VISIBLE);
+//            toolbar.setSubtitle();
         } else if (tabIndex == 1) {
-            titleTextView.setText("星标");
-            subTitleTextView.setVisibility(View.GONE);
+            toolbar.setTitle(R.string.shared);
+            toolbar.setSubtitle(null);
+            toolbar.setNavigationIcon(null);
+        } else if (tabIndex == 2) {
+            toolbar.setTitle(getResources().getString(R.string.tabs_main_star));
+//            subTitleTextView.setVisibility(View.GONE);
+            toolbar.setSubtitle(null);
+            toolbar.setNavigationIcon(null);
         } else {
-            titleTextView.setText("个人中心");
-            subTitleTextView.setVisibility(View.GONE);
+            toolbar.setTitle(getResources().getString(R.string.tabs_main_usercenter));
+//            subTitleTextView.setVisibility(View.GONE);
+            toolbar.setSubtitle(null);
+            toolbar.setNavigationIcon(null);
         }
     }
-
-
 
 
     @Override
@@ -380,6 +400,37 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private Toolbar.OnMenuItemClickListener onMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.search_meny_main:
+                    //搜索
+                    break;
+                case R.id.recovery_meny_main:
+                    //回收站
+                    break;
+            }
+            return true;
+        }
+    };
+
+    @Override
     public void onBackPressed() {
         if (currentFragmentIndex != 0 || !navContext.inRepo()) {
             super.onBackPressed();
@@ -392,7 +443,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     .getDirPath());
             navContext.setDir(parentPath, null);
         }
-        subTitleTextView.setText(navContext.getDirPath());
+
+//        subTitleTextView.setText(navContext.getDirPath());
+        toolbar.setSubtitle(navContext.getDirPath());
+        toolbar.setNavigationIcon(R.drawable.home_up_btn);
         ReposFragment reposFragment = (ReposFragment) fragmentList.get(currentFragmentIndex);
         reposFragment.refreshView(false);
     }
@@ -866,7 +920,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 if (!txService.hasDownloadNotifProvider()) {
                     DownloadNotificationProvider provider =
                             new DownloadNotificationProvider(txService.getDownloadTaskManager(),
-                            txService);
+                                    txService);
                     txService.saveDownloadNotifProvider(provider);
                 }
 
@@ -980,7 +1034,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
             try {
                 Uri uri = Uri.parse(SMS_URI_ALL);
-                String[] projection = new String[] { "_id", "address", "person", "body", "date", "type" };
+                String[] projection = new String[]{"_id", "address", "person", "body", "date", "type"};
                 Cursor cur = getContentResolver().query(uri, projection, null, null, "date desc");      // 获取手机内部短信
 
                 if (cur.moveToFirst()) {
