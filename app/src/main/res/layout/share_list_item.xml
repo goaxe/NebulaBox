@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/icon_item_share_list_iv"
+        android:layout_width="@dimen/lv_icon_width"
+        android:layout_height="@dimen/lv_icon_width"/>
 
     <TextView
-        android:id="@+id/text"
+        android:id="@+id/name_item_share_list_tv"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/icon_item_share_list_iv"
+        android:textSize="18sp"/>
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/repo_item_share_list_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/name_item_share_list_tv"
+        android:layout_alignStart="@id/name_item_share_list_tv"
+        android:layout_below="@id/name_item_share_list_tv"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/date_item_share_list_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/name_item_share_list_tv"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/frequency_item_share_list_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name_item_share_list_tv"
+        android:layout_toStartOf="@+id/date_item_share_list_tv"
+        android:layout_toLeftOf="@+id/date_item_share_list_tv"
+        android:textSize="14sp"/>
+
+</RelativeLayout>
