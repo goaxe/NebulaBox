@@ -1106,5 +1106,15 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
         setCategoryDataToAdapter(searchList);
     }
 
+    public String getRepoNameByRepoId(String repoId) {
+        List<SeafRepo> repos = dataManager.getReposFromCache();
+        for (SeafRepo repo : repos) {
+            if (repo.getID().equals(repoId)) {
+                return repo.getName();
+            }
+        }
+        return getString(R.string.unknown_repo_name);
+    }
+
 
 }

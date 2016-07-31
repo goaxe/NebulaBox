@@ -1,6 +1,5 @@
 package com.tsinghua.nebulabox.ui.dialog;
 
-
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;

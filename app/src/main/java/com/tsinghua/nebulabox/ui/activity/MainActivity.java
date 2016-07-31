@@ -424,15 +424,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.search_menu_main:
-                    final EditText editText = new EditText(getApplicationContext());
-                    new AlertDialog.Builder(getApplicationContext()).setTitle(getString(R.string.search_bar_hint)).setIcon(android.R.drawable.ic_dialog_info).setView(editText).setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
+                    final EditText editText = new EditText(MainActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle(getString(R.string.search_bar_hint));
+                    builder.setIcon(android.R.drawable.ic_dialog_info);
+                    builder.setView(editText);
+                    builder.setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             String searchContent = editText.getText().toString();
-                            getReposFragment().doSearch(searchContent);
+                            MainActivity.this.getReposFragment().doSearch(searchContent);
                         }
-                    }).setNegativeButton(getString(R.string.cancel), null).show();
-                    break;
+                    });
+                    builder.setNegativeButton(getString(R.string.cancel), null);
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                   break;
                 case R.id.repo_history_menu_main:
                     historyRepo(getNavContext().getRepoID());
                     break;
@@ -440,6 +448,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             return true;
         }
     };
+
 
     @Override
     public void onBackPressed() {
