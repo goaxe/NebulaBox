@@ -103,9 +103,9 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
     private String[] sortOptionalTextList;
     private String[] uploadOptionalTextList;
 
-    private int[] categoryOptionalIconList = new int[]{R.drawable.icon_picture,R.drawable.icon_music,R.drawable.icon_video,R.drawable.icon_document,R.drawable.icon_app,R.drawable.icon_all};
-    private int[] sortOptionalIconList = new int[]{R.drawable.icon_sort_name_reverse,R.drawable.icon_sort_date_reverse};
-    private int[] uploadOptionaIconList = new int[]{R.drawable.icon_folder_created,R.drawable.icon_upload_file,R.drawable.icon_play_camera};
+    private int[] categoryOptionalIconList = new int[]{R.drawable.icon_picture, R.drawable.icon_music, R.drawable.icon_video, R.drawable.icon_document, R.drawable.icon_app, R.drawable.icon_all};
+    private int[] sortOptionalIconList = new int[]{R.drawable.icon_sort_name_reverse, R.drawable.icon_sort_date_reverse};
+    private int[] uploadOptionaIconList = new int[]{R.drawable.icon_folder_created, R.drawable.icon_upload_file, R.drawable.icon_play_camera};
 
     private FileOptionDialog categoryDialog;
     private FileOptionDialog sortDialog;
@@ -194,7 +194,10 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
                                     currentPath + seafDirent.name : currentPath + "/" + seafDirent.name;
                             navContext.setDir(newPath, seafDirent.id);
                             refreshView(false);
-                            mActivity.subTitleTextView.setText(newPath);
+
+//                            mActivity.subTitleTextView.setText(newPath);
+                            mActivity.toolbar.setSubtitle(newPath);
+                            mActivity.toolbar.setNavigationIcon(R.drawable.home_up_btn);
                         } else {
                             mActivity.onFileSelected(seafDirent);
                         }
@@ -207,7 +210,9 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
                     navContext.setRepoName(seafRepo.getName());
                     navContext.setDir("/", seafRepo.root);
                     refreshView(false);
-                    mActivity.subTitleTextView.setText(seafRepo.getName());
+//                    mActivity.subTitleTextView.setText(seafRepo.getName());
+                    mActivity.toolbar.setSubtitle(seafRepo.getName());
+                    mActivity.toolbar.setNavigationIcon(R.drawable.home_up_btn);
                 } else {
                     Log.e(DEBUG_TAG, "split line");
                 }
@@ -221,7 +226,6 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
                 return true;
             }
         });
-
 
 
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -269,7 +273,6 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
     }
 
 
-
     public RelativeLayout getEmptyView() {
 
         return emptyRelativeLayout;
@@ -288,7 +291,7 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
         popupWindow.getContentView().setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if (i == KeyEvent.KEYCODE_BACK){
+                if (i == KeyEvent.KEYCODE_BACK) {
                     popupWindow.dismiss();
                     return true;
                 }
@@ -574,13 +577,16 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
             navToDirectory(forceRefresh);
             optionLinearLayout.setVisibility(View.VISIBLE);
             lineView.setVisibility(View.VISIBLE);
-            mActivity.subTitleTextView.setVisibility(View.VISIBLE);
+//            mActivity.subTitleTextView.setVisibility(View.VISIBLE);
+//            mActivity.toolbar.setSubtitle();
         } else {
 //            mActivity.disableUpButton();
             navToReposView(forceRefresh);
             optionLinearLayout.setVisibility(View.GONE);
             lineView.setVisibility(View.GONE);
-            mActivity.subTitleTextView.setVisibility(View.GONE);
+//            mActivity.subTitleTextView.setVisibility(View.GONE);
+            mActivity.toolbar.setSubtitle(null);
+            mActivity.toolbar.setNavigationIcon(null);
         }
     }
 
@@ -774,7 +780,7 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
                         break;
                     case R.id.history:
                         mActivity.historyFile(repoID, path);
-                       break;
+                        break;
                     case R.id.rename:
                         mActivity.renameFile(repoID, repoName, path);
                         break;
@@ -896,9 +902,9 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
 //            UploadChoiceDialog dialog = new UploadChoiceDialog();
 //            dialog.show(getSupportFragmentManager(), PICK_FILE_DIALOG_FRAGMENT_TAG);
 //        } else {
-            Intent target = Utils.createGetContentIntent();
-            Intent intent = Intent.createChooser(target, getString(R.string.choose_file));
-            mActivity.startActivityForResult(intent, MainActivity.PICK_FILE_REQUEST);
+        Intent target = Utils.createGetContentIntent();
+        Intent intent = Intent.createChooser(target, getString(R.string.choose_file));
+        mActivity.startActivityForResult(intent, MainActivity.PICK_FILE_REQUEST);
 //        }
 
 //        Intent intent = new Intent(mActivity, MultiFileChooserActivity.class);
