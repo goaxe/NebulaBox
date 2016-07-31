@@ -4,14 +4,14 @@
 
     <item
         android:title="@string/search_menu_item"
-        android:id="@+id/search_meny_main"
-        android:icon="@drawable/search"
+        android:id="@+id/search_menu_main"
+        android:icon="@drawable/search_48"
         android:orderInCategory="90"
         app:showAsAction="ifRoom"/>
     <item
         android:title="@string/search_menu_item"
-        android:id="@+id/recovery_meny_main"
-        android:icon="@drawable/search"
+        android:id="@+id/repo_history_menu_main"
+        android:icon="@drawable/ic_history_white_48dp"
         android:orderInCategory="90"
         app:showAsAction="ifRoom"/>
 

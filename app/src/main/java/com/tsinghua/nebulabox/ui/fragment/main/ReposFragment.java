@@ -1101,4 +1101,10 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
 
     }
 
+    public void doSearch(String searchContent) {
+        searchList = Utils.searchFile(getAdapter().getDirents(), searchContent);
+        setCategoryDataToAdapter(searchList);
+    }
+
+
 }
