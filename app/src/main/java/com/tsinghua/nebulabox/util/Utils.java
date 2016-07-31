@@ -371,6 +371,11 @@ public class Utils {
     /**
      * Translate commit time to human readable time description
      */
+    public static String translateCommitTimeToMonth(long timestampInMillis) {
+        Date d = new Date(timestampInMillis);
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy年MM月");
+        return fmt.format(d);
+    }
     public static String translateCommitTime(long timestampInMillis) {
         long now = Calendar.getInstance().getTimeInMillis();
         if (now <= timestampInMillis) {
