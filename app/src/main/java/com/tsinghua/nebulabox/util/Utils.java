@@ -788,6 +788,16 @@ public class Utils {
         return filterList;
     }
 
+    public static List<SeafDirent> searchFile(List<SeafDirent> curList, String searchContent) {
+        List<SeafDirent> searchedList = new ArrayList<>();
+        for (SeafDirent dirent : curList) {
+            if (dirent.getTitle().contains(searchContent)) {
+                searchedList.add(dirent);
+            }
+        }
+        return searchedList;
+    }
+
     public static List<SeafDirent> sortFileByFileName(List<SeafDirent> list){
         for (int i = 0 ; i<list.size() ; i++){
             for (int j = 0;j<list.size() - i -1;j++){

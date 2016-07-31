@@ -7,7 +7,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Debug;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -110,6 +109,8 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
 
     private FileOptionDialog categoryDialog;
     private FileOptionDialog sortDialog;
+
+    private List<SeafDirent> searchList;
 
     private List<SeafDirent> pictureList;
     private List<SeafDirent> videoList;
@@ -298,7 +299,7 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
             }
         });
 
-        OptionalGridViewAdapter adapter = loadOptionalPopupData(index);
+        final OptionalGridViewAdapter adapter = loadOptionalPopupData(index);
         if (adapter == null) {
             return;
         }
