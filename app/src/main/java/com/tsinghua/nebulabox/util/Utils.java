@@ -31,7 +31,6 @@ import com.tsinghua.nebulabox.SeadroidApplication;
 import com.tsinghua.nebulabox.data.SeafDirent;
 import com.tsinghua.nebulabox.data.SeafRepo;
 import com.tsinghua.nebulabox.fileschooser.SelectableFile;
-//import com.seafile.seadroid2.fileschooser.SelectableFile;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,6 +70,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
+
+//import com.seafile.seadroid2.fileschooser.SelectableFile;
 
 public class Utils {
     public static final String MIME_APPLICATION_OCTET_STREAM = "application/octet-stream";
@@ -786,6 +787,21 @@ public class Utils {
             }
         }
         return filterList;
+    }
+
+    public static boolean isNeedFormat(String fileName,String[] formatList){
+        boolean isNeedFormat = false;
+        for (int i = 0; i < formatList.length ; i++){
+            if (fileName.length() < formatList[i].length())
+                continue;
+            if (formatList[i].equals(fileName.substring(fileName.length() - formatList[i].length(),fileName.length()))){
+                isNeedFormat = true;
+                break;
+            }else{
+                isNeedFormat = false;
+            }
+        }
+        return isNeedFormat;
     }
 
     public static List<SeafDirent> searchFile(List<SeafDirent> curList, String searchContent) {

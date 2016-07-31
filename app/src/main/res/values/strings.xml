@@ -521,5 +521,8 @@
     <string name="tabs_main_star">start</string>
     <string name="tabs_main_usercenter">settings</string>
     <string name="unknown_repo_name">unknown repo name</string>
+    <string name="view_count">view count:</string>
+    <string name="expire_at">expire at:</string>
+
 
 </resources>

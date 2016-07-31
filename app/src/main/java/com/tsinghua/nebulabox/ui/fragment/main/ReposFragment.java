@@ -165,10 +165,10 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
         sortDialog.setOnItemClickListener(this);
 
         pictureFormat = resources.getStringArray(R.array.format_picture);
+        txtFormat = resources.getStringArray(R.array.format_document);
         audioFormat = resources.getStringArray(R.array.format_audio);
         videoFormat = resources.getStringArray(R.array.format_video);
         appFormat = resources.getStringArray(R.array.format_app);
-        txtFormat = resources.getStringArray(R.array.format_document);
 
         dataManager = mActivity.getDataManager();
 

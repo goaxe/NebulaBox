@@ -129,5 +129,9 @@
     <string name="tabs_main_star">星标</string>
     <string name="tabs_main_usercenter">我</string>
     <string name="unknown_repo_name">未知的repo名字</string>
+    <string name="view_count">被访问次数:</string>
+    <string name="expire_at">过期时间为:</string>
+
+
 
 </resources>
