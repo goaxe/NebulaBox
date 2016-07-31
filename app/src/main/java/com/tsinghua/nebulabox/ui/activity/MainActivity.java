@@ -2,6 +2,7 @@ package com.tsinghua.nebulabox.ui.activity;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
@@ -14,12 +15,14 @@ import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -415,20 +418,37 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         return super.onPrepareOptionsMenu(menu);
     }
 
+
     private Toolbar.OnMenuItemClickListener onMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.search_meny_main:
-                    //搜索
-                    break;
-                case R.id.recovery_meny_main:
-                    //回收站
+                case R.id.search_menu_main:
+                    final EditText editText = new EditText(MainActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle(getString(R.string.search_bar_hint));
+                    builder.setIcon(android.R.drawable.ic_dialog_info);
+                    builder.setView(editText);
+                    builder.setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            String searchContent = editText.getText().toString();
+                            MainActivity.this.getReposFragment().doSearch(searchContent);
+                        }
+                    });
+                    builder.setNegativeButton(getString(R.string.cancel), null);
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                   break;
+                case R.id.repo_history_menu_main:
+                    historyRepo(getNavContext().getRepoID());
                     break;
             }
             return true;
         }
     };
+
 
     @Override
     public void onBackPressed() {
@@ -1090,5 +1110,4 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             return smsBuilder.toString();
         }
     }
-
 }

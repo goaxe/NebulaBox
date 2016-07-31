@@ -114,10 +114,10 @@ public class ShareFragment extends BaseFragment {
             }else{
                 viewHolder = (ViewHolder)convertView.getTag();
             }
-            viewHolder.dateTextView.setText(share.getExpired() ? share.getExpireDate() : "--");
-            viewHolder.repoTextView.setText(share.getRepoId());
+            viewHolder.dateTextView.setText(share.getExpired() ? getString(R.string.expire_at) + share.getExpireDate() : "");
+            viewHolder.repoTextView.setText(mActivity.getReposFragment().getRepoNameByRepoId(share.getRepoId()));
             viewHolder.nameTextView.setText(share.getPath());
-            viewHolder.frequencyTextView.setText(String.valueOf(share.getViewCount()));
+            viewHolder.frequencyTextView.setText(getString(R.string.view_count) + share.getViewCount());
             if (Utils.isNeedFormat(share.getPath(),pictureFormat)){
                 viewHolder.iconImageView.setImageResource(R.drawable.file_image);
             } else if (Utils.isNeedFormat(share.getPath(),documentFormat)){
