@@ -64,6 +64,14 @@ public class SeafItemAdapter extends BaseAdapter {
     /** sort files order */
     public static final int SORT_ORDER_DESCENDING = 12;
 
+    public List<SeafDirent> getDirents() {
+        List<SeafDirent> dirents = new ArrayList<>();
+        for (SeafItem item : items) {
+            dirents.add((SeafDirent) item);
+        }
+        return dirents;
+    }
+
     @Override
     public int getCount() {
         return items.size();
