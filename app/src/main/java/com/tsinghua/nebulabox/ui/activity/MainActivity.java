@@ -57,7 +57,6 @@ import com.tsinghua.nebulabox.ui.fragment.main.UserCenterFragment;
 import com.tsinghua.nebulabox.util.ConcurrentAsyncTask;
 import com.tsinghua.nebulabox.util.Utils;
 import com.tsinghua.nebulabox.util.UtilsJellyBean;
-import com.tsinghua.nebulabox.util.log.KLog;
 
 import org.apache.commons.io.IOUtils;
 
@@ -123,7 +122,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Bind(R.id.toolbar_actionbar)
     public Toolbar toolbar;
 
-    public boolean isShowToolbarMenuItem = true;
+//    public boolean isShowToolbarMenuItem = true;
 
     @Bind({R.id.personal_main_iv, R.id.share_main_iv, R.id.star_main_iv, R.id.usercenter_main_iv})
     List<ImageView> tabsImageViewList;
@@ -238,11 +237,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         switchTextAndImage(tabIndex);
 
-        if (tabIndex == 0){
-            isShowToolbarMenuItem = true;
-        }else {
-            isShowToolbarMenuItem = false;
-        }
         invalidateOptionsMenu();
 
         this.currentFragmentIndex = tabIndex;
@@ -262,8 +256,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         if (tabIndex == 0) {
             toolbar.setTitle(getResources().getString(R.string.tabs_main_personal));
-//            subTitleTextView.setVisibility(View.VISIBLE);
-//            toolbar.setSubtitle();
+            if (navContext.inRepo()){
+                toolbar.setNavigationIcon(R.drawable.home_up_btn);
+                toolbar.setSubtitle(navContext.getDirPath());
+            }
         } else if (tabIndex == 1) {
             toolbar.setTitle(R.string.shared);
             toolbar.setSubtitle(null);
@@ -279,9 +275,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             toolbar.setSubtitle(null);
             toolbar.setNavigationIcon(null);
         }
-    }
-
-    private void setToolbarMenuItemStatus(){
     }
 
     @Override
@@ -405,8 +398,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.search_menu_main).setVisible(isShowToolbarMenuItem);
-        menu.findItem(R.id.repo_history_menu_main).setVisible(isShowToolbarMenuItem);
+        if (currentFragmentIndex == 0 && navContext.inRepo()){
+            menu.findItem(R.id.search_menu_main).setVisible(true);
+            menu.findItem(R.id.repo_history_menu_main).setVisible(true);
+        }else {
+            menu.findItem(R.id.search_menu_main).setVisible(false);
+            menu.findItem(R.id.repo_history_menu_main).setVisible(false);
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -461,6 +459,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         toolbar.setNavigationIcon(R.drawable.home_up_btn);
         ReposFragment reposFragment = (ReposFragment) fragmentList.get(currentFragmentIndex);
         reposFragment.refreshView(false);
+
+        invalidateOptionsMenu();
     }
 
     private Fragment getFragment(int index) {
