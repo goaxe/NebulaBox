@@ -201,6 +201,8 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
                         } else {
                             mActivity.onFileSelected(seafDirent);
                         }
+                        mActivity.isShowToolbarMenuItem = true;
+                        mActivity.invalidateOptionsMenu();
                     } else {
                         return;
                     }
@@ -213,8 +215,8 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
 //                    mActivity.subTitleTextView.setText(seafRepo.getName());
                     mActivity.toolbar.setSubtitle(seafRepo.getName());
                     mActivity.toolbar.setNavigationIcon(R.drawable.home_up_btn);
-                } else {
-                    Log.e(DEBUG_TAG, "split line");
+                    mActivity.isShowToolbarMenuItem = false;
+                    mActivity.invalidateOptionsMenu();
                 }
             }
         });

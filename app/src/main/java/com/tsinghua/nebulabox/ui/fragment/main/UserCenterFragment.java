@@ -207,7 +207,7 @@ public class UserCenterFragment extends BaseFragment {
     @OnClick(R.id.about_user_center_rl)
     public void aboutSelf() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-        builder.setMessage("NebulaBox应用是由清华大学开发");
+        builder.setMessage(R.string.about_self_content);
         builder.setCancelable(true);
         builder.show();
     }

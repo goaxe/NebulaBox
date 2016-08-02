@@ -23,7 +23,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -51,13 +50,14 @@ import com.tsinghua.nebulabox.ui.dialog.CopyMoveDialog;
 import com.tsinghua.nebulabox.ui.dialog.DeleteFileDialog;
 import com.tsinghua.nebulabox.ui.dialog.RenameFileDialog;
 import com.tsinghua.nebulabox.ui.dialog.TaskDialog;
+import com.tsinghua.nebulabox.ui.fragment.main.ReposFragment;
 import com.tsinghua.nebulabox.ui.fragment.main.ShareFragment;
 import com.tsinghua.nebulabox.ui.fragment.main.StarredFragment;
-import com.tsinghua.nebulabox.ui.fragment.main.ReposFragment;
 import com.tsinghua.nebulabox.ui.fragment.main.UserCenterFragment;
 import com.tsinghua.nebulabox.util.ConcurrentAsyncTask;
 import com.tsinghua.nebulabox.util.Utils;
 import com.tsinghua.nebulabox.util.UtilsJellyBean;
+import com.tsinghua.nebulabox.util.log.KLog;
 
 import org.apache.commons.io.IOUtils;
 
@@ -77,32 +77,6 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, StarredFragment.OnStarredFileSelectedListener {
 
-    @Override
-    public void onStarredFileSelected(SeafStarredFile starredFile) {
-        final String repoID = starredFile.getRepoID();
-        final SeafRepo repo = dataManager.getCachedRepoByID(repoID);
-        if (repo == null) return;
-
-        final String repoName = repo.getName();
-        final String filePath = starredFile.getPath();
-        final String dirPath = Utils.getParentPath(filePath);
-
-        // Encrypted repo doesn\`t support gallery,
-        // because pic thumbnail under encrypted repo was not supported at the server side
-        if (Utils.isViewableImage(starredFile.getTitle()) && !repo.encrypted) {
-            WidgetUtils.startGalleryActivity(this, repoName, repoID, dirPath, starredFile.getTitle(), accountManager.getAccount());
-            return;
-        }
-
-        final File localFile = dataManager.getLocalCachedFile(repoName, repoID, filePath, null);
-        if (localFile != null) {
-            WidgetUtils.showFile(this, localFile);
-            return;
-        }
-
-        startFileActivity(repoName, repoID, filePath, repo.canLocalDecrypt(), repo.encVersion);
-
-    }
 
     private static final String DEBUG_TAG = "MainActivity";
 
@@ -146,22 +120,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private NavContext navContext = new NavContext();
 
-    //    @Bind(R.id.avatar_toolbar_main_iv)
-//    CircleImageView avatarImageView;
-//    @Bind(R.id.username_toolbar_main_tv)
-//    TextView userNameTextView;
-//    @Bind(R.id.search_toolbar_main_iv)
-//    ImageView searchImageView;
-//    @Bind(R.id.more_toolbar_main_iv)
-//    ImageView moreImageView;
     @Bind(R.id.toolbar_actionbar)
     public Toolbar toolbar;
-    //    @Bind(R.id.title_toolbar_main_tv)
-//    TextView titleTextView;
-//    @Bind(R.id.subtitle_toolbar_main_tv)
-//    public TextView subTitleTextView;
-    @Bind(R.id.content_main_fl)
-    FrameLayout contentFrameLayout;
+
+    public boolean isShowToolbarMenuItem = true;
 
     @Bind({R.id.personal_main_iv, R.id.share_main_iv, R.id.star_main_iv, R.id.usercenter_main_iv})
     List<ImageView> tabsImageViewList;
@@ -273,20 +235,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         }
         transaction.show(nextFragment).commitAllowingStateLoss();
+
         switchTextAndImage(tabIndex);
+
+        if (tabIndex == 0){
+            isShowToolbarMenuItem = true;
+        }else {
+            isShowToolbarMenuItem = false;
+        }
+        invalidateOptionsMenu();
+
         this.currentFragmentIndex = tabIndex;
 
-//
-//        if (nextFragment != currentFragment) {
-//            android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
-//            if (nextFragment.isAdded()) {
-//                transaction.hide(currentFragment).show(nextFragment).commitAllowingStateLoss();
-//            } else {
-//                transaction.hide(currentFragment).add(R.id.content_main_fl, nextFragment).commitAllowingStateLoss();
-//            }
-//            switchTextAndImage(tabIndex);
-//            this.currentFragmentIndex = tabIndex;
-//        }
     }
 
     /**
@@ -319,6 +279,35 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             toolbar.setSubtitle(null);
             toolbar.setNavigationIcon(null);
         }
+    }
+
+    private void setToolbarMenuItemStatus(){
+    }
+
+    @Override
+    public void onStarredFileSelected(SeafStarredFile starredFile) {
+        final String repoID = starredFile.getRepoID();
+        final SeafRepo repo = dataManager.getCachedRepoByID(repoID);
+        if (repo == null) return;
+
+        final String repoName = repo.getName();
+        final String filePath = starredFile.getPath();
+        final String dirPath = Utils.getParentPath(filePath);
+
+        // Encrypted repo doesn\`t support gallery,
+        // because pic thumbnail under encrypted repo was not supported at the server side
+        if (Utils.isViewableImage(starredFile.getTitle()) && !repo.encrypted) {
+            WidgetUtils.startGalleryActivity(this, repoName, repoID, dirPath, starredFile.getTitle(), accountManager.getAccount());
+            return;
+        }
+
+        final File localFile = dataManager.getLocalCachedFile(repoName, repoID, filePath, null);
+        if (localFile != null) {
+            WidgetUtils.showFile(this, localFile);
+            return;
+        }
+
+        startFileActivity(repoName, repoID, filePath, repo.canLocalDecrypt(), repo.encVersion);
     }
 
 
@@ -408,6 +397,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
@@ -415,6 +405,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.search_menu_main).setVisible(isShowToolbarMenuItem);
+        menu.findItem(R.id.repo_history_menu_main).setVisible(isShowToolbarMenuItem);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -440,7 +432,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     AlertDialog dialog = builder.create();
                     dialog.show();
 
-                   break;
+                    break;
                 case R.id.repo_history_menu_main:
                     historyRepo(getNavContext().getRepoID());
                     break;
