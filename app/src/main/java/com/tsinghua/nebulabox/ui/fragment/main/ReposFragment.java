@@ -204,7 +204,7 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
                         } else {
                             mActivity.onFileSelected(seafDirent);
                         }
-                        mActivity.isShowToolbarMenuItem = true;
+//                        mActivity.isShowToolbarMenuItem = true;
                         mActivity.invalidateOptionsMenu();
                     } else {
                         return;
@@ -218,7 +218,7 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
 //                    mActivity.subTitleTextView.setText(seafRepo.getName());
                     mActivity.toolbar.setSubtitle(seafRepo.getName());
                     mActivity.toolbar.setNavigationIcon(R.drawable.home_up_btn);
-                    mActivity.isShowToolbarMenuItem = false;
+//                    mActivity.isShowToolbarMenuItem = false;
                     mActivity.invalidateOptionsMenu();
                 }
             }
@@ -651,7 +651,7 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
 
     @Override
     public NavContext getNavContext() {
-        return ((MainActivity) mActivity).getNavContext();
+        return mActivity.getNavContext();
     }
 
     private class LoadTask extends AsyncTask<Void, Void, List<SeafRepo>> {
