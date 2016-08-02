@@ -62,6 +62,10 @@ public class SeafDirent implements SeafItem, Serializable {
         return Utils.readableFileSize(size) + ", " + timestamp;
     }
 
+    public String getMonth() {
+        return Utils.translateCommitTimeToMonth(mtime*1000);
+    }
+
 
     @Override
     public int getIcon() {

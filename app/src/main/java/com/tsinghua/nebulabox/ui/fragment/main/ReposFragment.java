@@ -32,6 +32,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cocosw.bottomsheet.BottomSheet;
+import com.google.common.collect.Lists;
 import com.tsinghua.nebulabox.R;
 import com.tsinghua.nebulabox.SeafException;
 import com.tsinghua.nebulabox.data.DataManager;
@@ -62,7 +63,9 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -276,8 +279,23 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
 
 
     public RelativeLayout getEmptyView() {
-
         return emptyRelativeLayout;
+    }
+
+    private Map<String, List<SeafDirent>> getPictureTimeMap(List<SeafDirent> pictureList) {
+        Map<String, List<SeafDirent>> ret = new HashMap<>();
+        for (SeafDirent dirent : pictureList) {
+            String month = dirent.getMonth();
+            if (ret.containsKey(month)) {
+                ret.get(month).add(dirent);
+            } else {
+                List<SeafDirent> dirents = new ArrayList<>();
+                dirents.add(dirent);
+                ret.put(month, dirents);
+            }
+        }
+
+        return ret;
     }
 
     private void initOptionalPopupWindow(final int index) {
@@ -315,7 +333,20 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
                         if (index == 0) {
                             //照片
                             pictureList = Utils.categoryFile(allDirentList, pictureFormat);
-                            setCategoryDataToAdapter(pictureList);
+                            Map<String, List<SeafDirent>> ret = getPictureTimeMap(pictureList);
+                            List<String> months = Lists.newArrayList(ret.keySet());
+                            Collections.sort(months);
+                            getAdapter().clear();
+                            for (String month : months) {
+                                getAdapter().add(new SeafGroup(month));
+                                List<SeafDirent> dirents = ret.get(month);
+                                for (SeafDirent dirent : dirents) {
+                                    getAdapter().add(dirent);
+                                }
+                            }
+                            getAdapter().notifyDataSetChanged();
+
+//                            setCategoryDataToAdapter(pictureList);
                         } else if (index == 1) {
                             fileNameDirentList = Utils.sortFileByFileName(allDirentList);
                             setCategoryDataToAdapter(fileNameDirentList);
