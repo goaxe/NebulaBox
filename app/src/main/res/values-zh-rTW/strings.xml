@@ -132,6 +132,18 @@
     <string name="view_count">被访问次数:</string>
     <string name="expire_at">过期时间为:</string>
 
+    <string name="categoty">类别</string>
+    <string name="sort">排序</string>
+    <string name="transfer_list">傳輸列表</string>
+
+
+    <string name="clear_cache">清空緩存</string>
+    <string name="cache_path">緩存路徑</string>
+    <string name="version_name">版本號</string>
+    <string name="abount_self">關於我們</string>
+    <string name="about_self_content">NebulaBox應用是由清華大學開發</string>
+
+    <string name="logout">退出登錄</string>
 
 
 </resources>

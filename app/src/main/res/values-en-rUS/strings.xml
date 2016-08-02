@@ -513,7 +513,18 @@
     <string name="view_count">view count:</string>
     <string name="expire_at">expire at:</string>
 
+    <string name="categoty">category</string>
+    <string name="sort">sort</string>
+    <string name="transfer_list">transfer list</string>
 
+
+    <string name="clear_cache">clear cache</string>
+    <string name="cache_path">cache path</string>
+    <string name="version_name">version name</string>
+    <string name="abount_self">about self</string>
+    <string name="about_self_content">NebulaBox application is developed by Tsinghua University</string>
+
+    <string name="logout">logout</string>
 
 
 </resources>

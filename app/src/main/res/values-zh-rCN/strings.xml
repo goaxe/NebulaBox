@@ -473,4 +473,17 @@
     <string name="expire_at">过期时间为:</string>
 
 
+    <string name="categoty">类别</string>
+    <string name="sort">排序</string>
+    <string name="transfer_list">传输列表</string>
+
+
+    <string name="clear_cache">清空缓存</string>
+    <string name="cache_path">缓存路径</string>
+    <string name="version_name">版本号</string>
+    <string name="abount_self">关于我们</string>
+    <string name="about_self_content">NebulaBox应用是由清华大学开发</string>
+
+    <string name="logout">退出登录</string>
+
 </resources>
