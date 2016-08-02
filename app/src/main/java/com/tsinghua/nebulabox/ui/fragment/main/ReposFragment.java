@@ -336,6 +336,7 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
                             Map<String, List<SeafDirent>> ret = getPictureTimeMap(pictureList);
                             List<String> months = Lists.newArrayList(ret.keySet());
                             Collections.sort(months);
+                            Collections.reverse(months);
                             getAdapter().clear();
                             for (String month : months) {
                                 getAdapter().add(new SeafGroup(month));
