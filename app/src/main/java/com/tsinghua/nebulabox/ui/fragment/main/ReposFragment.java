@@ -931,6 +931,9 @@ public class ReposFragment extends BaseFragment implements View.OnClickListener,
         dialog.show(mActivity.getSupportFragmentManager(), "NewDirDialogFragment");
     }
 
+    /**
+     * 上传文件
+     */
     private void pickFile() {
 //        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
 //            UploadChoiceDialog dialog = new UploadChoiceDialog();

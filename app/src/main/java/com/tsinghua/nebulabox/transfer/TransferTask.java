@@ -10,7 +10,7 @@ import java.io.File;
 /**
  * Base class for transferring data
  * <p/>
- * reference for override equals and hashcode, http://www.javaranch.com/journal/2002/10/equalhash.html
+ * reference for override equals and hashcode, <a> http://www.javaranch.com/journal/2002/10/equalhash.html </a>
  * <p/>
  */
 public abstract class TransferTask extends AsyncTask<Void, Long, File> {

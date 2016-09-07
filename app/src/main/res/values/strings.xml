@@ -168,6 +168,8 @@
         <item>Accounts</item>
         <item>Backup Photos</item>
     </string-array>
+    <string name="backup_contacts">contacts backup</string>
+    <string name="backup_message">message backup</string>
     <string name="no_starred_file">No starred file yet</string>
     <string name="added_to_upload_tasks">Uploading started</string>
     <string name="added_photo_to_upload_tasks">Photo uploading started</string>

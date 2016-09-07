@@ -50,7 +50,7 @@
         <!--<item name="android:colorButtonNormal">@color/fancy_orange</item>-->
         <item name="colorButtonNormal">@color/fancy_orange</item>
         <item name="alertDialogTheme">@style/AppCompatAlertDialogStyle</item>
-        <item name="android:navigationBarColor">@color/color_primary</item>
+        <item name="android:navigationBarColor">@color/black</item>
     </style>
 
     <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
