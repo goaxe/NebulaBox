@@ -155,6 +155,8 @@
         <item>账户</item>
         <item>相册备份</item>
     </string-array>
+    <string name="backup_contacts">通讯录备份</string>
+    <string name="backup_message">短信备份</string>
     <string name="no_starred_file">无星标文件</string>
     <string name="added_to_upload_tasks">开始上传</string>
     <string name="added_photo_to_upload_tasks">图片开始上传</string>

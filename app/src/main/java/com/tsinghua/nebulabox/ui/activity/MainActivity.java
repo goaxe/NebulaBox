@@ -401,8 +401,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (currentFragmentIndex == 0 && navContext.inRepo()){
             menu.findItem(R.id.search_menu_main).setVisible(true);
             menu.findItem(R.id.repo_history_menu_main).setVisible(true);
+            menu.findItem(R.id.contacts_menu_main).setVisible(true);
+            menu.findItem(R.id.messages_menu_main).setVisible(true);
         }else {
             menu.findItem(R.id.search_menu_main).setVisible(false);
+            menu.findItem(R.id.contacts_menu_main).setVisible(false);
+            menu.findItem(R.id.messages_menu_main).setVisible(false);
             menu.findItem(R.id.repo_history_menu_main).setVisible(false);
         }
         return super.onPrepareOptionsMenu(menu);
@@ -433,6 +437,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     break;
                 case R.id.repo_history_menu_main:
                     historyRepo(getNavContext().getRepoID());
+                    break;
+                case R.id.contacts_menu_main:
+                    backupLocalContact();
+                    break;
+                case R.id.messages_menu_main:
+                    backupLocalMsg();
                     break;
             }
             return true;

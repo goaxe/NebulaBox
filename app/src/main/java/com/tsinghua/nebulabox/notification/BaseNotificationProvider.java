@@ -175,7 +175,7 @@ public abstract class BaseNotificationProvider {
      *
      */
     protected void notifyCompletedWithErrors(int notificationID, String title, String info, int progress) {
-        mNotifBuilder.setSmallIcon(R.drawable.icon);
+        mNotifBuilder.setSmallIcon(R.mipmap.logo);
         mNotifBuilder.setContentTitle(title);
         mNotifBuilder.setContentText(info);
         mNotifBuilder.setProgress(100, progress, false);
